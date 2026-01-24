@@ -1,8 +1,10 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { patientService } from '../../services/patient.service';
+import { dialysisService } from '../../services/dialysis.service';
+import { dialysisPrescriptionService } from '../../services/dialysis-prescription.service';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '../../components/ui';
-import { formatDate, calculateAge, formatBloodType } from '../../lib/utils';
+import { formatDate, formatDateTime, calculateAge, formatBloodType } from '../../lib/utils';
 import {
     ArrowLeft,
     Phone,
@@ -14,6 +16,7 @@ import {
     User,
     Heart,
     Calendar,
+    Droplet,
 } from 'lucide-react';
 
 export function PatientDetailPage() {
@@ -22,6 +25,31 @@ export function PatientDetailPage() {
     const { data: patient, isLoading } = useQuery({
         queryKey: ['patient', id],
         queryFn: () => patientService.getPatient(id!),
+        enabled: !!id,
+    });
+
+    const { data: dialysisSessions } = useQuery({
+        queryKey: ['dialysis-sessions', 'patient', id],
+        queryFn: () =>
+            dialysisService.getSessions({
+                patientId: id!,
+                limit: 5,
+                sortBy: 'startTime',
+                sortOrder: 'desc',
+            }),
+        enabled: !!id,
+    });
+
+    const { data: dialysisPrescriptions } = useQuery({
+        queryKey: ['dialysis-prescriptions', 'patient', id],
+        queryFn: () =>
+            dialysisPrescriptionService.getPrescriptions({
+                patientId: id!,
+                limit: 1,
+                isActive: true,
+                sortBy: 'startDate',
+                sortOrder: 'desc',
+            }),
         enabled: !!id,
     });
 
@@ -48,6 +76,9 @@ export function PatientDetailPage() {
         (typeof patient.allergies === 'string' ? JSON.parse(patient.allergies || '[]') : []);
     const conditions = Array.isArray(patient.chronicConditions) ? patient.chronicConditions :
         (typeof patient.chronicConditions === 'string' ? JSON.parse(patient.chronicConditions || '[]') : []);
+    const activePrescription = dialysisPrescriptions?.prescriptions?.[0];
+    const recentSessions = dialysisSessions?.sessions ?? [];
+    const accessType = activePrescription?.accessType || recentSessions[0]?.accessType;
 
     return (
         <div className="space-y-6">
@@ -192,6 +223,78 @@ export function PatientDetailPage() {
                             ) : (
                                 <p className="text-gray-500 text-center py-6">No medical history recorded</p>
                             )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Dialysis Overview */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Droplet size={20} />
+                                Dialysis Overview
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-3">Current Prescription</p>
+                                    {activePrescription ? (
+                                        <div className="space-y-2 text-sm text-gray-700">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Dialyzer</span>
+                                                <span>{activePrescription.dialyzer || '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Dialysate</span>
+                                                <span>{activePrescription.dialysate || '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Duration</span>
+                                                <span>{activePrescription.durationMinutes ? `${activePrescription.durationMinutes} min` : '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Dry Weight</span>
+                                                <span>{activePrescription.dryWeight ?? '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Target UF</span>
+                                                <span>{activePrescription.targetUltrafiltration ?? '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Access Type</span>
+                                                <span>{accessType || '-'}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No active prescription on file.</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <p className="text-sm text-gray-500">Recent Sessions</p>
+                                        {id && (
+                                            <Link to={`/dialysis?patientId=${id}`} className="text-sm text-blue-600 hover:underline">
+                                                View all
+                                            </Link>
+                                        )}
+                                    </div>
+                                    {recentSessions.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {recentSessions.slice(0, 3).map((session) => (
+                                                <div key={session.id} className="flex items-center justify-between text-sm">
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">{formatDateTime(session.startTime)}</p>
+                                                        <p className="text-xs text-gray-500">{session.accessType || 'Access: N/A'}</p>
+                                                    </div>
+                                                    <span className="text-xs text-gray-500">{session.status}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No recent sessions.</p>
+                                    )}
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>

@@ -50,7 +50,11 @@ model User {
   appointmentsCreated Appointment[] @relation("AppointmentCreatedBy")
   appointmentsAsProvider Appointment[] @relation("AppointmentProvider")
   encountersCreated Encounter[] @relation("EncounterCreatedBy")
+  encountersAsProvider Encounter[] @relation("EncounterProvider")
   department Department? @relation("DepartmentUsers", fields: [departmentId], references: [id])
+  dialysisSessions DialysisSession[]
+  dialysisPrescriptions DialysisPrescription[]
+  dialysisSchedules DialysisSchedule[]
 
   @@map("users")
 }
@@ -92,6 +96,11 @@ model Patient {
   documents               PatientDocument[]
   appointments            Appointment[]
   encounters              Encounter[]
+  dialysisSessions        DialysisSession[]
+  dialysisPrescriptions   DialysisPrescription[]
+  dialysisSchedules       DialysisSchedule[]
+  dialysisLabResults       DialysisLabResult[]
+  dialysisMedicationOrders DialysisMedicationOrder[]
 
   @@map("patients")
 }
@@ -145,6 +154,35 @@ enum AppointmentStatus {
   COMPLETED
   CANCELLED
   NO_SHOW
+}
+
+enum DialysisStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum DialysisStationStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  OUT_OF_SERVICE
+}
+
+enum DialysisScheduleRecurrence {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum DialysisMedicationRoute {
+  IV
+  PO
+  IM
+  SC
+  OTHER
 }
 
 model Department {
@@ -221,6 +259,184 @@ model Appointment {
   @@map("appointments")
 }
 
+model DialysisSession {
+  id                     String         @id @default(cuid())
+  patientId              String
+  providerId             String
+  status                 DialysisStatus @default(SCHEDULED)
+  startTime              DateTime
+  endTime                DateTime
+  machineNumber          String?
+  accessType             String?
+  dialyzer               String?
+  dialysate              String?
+  bloodFlowRate          Int?
+  dialysateFlowRate      Int?
+  ultrafiltrationVolume  Float?
+  weightPre              Float?
+  weightPost             Float?
+  notes                  String?        @db.Text
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  patient                Patient        @relation(fields: [patientId], references: [id])
+  provider               User           @relation(fields: [providerId], references: [id])
+  flowsheetEntries       DialysisFlowsheetEntry[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([startTime])
+  @@index([status])
+  @@map("dialysis_sessions")
+}
+
+model DialysisPrescription {
+  id                     String   @id @default(cuid())
+  patientId              String
+  providerId             String?
+  dryWeight              Float?
+  targetUltrafiltration  Float?
+  durationMinutes        Int?
+  dialyzer               String?
+  dialysate              String?
+  bloodFlowRate          Int?
+  dialysateFlowRate      Int?
+  accessType             String?
+  frequency              String?
+  isActive               Boolean  @default(true)
+  notes                  String?  @db.Text
+  startDate              DateTime?
+  endDate                DateTime?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  patient                Patient  @relation(fields: [patientId], references: [id])
+  provider               User?    @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([isActive])
+  @@map("dialysis_prescriptions")
+}
+
+model DialysisFlowsheetEntry {
+  id                     String   @id @default(cuid())
+  sessionId              String
+  recordedAt             DateTime
+  bpSystolic             Int?
+  bpDiastolic            Int?
+  heartRate              Int?
+  temperature            Float?
+  oxygenSaturation       Int?
+  bloodFlowRate          Int?
+  dialysateFlowRate      Int?
+  ultrafiltrationVolume  Float?
+  arterialPressure       Int?
+  venousPressure         Int?
+  transmembranePressure  Int?
+  alarms                 String?  @db.Text
+  notes                  String?  @db.Text
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  session                DialysisSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([recordedAt])
+  @@map("dialysis_flowsheet_entries")
+}
+
+model DialysisStation {
+  id               String                @id @default(cuid())
+  name             String
+  room             String?
+  machineNumber    String?
+  status           DialysisStationStatus @default(AVAILABLE)
+  lastServiceDate  DateTime?
+  nextServiceDate  DateTime?
+  notes            String?               @db.Text
+  isActive         Boolean               @default(true)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  schedules        DialysisSchedule[]
+
+  @@map("dialysis_stations")
+}
+
+model DialysisSchedule {
+  id               String                     @id @default(cuid())
+  patientId        String
+  providerId       String?
+  stationId        String?
+  startTime        DateTime
+  durationMinutes  Int
+  recurrence       DialysisScheduleRecurrence @default(NONE)
+  daysOfWeek       Json                       @default("[]")
+  endDate          DateTime?
+  isActive         Boolean                    @default(true)
+  notes            String?                    @db.Text
+  createdAt        DateTime                   @default(now())
+  updatedAt        DateTime                   @updatedAt
+
+  patient          Patient                    @relation(fields: [patientId], references: [id])
+  provider         User?                      @relation(fields: [providerId], references: [id])
+  station          DialysisStation?           @relation(fields: [stationId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([stationId])
+  @@index([startTime])
+  @@map("dialysis_schedules")
+}
+
+model DialysisLabResult {
+  id              String   @id @default(cuid())
+  patientId       String
+  collectedAt     DateTime
+  ktv             Float?
+  urr             Float?
+  hemoglobin      Float?
+  potassium       Float?
+  sodium          Float?
+  calcium         Float?
+  phosphorus      Float?
+  bicarbonate     Float?
+  albumin         Float?
+  creatinine      Float?
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  patient         Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([collectedAt])
+  @@map("dialysis_lab_results")
+}
+
+model DialysisMedicationOrder {
+  id                String                   @id @default(cuid())
+  patientId         String
+  medicationName    String
+  dose              String?
+  route             DialysisMedicationRoute?
+  frequency         String?
+  startDate         DateTime?
+  endDate           DateTime?
+  lastAdministeredAt DateTime?
+  isActive          Boolean                  @default(true)
+  notes             String?                  @db.Text
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  patient           Patient                  @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([isActive])
+  @@map("dialysis_medication_orders")
+}
+
 model Encounter {
   id            String     @id @default(cuid())
   patientId     String
@@ -236,7 +452,7 @@ model Encounter {
   updatedAt     DateTime   @updatedAt
 
   patient    Patient   @relation(fields: [patientId], references: [id])
-  provider   User      @relation(fields: [providerId], references: [id])
+  provider   User      @relation("EncounterProvider", fields: [providerId], references: [id])
   appointment Appointment? @relation(fields: [appointmentId], references: [id])
   createdBy  User      @relation("EncounterCreatedBy", fields: [createdById], references: [id])
 

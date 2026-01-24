@@ -1,53 +1,38 @@
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { dialysisService } from '../../services/dialysis.service';
+import { dialysisScheduleService } from '../../services/dialysis-schedule.service';
 import { Button, Card, Input } from '../../components/ui';
 import { formatDateTime } from '../../lib/utils';
 import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { DialysisSession, DialysisStatus } from '../../types';
+import type { DialysisSchedule, DialysisScheduleRecurrence } from '../../types';
 import { DialysisNav } from './DialysisNav';
 
-const statusStyles: Record<DialysisStatus, string> = {
-    SCHEDULED: 'bg-slate-100 text-slate-700',
-    IN_PROGRESS: 'bg-blue-100 text-blue-700',
-    COMPLETED: 'bg-green-100 text-green-700',
-    CANCELLED: 'bg-red-100 text-red-700',
-};
+const recurrenceOptions: DialysisScheduleRecurrence[] = ['NONE', 'DAILY', 'WEEKLY', 'MONTHLY'];
 
-const statusOptions: DialysisStatus[] = [
-    'SCHEDULED',
-    'IN_PROGRESS',
-    'COMPLETED',
-    'CANCELLED',
-];
-
-export function DialysisListPage() {
+export function DialysisSchedulesPage() {
     const queryClient = useQueryClient();
-    const [searchParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const [status, setStatus] = useState<DialysisStatus | ''>('');
     const [search, setSearch] = useState('');
     const [searchInput, setSearchInput] = useState('');
+    const [recurrence, setRecurrence] = useState<DialysisScheduleRecurrence | ''>('');
     const limit = 10;
-    const patientIdParam = searchParams.get('patientId') || '';
 
     const { data, isLoading } = useQuery({
-        queryKey: ['dialysis-sessions', page, status, search, patientIdParam],
+        queryKey: ['dialysis-schedules', page, search, recurrence],
         queryFn: () =>
-            dialysisService.getSessions({
+            dialysisScheduleService.getSchedules({
                 page,
                 limit,
-                status: status || undefined,
-                search: search || undefined,
-                patientId: patientIdParam || undefined,
+                search,
+                recurrence: recurrence || undefined,
             }),
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: string) => dialysisService.deleteSession(id),
+        mutationFn: (id: string) => dialysisScheduleService.deleteSchedule(id),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['dialysis-sessions'] });
+            queryClient.invalidateQueries({ queryKey: ['dialysis-schedules'] });
         },
     });
 
@@ -57,27 +42,27 @@ export function DialysisListPage() {
         setPage(1);
     };
 
-    const handleDelete = (session: DialysisSession) => {
+    const handleDelete = (schedule: DialysisSchedule) => {
         if (deleteMutation.isPending) return;
-        if (window.confirm('Delete this dialysis session? This cannot be undone.')) {
-            deleteMutation.mutate(session.id);
+        if (window.confirm('Delete this schedule? This cannot be undone.')) {
+            deleteMutation.mutate(schedule.id);
         }
     };
 
-    const sessions = data?.sessions ?? [];
+    const schedules = data?.schedules ?? [];
     const pagination = data?.pagination;
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Dialysis</h1>
-                    <p className="text-gray-500 mt-1">Track dialysis sessions and treatment details.</p>
+                    <h1 className="text-3xl font-bold text-gray-900">Dialysis Schedules</h1>
+                    <p className="text-gray-500 mt-1">Plan recurring sessions and chair assignments.</p>
                 </div>
-                <Link to="/dialysis/new">
+                <Link to="/dialysis/schedules/new">
                     <Button>
                         <Plus size={18} className="mr-2" />
-                        New Session
+                        New Schedule
                     </Button>
                 </Link>
             </div>
@@ -89,7 +74,7 @@ export function DialysisListPage() {
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <Input
-                            placeholder="Search by patient, MRN, or provider..."
+                            placeholder="Search by patient or provider..."
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             className="pl-10"
@@ -98,25 +83,22 @@ export function DialysisListPage() {
                     <div className="w-full md:w-48">
                         <select
                             className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                            value={status}
+                            value={recurrence}
                             onChange={(e) => {
-                                setStatus(e.target.value as DialysisStatus | '');
+                                setRecurrence(e.target.value as DialysisScheduleRecurrence | '');
                                 setPage(1);
                             }}
                         >
-                            <option value="">All statuses</option>
-                            {statusOptions.map((option) => (
-                                <option key={option} value={option}>{option}</option>
+                            <option value="">All recurrence</option>
+                            {recurrenceOptions.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
                             ))}
                         </select>
                     </div>
                     <Button type="submit">Search</Button>
                 </form>
-                {patientIdParam && (
-                    <p className="mt-3 text-sm text-blue-600">
-                        Filtered by patient ID: {patientIdParam}
-                    </p>
-                )}
             </Card>
 
             <Card>
@@ -125,9 +107,9 @@ export function DialysisListPage() {
                         <thead className="bg-gray-50 border-b border-gray-100">
                             <tr>
                                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Patient</th>
-                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Provider</th>
+                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Station</th>
                                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Schedule</th>
-                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Details</th>
+                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Recurrence</th>
                                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Status</th>
                                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600"></th>
                             </tr>
@@ -136,51 +118,55 @@ export function DialysisListPage() {
                             {isLoading ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                        Loading sessions...
+                                        Loading schedules...
                                     </td>
                                 </tr>
-                            ) : sessions.length === 0 ? (
+                            ) : schedules.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                        No sessions found
+                                        No schedules found
                                     </td>
                                 </tr>
                             ) : (
-                                sessions.map((session) => (
-                                    <tr key={session.id} className="hover:bg-gray-50">
+                                schedules.map((schedule) => (
+                                    <tr key={schedule.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4">
                                             <div className="font-medium text-gray-900">
-                                                {session.patient
-                                                    ? `${session.patient.firstName} ${session.patient.lastName}`
-                                                    : session.patientId}
+                                                {schedule.patient
+                                                    ? `${schedule.patient.firstName} ${schedule.patient.lastName}`
+                                                    : schedule.patientId}
                                             </div>
                                             <div className="text-xs text-gray-500">
-                                                {session.patient?.mrn || session.patientId}
+                                                {schedule.patient?.mrn || schedule.patientId}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-700">
-                                            {session.provider
-                                                ? `Dr. ${session.provider.firstName} ${session.provider.lastName}`
-                                                : session.providerId}
+                                            <div>{schedule.station?.name || schedule.stationId || '-'}</div>
+                                            <div className="text-xs text-gray-500">{schedule.station?.room || ''}</div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-700">
-                                            <div>{formatDateTime(session.startTime)}</div>
-                                            <div className="text-xs text-gray-500">{formatDateTime(session.endTime)}</div>
+                                            <div>{formatDateTime(schedule.startTime)}</div>
+                                            <div className="text-xs text-gray-500">{schedule.durationMinutes} min</div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-700">
-                                            <div>Access: {session.accessType || 'N/A'}</div>
+                                            <div>{schedule.recurrence}</div>
                                             <div className="text-xs text-gray-500">
-                                                Machine: {session.machineNumber || 'N/A'}
+                                                {schedule.daysOfWeek?.length ? schedule.daysOfWeek.join(', ') : 'Single'}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[session.status]}`}>
-                                                {session.status.split('_').join(' ')}
+                                            <span
+                                                className={`px-2 py-1 rounded-full text-xs font-medium ${schedule.isActive === false
+                                                    ? 'bg-gray-100 text-gray-600'
+                                                    : 'bg-green-100 text-green-700'
+                                                    }`}
+                                            >
+                                                {schedule.isActive === false ? 'Inactive' : 'Active'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
-                                                <Link to={`/dialysis/${session.id}/edit`}>
+                                                <Link to={`/dialysis/schedules/${schedule.id}/edit`}>
                                                     <Button variant="outline" size="sm">
                                                         <Pencil size={16} />
                                                     </Button>
@@ -188,7 +174,7 @@ export function DialysisListPage() {
                                                 <Button
                                                     variant="destructive"
                                                     size="sm"
-                                                    onClick={() => handleDelete(session)}
+                                                    onClick={() => handleDelete(schedule)}
                                                     disabled={deleteMutation.isPending}
                                                 >
                                                     <Trash2 size={16} />
@@ -205,7 +191,7 @@ export function DialysisListPage() {
                 {pagination && pagination.totalPages > 1 && (
                     <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
                         <p className="text-sm text-gray-500">
-                            Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, pagination.total)} of {pagination.total} sessions
+                            Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, pagination.total)} of {pagination.total} schedules
                         </p>
                         <div className="flex gap-2">
                             <Button

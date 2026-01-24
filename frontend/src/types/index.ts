@@ -295,6 +295,258 @@ export interface CreateDialysisSessionRequest {
     notes?: string;
 }
 
+export type DialysisStationStatus = 'AVAILABLE' | 'IN_USE' | 'MAINTENANCE' | 'OUT_OF_SERVICE';
+export type DialysisScheduleRecurrence = 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
+export type DialysisMedicationRoute = 'IV' | 'PO' | 'IM' | 'SC' | 'OTHER';
+
+export interface DialysisPrescription {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    dryWeight?: number;
+    targetUltrafiltration?: number;
+    durationMinutes?: number;
+    dialyzer?: string;
+    dialysate?: string;
+    bloodFlowRate?: number;
+    dialysateFlowRate?: number;
+    accessType?: string;
+    frequency?: string;
+    isActive?: boolean;
+    notes?: string;
+    startDate?: string;
+    endDate?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateDialysisPrescriptionRequest {
+    patientId: string;
+    providerId?: string;
+    dryWeight?: number;
+    targetUltrafiltration?: number;
+    durationMinutes?: number;
+    dialyzer?: string;
+    dialysate?: string;
+    bloodFlowRate?: number;
+    dialysateFlowRate?: number;
+    accessType?: string;
+    frequency?: string;
+    isActive?: boolean;
+    notes?: string;
+    startDate?: string;
+    endDate?: string;
+}
+
+export interface DialysisFlowsheetEntry {
+    id: string;
+    sessionId: string;
+    recordedAt: string;
+    bpSystolic?: number;
+    bpDiastolic?: number;
+    heartRate?: number;
+    temperature?: number;
+    oxygenSaturation?: number;
+    bloodFlowRate?: number;
+    dialysateFlowRate?: number;
+    ultrafiltrationVolume?: number;
+    arterialPressure?: number;
+    venousPressure?: number;
+    transmembranePressure?: number;
+    alarms?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface CreateDialysisFlowsheetEntryRequest {
+    sessionId: string;
+    recordedAt: string;
+    bpSystolic?: number;
+    bpDiastolic?: number;
+    heartRate?: number;
+    temperature?: number;
+    oxygenSaturation?: number;
+    bloodFlowRate?: number;
+    dialysateFlowRate?: number;
+    ultrafiltrationVolume?: number;
+    arterialPressure?: number;
+    venousPressure?: number;
+    transmembranePressure?: number;
+    alarms?: string;
+    notes?: string;
+}
+
+export interface DialysisStation {
+    id: string;
+    name: string;
+    room?: string;
+    machineNumber?: string;
+    status: DialysisStationStatus;
+    lastServiceDate?: string;
+    nextServiceDate?: string;
+    notes?: string;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface CreateDialysisStationRequest {
+    name: string;
+    room?: string;
+    machineNumber?: string;
+    status?: DialysisStationStatus;
+    lastServiceDate?: string;
+    nextServiceDate?: string;
+    notes?: string;
+    isActive?: boolean;
+}
+
+export interface DialysisSchedule {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    stationId?: string;
+    startTime: string;
+    durationMinutes: number;
+    recurrence: DialysisScheduleRecurrence;
+    daysOfWeek?: string[];
+    endDate?: string;
+    isActive?: boolean;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    station?: {
+        id: string;
+        name: string;
+        room?: string;
+    };
+}
+
+export interface CreateDialysisScheduleRequest {
+    patientId: string;
+    providerId?: string;
+    stationId?: string;
+    startTime: string;
+    durationMinutes: number;
+    recurrence?: DialysisScheduleRecurrence;
+    daysOfWeek?: string[];
+    endDate?: string;
+    isActive?: boolean;
+    notes?: string;
+}
+
+export interface DialysisLabResult {
+    id: string;
+    patientId: string;
+    collectedAt: string;
+    ktv?: number;
+    urr?: number;
+    hemoglobin?: number;
+    potassium?: number;
+    sodium?: number;
+    calcium?: number;
+    phosphorus?: number;
+    bicarbonate?: number;
+    albumin?: number;
+    creatinine?: number;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateDialysisLabResultRequest {
+    patientId: string;
+    collectedAt: string;
+    ktv?: number;
+    urr?: number;
+    hemoglobin?: number;
+    potassium?: number;
+    sodium?: number;
+    calcium?: number;
+    phosphorus?: number;
+    bicarbonate?: number;
+    albumin?: number;
+    creatinine?: number;
+    notes?: string;
+}
+
+export interface DialysisMedicationOrder {
+    id: string;
+    patientId: string;
+    medicationName: string;
+    dose?: string;
+    route?: DialysisMedicationRoute;
+    frequency?: string;
+    startDate?: string;
+    endDate?: string;
+    lastAdministeredAt?: string;
+    isActive?: boolean;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateDialysisMedicationOrderRequest {
+    patientId: string;
+    medicationName: string;
+    dose?: string;
+    route?: DialysisMedicationRoute;
+    frequency?: string;
+    startDate?: string;
+    endDate?: string;
+    lastAdministeredAt?: string;
+    isActive?: boolean;
+    notes?: string;
+}
+
+export interface DialysisReportSummary {
+    totalSessions?: number;
+    completedSessions?: number;
+    cancelledSessions?: number;
+    averageDurationMinutes?: number;
+    averageKtv?: number;
+    averageUrr?: number;
+    activePatients?: number;
+    chairUtilizationPercent?: number;
+}
+
 export interface AppointmentMeta {
     visitTypes: VisitType[];
     locations: Location[];

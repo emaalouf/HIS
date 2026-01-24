@@ -16,6 +16,19 @@ import { SpecialtyListPage } from './pages/specialties/SpecialtyListPage';
 import { SpecialtyFormPage } from './pages/specialties/SpecialtyFormPage';
 import { DialysisListPage } from './pages/dialysis/DialysisListPage';
 import { DialysisFormPage } from './pages/dialysis/DialysisFormPage';
+import { DialysisPrescriptionsPage } from './pages/dialysis/DialysisPrescriptionsPage';
+import { DialysisPrescriptionFormPage } from './pages/dialysis/DialysisPrescriptionFormPage';
+import { DialysisFlowsheetPage } from './pages/dialysis/DialysisFlowsheetPage';
+import { DialysisFlowsheetFormPage } from './pages/dialysis/DialysisFlowsheetFormPage';
+import { DialysisStationsPage } from './pages/dialysis/DialysisStationsPage';
+import { DialysisStationFormPage } from './pages/dialysis/DialysisStationFormPage';
+import { DialysisSchedulesPage } from './pages/dialysis/DialysisSchedulesPage';
+import { DialysisScheduleFormPage } from './pages/dialysis/DialysisScheduleFormPage';
+import { DialysisLabsPage } from './pages/dialysis/DialysisLabsPage';
+import { DialysisLabFormPage } from './pages/dialysis/DialysisLabFormPage';
+import { DialysisMedicationsPage } from './pages/dialysis/DialysisMedicationsPage';
+import { DialysisMedicationFormPage } from './pages/dialysis/DialysisMedicationFormPage';
+import { DialysisReportsPage } from './pages/dialysis/DialysisReportsPage';
 import './index.css';
 
 function App() {
@@ -28,6 +41,25 @@ function App() {
         <Route path="/dialysis" element={<DialysisListPage />} />
         <Route path="/dialysis/new" element={<DialysisFormPage />} />
         <Route path="/dialysis/:id/edit" element={<DialysisFormPage />} />
+        <Route path="/dialysis/prescriptions" element={<DialysisPrescriptionsPage />} />
+        <Route path="/dialysis/prescriptions/new" element={<DialysisPrescriptionFormPage />} />
+        <Route path="/dialysis/prescriptions/:id/edit" element={<DialysisPrescriptionFormPage />} />
+        <Route path="/dialysis/flowsheets" element={<DialysisFlowsheetPage />} />
+        <Route path="/dialysis/flowsheets/new" element={<DialysisFlowsheetFormPage />} />
+        <Route path="/dialysis/flowsheets/:id/edit" element={<DialysisFlowsheetFormPage />} />
+        <Route path="/dialysis/stations" element={<DialysisStationsPage />} />
+        <Route path="/dialysis/stations/new" element={<DialysisStationFormPage />} />
+        <Route path="/dialysis/stations/:id/edit" element={<DialysisStationFormPage />} />
+        <Route path="/dialysis/schedules" element={<DialysisSchedulesPage />} />
+        <Route path="/dialysis/schedules/new" element={<DialysisScheduleFormPage />} />
+        <Route path="/dialysis/schedules/:id/edit" element={<DialysisScheduleFormPage />} />
+        <Route path="/dialysis/labs" element={<DialysisLabsPage />} />
+        <Route path="/dialysis/labs/new" element={<DialysisLabFormPage />} />
+        <Route path="/dialysis/labs/:id/edit" element={<DialysisLabFormPage />} />
+        <Route path="/dialysis/medications" element={<DialysisMedicationsPage />} />
+        <Route path="/dialysis/medications/new" element={<DialysisMedicationFormPage />} />
+        <Route path="/dialysis/medications/:id/edit" element={<DialysisMedicationFormPage />} />
+        <Route path="/dialysis/reports" element={<DialysisReportsPage />} />
         <Route path="/providers" element={<ProviderListPage />} />
         <Route path="/providers/new" element={<ProviderFormPage />} />
         <Route path="/providers/:id/edit" element={<ProviderFormPage />} />

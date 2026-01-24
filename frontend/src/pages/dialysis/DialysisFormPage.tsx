@@ -3,9 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { dialysisService } from '../../services/dialysis.service';
 import { providerService } from '../../services/provider.service';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '../../components/ui';
+import { patientService } from '../../services/patient.service';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, SearchableSelect } from '../../components/ui';
 import { ArrowLeft, Save } from 'lucide-react';
 import type { CreateDialysisSessionRequest, DialysisStatus } from '../../types';
+import type { SelectOption } from '../../components/ui/SearchableSelect';
+import { DialysisNav } from './DialysisNav';
 
 const statusOptions: DialysisStatus[] = [
     'SCHEDULED',
@@ -43,6 +46,8 @@ export function DialysisFormPage() {
     const queryClient = useQueryClient();
     const [error, setError] = useState('');
     const isEditMode = Boolean(id);
+    const [patientInput, setPatientInput] = useState('');
+    const [providerInput, setProviderInput] = useState('');
 
     const defaultStart = useMemo(() => {
         const start = new Date();
@@ -80,9 +85,31 @@ export function DialysisFormPage() {
         enabled: isEditMode,
     });
 
-    const { data: providersData } = useQuery({
-        queryKey: ['providers', 'dialysis'],
-        queryFn: () => providerService.getProviders({ page: 1, limit: 200 }),
+    const patientSearch = patientInput.trim();
+    const providerSearch = providerInput.trim();
+
+    const { data: patientsData, isLoading: isPatientsLoading } = useQuery({
+        queryKey: ['patients', 'dialysis-picker', patientSearch],
+        queryFn: () =>
+            patientService.getPatients({
+                page: 1,
+                limit: 10,
+                search: patientSearch || undefined,
+                sortBy: patientSearch ? undefined : 'createdAt',
+                sortOrder: patientSearch ? undefined : 'desc',
+            }),
+    });
+
+    const { data: providersData, isLoading: isProvidersLoading } = useQuery({
+        queryKey: ['providers', 'dialysis-picker', providerSearch],
+        queryFn: () =>
+            providerService.getProviders({
+                page: 1,
+                limit: 10,
+                search: providerSearch || undefined,
+                sortBy: providerSearch ? undefined : 'createdAt',
+                sortOrder: providerSearch ? undefined : 'desc',
+            }),
     });
 
     useEffect(() => {
@@ -104,6 +131,17 @@ export function DialysisFormPage() {
             weightPost: session.weightPost?.toString() || '',
             notes: session.notes || '',
         });
+        if (session.patient) {
+            setPatientInput(`${session.patient.firstName} ${session.patient.lastName}`);
+        } else {
+            setPatientInput(session.patientId);
+        }
+        if (session.provider) {
+            const prefix = session.provider.role === 'DOCTOR' ? 'Dr. ' : '';
+            setProviderInput(`${prefix}${session.provider.firstName} ${session.provider.lastName}`);
+        } else {
+            setProviderInput(session.providerId);
+        }
     }, [session]);
 
     const createMutation = useMutation({
@@ -139,6 +177,15 @@ export function DialysisFormPage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+
+        if (!formData.patientId) {
+            setError('Please select a patient.');
+            return;
+        }
+        if (!formData.providerId) {
+            setError('Please select a provider.');
+            return;
+        }
 
         const payload: CreateDialysisSessionRequest = {
             patientId: formData.patientId,
@@ -184,8 +231,24 @@ export function DialysisFormPage() {
         );
     }
 
-    const providers = providersData?.providers ?? [];
     const isSaving = createMutation.isPending || updateMutation.isPending;
+    const patients = patientsData?.patients ?? [];
+    const patientOptions: SelectOption[] = patients.map((patient) => ({
+        id: patient.id,
+        label: `${patient.firstName} ${patient.lastName}`,
+        subLabel: `MRN ${patient.mrn}${patient.phone ? ` • ${patient.phone}` : ''}`,
+    }));
+
+    const providers = providersData?.providers ?? [];
+    const providerOptions: SelectOption[] = providers.map((provider) => {
+        const prefix = provider.role === 'DOCTOR' ? 'Dr. ' : '';
+        const secondary = [provider.specialty, provider.department].filter(Boolean).join(' • ') || provider.role;
+        return {
+            id: provider.id,
+            label: `${prefix}${provider.firstName} ${provider.lastName}`,
+            subLabel: secondary,
+        };
+    });
 
     return (
         <div className="w-full max-w-5xl mx-auto space-y-6 lg:pl-0">
@@ -201,6 +264,8 @@ export function DialysisFormPage() {
                 </h1>
             </div>
 
+            <DialysisNav />
+
             <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
                     <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
@@ -214,30 +279,40 @@ export function DialysisFormPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Input
-                                label="Patient ID *"
-                                name="patientId"
-                                value={formData.patientId}
-                                onChange={(e) => setFormData(prev => ({ ...prev, patientId: e.target.value }))}
+                            <SearchableSelect
+                                label="Patient *"
+                                placeholder="Search patients..."
+                                value={patientInput}
                                 required
+                                options={patientOptions}
+                                selectedId={formData.patientId}
+                                isLoading={isPatientsLoading}
+                                onInputChange={(value) => {
+                                    setPatientInput(value);
+                                    setFormData(prev => ({ ...prev, patientId: '' }));
+                                }}
+                                onSelect={(option) => {
+                                    setPatientInput(option.label);
+                                    setFormData(prev => ({ ...prev, patientId: option.id }));
+                                }}
                             />
-                            <div className="w-full">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Provider *</label>
-                                <select
-                                    name="providerId"
-                                    value={formData.providerId}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, providerId: e.target.value }))}
-                                    className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                >
-                                    <option value="">Select a provider</option>
-                                    {providers.map((provider) => (
-                                        <option key={provider.id} value={provider.id}>
-                                            Dr. {provider.firstName} {provider.lastName}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                            <SearchableSelect
+                                label="Provider *"
+                                placeholder="Search providers..."
+                                value={providerInput}
+                                required
+                                options={providerOptions}
+                                selectedId={formData.providerId}
+                                isLoading={isProvidersLoading}
+                                onInputChange={(value) => {
+                                    setProviderInput(value);
+                                    setFormData(prev => ({ ...prev, providerId: '' }));
+                                }}
+                                onSelect={(option) => {
+                                    setProviderInput(option.label);
+                                    setFormData(prev => ({ ...prev, providerId: option.id }));
+                                }}
+                            />
                             <div className="w-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Status *</label>
                                 <select
