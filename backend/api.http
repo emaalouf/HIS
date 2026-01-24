@@ -1,0 +1,120 @@
+### Hospital Management System - API Testing
+
+### Variables
+@baseUrl = http://localhost:3000/api
+@accessToken = {{login.response.body.data.accessToken}}
+
+### ===============================
+### Auth Endpoints
+### ===============================
+
+### Register Admin User
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@hospital.com",
+  "password": "admin123",
+  "firstName": "System",
+  "lastName": "Admin",
+  "role": "ADMIN"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@hospital.com",
+  "password": "admin123"
+}
+
+### Get Current User
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{accessToken}}
+
+### Refresh Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "your-refresh-token-here"
+}
+
+### ===============================
+### Patient Endpoints
+### ===============================
+
+### Get Patient Stats
+GET {{baseUrl}}/patients/stats
+Authorization: Bearer {{accessToken}}
+
+### List All Patients (Paginated)
+GET {{baseUrl}}/patients?page=1&limit=10
+Authorization: Bearer {{accessToken}}
+
+### Search Patients
+GET {{baseUrl}}/patients?search=Alice
+Authorization: Bearer {{accessToken}}
+
+### Create Patient
+POST {{baseUrl}}/patients
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "dateOfBirth": "1990-05-15",
+  "gender": "MALE",
+  "bloodType": "A_POSITIVE",
+  "phone": "+1234567890",
+  "email": "john.doe@email.com",
+  "address": "123 Main Street",
+  "city": "New York",
+  "country": "USA",
+  "emergencyContactName": "Jane Doe",
+  "emergencyContactPhone": "+1234567891",
+  "emergencyContactRelation": "Spouse",
+  "allergies": ["Penicillin", "Peanuts"],
+  "chronicConditions": ["Hypertension"]
+}
+
+### Get Patient by ID
+GET {{baseUrl}}/patients/PATIENT_ID_HERE
+Authorization: Bearer {{accessToken}}
+
+### Update Patient
+PUT {{baseUrl}}/patients/PATIENT_ID_HERE
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "phone": "+1987654321",
+  "address": "456 New Address"
+}
+
+### Delete Patient (Soft Delete)
+DELETE {{baseUrl}}/patients/PATIENT_ID_HERE
+Authorization: Bearer {{accessToken}}
+
+### ===============================
+### Medical History Endpoints
+### ===============================
+
+### Get Medical History for Patient
+GET {{baseUrl}}/patients/PATIENT_ID_HERE/history
+Authorization: Bearer {{accessToken}}
+
+### Add Medical History (Doctor Only)
+POST {{baseUrl}}/patients/PATIENT_ID_HERE/history
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "diagnosis": "Common Cold",
+  "treatment": "Rest and fluids, OTC medication",
+  "notes": "Patient presented with mild fever and congestion",
+  "visitDate": "2024-01-24"
+}
