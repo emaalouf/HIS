@@ -1,6 +1,8 @@
 export type Role = 'ADMIN' | 'DOCTOR' | 'NURSE' | 'RECEPTIONIST';
 export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
 export type BloodType = 'A_POSITIVE' | 'A_NEGATIVE' | 'B_POSITIVE' | 'B_NEGATIVE' | 'AB_POSITIVE' | 'AB_NEGATIVE' | 'O_POSITIVE' | 'O_NEGATIVE' | 'UNKNOWN';
+export type AppointmentStatus = 'SCHEDULED' | 'CONFIRMED' | 'CHECKED_IN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+export type DialysisStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export interface User {
     id: string;
@@ -9,6 +11,68 @@ export interface User {
     lastName: string;
     role: Role;
     createdAt?: string;
+}
+
+export interface Permission {
+    id: string;
+    name: string;
+    description?: string;
+    key?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface AccessRole {
+    id: string;
+    name: string;
+    description?: string;
+    isActive?: boolean;
+    permissions?: Permission[];
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface Specialty {
+    id: string;
+    name: string;
+    description?: string;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface CreatePermissionRequest {
+    name: string;
+    description?: string;
+    key?: string;
+}
+
+export interface CreateRoleRequest {
+    name: string;
+    description?: string;
+    isActive?: boolean;
+    permissionIds?: string[];
+}
+
+export interface CreateSpecialtyRequest {
+    name: string;
+    description?: string;
+    isActive?: boolean;
+}
+
+export interface Provider {
+    id: string;
+    firstName: string;
+    lastName: string;
+    role: Role;
+    email?: string;
+    phone?: string;
+    specialty?: string;
+    department?: string;
+    licenseNumber?: string;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface Patient {
@@ -116,9 +180,123 @@ export interface CreatePatientRequest {
     chronicConditions?: string[];
 }
 
+export interface CreateProviderRequest {
+    firstName: string;
+    lastName: string;
+    role: Role;
+    email?: string;
+    phone?: string;
+    specialty?: string;
+    department?: string;
+    licenseNumber?: string;
+    isActive?: boolean;
+}
+
 export interface CreateMedicalHistoryRequest {
     diagnosis: string;
     treatment?: string;
     notes?: string;
     visitDate: string;
+}
+
+export interface VisitType {
+    id: string;
+    name: string;
+    description?: string | null;
+    durationMinutes: number;
+    isTelehealth: boolean;
+    color?: string | null;
+}
+
+export interface Location {
+    id: string;
+    name: string;
+    type?: string | null;
+}
+
+export interface Appointment {
+    id: string;
+    patientId: string;
+    providerId: string;
+    visitTypeId?: string | null;
+    locationId?: string | null;
+    startTime: string;
+    endTime: string;
+    status: AppointmentStatus;
+    reason?: string | null;
+    notes?: string | null;
+    cancellationReason?: string | null;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+        phone?: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    visitType?: VisitType | null;
+    location?: Location | null;
+}
+
+export interface DialysisSession {
+    id: string;
+    patientId: string;
+    providerId: string;
+    status: DialysisStatus;
+    startTime: string;
+    endTime: string;
+    machineNumber?: string;
+    accessType?: string;
+    dialyzer?: string;
+    dialysate?: string;
+    bloodFlowRate?: number;
+    dialysateFlowRate?: number;
+    ultrafiltrationVolume?: number;
+    weightPre?: number;
+    weightPost?: number;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+        phone?: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateDialysisSessionRequest {
+    patientId: string;
+    providerId: string;
+    status?: DialysisStatus;
+    startTime: string;
+    endTime: string;
+    machineNumber?: string;
+    accessType?: string;
+    dialyzer?: string;
+    dialysate?: string;
+    bloodFlowRate?: number;
+    dialysateFlowRate?: number;
+    ultrafiltrationVolume?: number;
+    weightPre?: number;
+    weightPost?: number;
+    notes?: string;
+}
+
+export interface AppointmentMeta {
+    visitTypes: VisitType[];
+    locations: Location[];
+    providers: Provider[];
 }

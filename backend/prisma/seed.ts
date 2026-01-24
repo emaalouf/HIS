@@ -64,6 +64,63 @@ async function main() {
     });
     console.log('✅ Created receptionist user:', receptionist.email);
 
+    // Departments
+    const department = await prisma.department.upsert({
+        where: { name: 'General Medicine' },
+        update: {},
+        create: {
+            name: 'General Medicine',
+            description: 'Primary care and internal medicine',
+        },
+    });
+    console.log('✅ Upserted department:', department.name);
+
+    // Locations
+    const location = await prisma.location.upsert({
+        where: { id: 'loc-clinic-1' },
+        update: {},
+        create: {
+            id: 'loc-clinic-1',
+            name: 'Clinic Room 1',
+            type: 'Clinic',
+            departmentId: department.id,
+        },
+    });
+
+    const telehealthLocation = await prisma.location.upsert({
+        where: { id: 'loc-virtual' },
+        update: {},
+        create: {
+            id: 'loc-virtual',
+            name: 'Telehealth',
+            type: 'Virtual',
+            departmentId: department.id,
+        },
+    });
+    console.log('✅ Upserted locations:', location.name, telehealthLocation.name);
+
+    // Visit types
+    const visitTypeNew = await prisma.visitType.upsert({
+        where: { name: 'New Patient Visit' },
+        update: {},
+        create: {
+            name: 'New Patient Visit',
+            description: 'Initial consult',
+            durationMinutes: 45,
+        },
+    });
+
+    const visitTypeFollowUp = await prisma.visitType.upsert({
+        where: { name: 'Follow Up' },
+        update: {},
+        create: {
+            name: 'Follow Up',
+            description: 'Established patient follow-up',
+            durationMinutes: 30,
+        },
+    });
+    console.log('✅ Upserted visit types:', visitTypeNew.name, visitTypeFollowUp.name);
+
     // Create sample patients
     const patients = [
         {
@@ -106,6 +163,43 @@ async function main() {
         });
         console.log('✅ Created patient:', patient.firstName, patient.lastName);
     }
+
+    // Sample appointments
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+
+    const tomorrowEnd = new Date(tomorrow);
+    tomorrowEnd.setMinutes(tomorrow.getMinutes() + 45);
+
+    await prisma.appointment.createMany({
+        data: [
+            {
+                patientId: (await prisma.patient.findUniqueOrThrow({ where: { mrn: 'MRN-001' } })).id,
+                providerId: doctor.id,
+                createdById: receptionist.id,
+                visitTypeId: visitTypeNew.id,
+                locationId: location.id,
+                startTime: tomorrow,
+                endTime: tomorrowEnd,
+                status: 'SCHEDULED',
+                reason: 'New patient visit',
+            },
+            {
+                patientId: (await prisma.patient.findUniqueOrThrow({ where: { mrn: 'MRN-002' } })).id,
+                providerId: doctor.id,
+                createdById: receptionist.id,
+                visitTypeId: visitTypeFollowUp.id,
+                locationId: telehealthLocation.id,
+                startTime: new Date(),
+                endTime: new Date(Date.now() + 30 * 60 * 1000),
+                status: 'CONFIRMED',
+                reason: 'Follow-up on labs',
+            },
+        ],
+        skipDuplicates: true,
+    });
+    console.log('✅ Seeded sample appointments');
 
     console.log('🎉 Database seed completed!');
 }

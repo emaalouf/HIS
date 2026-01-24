@@ -7,12 +7,24 @@ import {
     Menu,
     X,
     Activity,
+    CalendarClock,
+    Stethoscope,
+    Shield,
+    Key,
+    ClipboardList,
+    Droplet,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
 
 const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Appointments', href: '/appointments', icon: CalendarClock },
+    { name: 'Dialysis', href: '/dialysis', icon: Droplet },
+    { name: 'Providers', href: '/providers', icon: Stethoscope },
+    { name: 'Specialties', href: '/specialties', icon: ClipboardList },
+    { name: 'Roles', href: '/roles', icon: Shield },
+    { name: 'Permissions', href: '/permissions', icon: Key },
     { name: 'Patients', href: '/patients', icon: Users },
 ];
 

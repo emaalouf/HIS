@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Role, Gender, BloodType } from '@prisma/client';
+import { Role, Gender, BloodType, AppointmentStatus } from '@prisma/client';
 
 // Auth Schemas
 export const registerSchema = z.object({
@@ -83,8 +83,70 @@ export const createMedicalHistorySchema = z.object({
     }),
 });
 
+// Appointment Schemas
+export const createAppointmentSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        visitTypeId: z.string().optional().nullable(),
+        locationId: z.string().optional().nullable(),
+        startTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start time',
+        }),
+        endTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end time',
+        }),
+        reason: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }).refine((data) => {
+        return new Date(data.endTime).getTime() > new Date(data.startTime).getTime();
+    }, {
+        message: 'End time must be after start time',
+        path: ['endTime'],
+    }),
+});
+
+export const updateAppointmentSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Appointment ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        visitTypeId: z.string().optional().nullable(),
+        locationId: z.string().optional().nullable(),
+        startTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start time',
+        }).optional(),
+        endTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end time',
+        }).optional(),
+        reason: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }).refine((data) => {
+        if (!data.startTime || !data.endTime) return true;
+        return new Date(data.endTime).getTime() > new Date(data.startTime).getTime();
+    }, {
+        message: 'End time must be after start time',
+        path: ['endTime'],
+    }),
+});
+
+export const updateAppointmentStatusSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Appointment ID is required'),
+    }),
+    body: z.object({
+        status: z.nativeEnum(AppointmentStatus),
+        cancellationReason: z.string().optional().nullable(),
+    }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type CreatePatientInput = z.infer<typeof createPatientSchema>['body'];
 export type UpdatePatientInput = z.infer<typeof updatePatientSchema>['body'];
 export type CreateMedicalHistoryInput = z.infer<typeof createMedicalHistorySchema>['body'];
+export type CreateAppointmentInput = z.infer<typeof createAppointmentSchema>['body'];
+export type UpdateAppointmentInput = z.infer<typeof updateAppointmentSchema>['body'];
+export type UpdateAppointmentStatusInput = z.infer<typeof updateAppointmentStatusSchema>['body'];
