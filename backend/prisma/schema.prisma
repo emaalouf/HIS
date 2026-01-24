@@ -62,6 +62,10 @@ model User {
   cardiologyProcedures CardiologyProcedure[]
   cardiologyDevices CardiologyDevice[]
   cardiologyMedicationOrders CardiologyMedicationOrder[]
+  nephrologyVisits NephrologyVisit[]
+  nephrologyImagingStudies NephrologyImaging[]
+  nephrologyBiopsies NephrologyBiopsy[]
+  nephrologyMedicationOrders NephrologyMedicationOrder[]
 
   @@map("users")
 }
@@ -116,6 +120,11 @@ model Patient {
   cardiologyDevices        CardiologyDevice[]
   cardiologyMedicationOrders CardiologyMedicationOrder[]
   cardiologyLabResults       CardiologyLabResult[]
+  nephrologyVisits           NephrologyVisit[]
+  nephrologyLabResults       NephrologyLabResult[]
+  nephrologyImagingStudies   NephrologyImaging[]
+  nephrologyBiopsies         NephrologyBiopsy[]
+  nephrologyMedicationOrders NephrologyMedicationOrder[]
 
   @@map("patients")
 }
@@ -233,6 +242,55 @@ enum CardiologyMedicationRoute {
   IM
   SC
   SL
+  OTHER
+}
+
+enum NephrologyVisitStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NephrologyTestStatus {
+  ORDERED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NephrologyProcedureStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NephrologyMedicationRoute {
+  IV
+  PO
+  IM
+  SC
+  SL
+  OTHER
+}
+
+enum CkdStage {
+  STAGE_1
+  STAGE_2
+  STAGE_3A
+  STAGE_3B
+  STAGE_4
+  STAGE_5
+  ESRD
+}
+
+enum NephrologyImagingModality {
+  ULTRASOUND
+  CT
+  MRI
+  XRAY
+  NUCLEAR
   OTHER
 }
 
@@ -717,6 +775,152 @@ model CardiologyLabResult {
   @@index([patientId])
   @@index([collectedAt])
   @@map("cardiology_lab_results")
+}
+
+model NephrologyVisit {
+  id           String                 @id @default(cuid())
+  patientId    String
+  providerId   String
+  status       NephrologyVisitStatus  @default(SCHEDULED)
+  visitDate    DateTime
+  reason       String?                @db.Text
+  symptoms     String?                @db.Text
+  ckdStage     CkdStage?
+  egfr         Float?
+  bpSystolic   Int?
+  bpDiastolic  Int?
+  diagnosis    String?                @db.Text
+  assessment   String?                @db.Text
+  plan         String?                @db.Text
+  notes        String?                @db.Text
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  patient      Patient                @relation(fields: [patientId], references: [id])
+  provider     User                   @relation(fields: [providerId], references: [id])
+  imagingStudies NephrologyImaging[]
+  biopsies     NephrologyBiopsy[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitDate])
+  @@index([status])
+  @@index([ckdStage])
+  @@map("nephrology_visits")
+}
+
+model NephrologyLabResult {
+  id               String   @id @default(cuid())
+  patientId        String
+  collectedAt      DateTime
+  creatinine       Float?
+  bun              Float?
+  egfr             Float?
+  potassium        Float?
+  sodium           Float?
+  chloride         Float?
+  bicarbonate      Float?
+  calcium          Float?
+  phosphorus       Float?
+  albumin          Float?
+  hemoglobin       Float?
+  pth              Float?
+  vitaminD         Float?
+  uricAcid         Float?
+  urineProtein     Float?
+  urineAlbumin     Float?
+  urineCreatinine  Float?
+  uacr             Float?
+  upcr             Float?
+  notes            String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  patient          Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([collectedAt])
+  @@map("nephrology_lab_results")
+}
+
+model NephrologyImaging {
+  id           String                   @id @default(cuid())
+  patientId    String
+  providerId   String?
+  visitId      String?
+  status       NephrologyTestStatus     @default(ORDERED)
+  performedAt  DateTime
+  modality     NephrologyImagingModality
+  studyType    String?
+  findings     String?                  @db.Text
+  impression   String?                  @db.Text
+  notes        String?                  @db.Text
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  patient      Patient                  @relation(fields: [patientId], references: [id])
+  provider     User?                    @relation(fields: [providerId], references: [id])
+  visit        NephrologyVisit?         @relation(fields: [visitId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitId])
+  @@index([performedAt])
+  @@index([status])
+  @@map("nephrology_imaging_studies")
+}
+
+model NephrologyBiopsy {
+  id               String                     @id @default(cuid())
+  patientId        String
+  providerId       String?
+  visitId          String?
+  status           NephrologyProcedureStatus  @default(SCHEDULED)
+  performedAt      DateTime
+  indication       String?                    @db.Text
+  specimenType     String?
+  pathologySummary String?                    @db.Text
+  complications    String?                    @db.Text
+  notes            String?                    @db.Text
+  createdAt        DateTime                   @default(now())
+  updatedAt        DateTime                   @updatedAt
+
+  patient          Patient                    @relation(fields: [patientId], references: [id])
+  provider         User?                      @relation(fields: [providerId], references: [id])
+  visit            NephrologyVisit?           @relation(fields: [visitId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitId])
+  @@index([performedAt])
+  @@index([status])
+  @@map("nephrology_biopsies")
+}
+
+model NephrologyMedicationOrder {
+  id                 String                    @id @default(cuid())
+  patientId          String
+  providerId         String?
+  medicationName     String
+  dose               String?
+  route              NephrologyMedicationRoute?
+  frequency          String?
+  startDate          DateTime?
+  endDate            DateTime?
+  lastAdministeredAt DateTime?
+  isActive           Boolean                   @default(true)
+  indication         String?                   @db.Text
+  notes              String?                   @db.Text
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+
+  patient            Patient                   @relation(fields: [patientId], references: [id])
+  provider           User?                     @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([isActive])
+  @@map("nephrology_medication_orders")
 }
 
 model Encounter {

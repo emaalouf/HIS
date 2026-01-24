@@ -13,6 +13,12 @@ import {
     CardiologyProcedureStatus,
     CardiologyDeviceStatus,
     CardiologyMedicationRoute,
+    CkdStage,
+    NephrologyVisitStatus,
+    NephrologyTestStatus,
+    NephrologyProcedureStatus,
+    NephrologyMedicationRoute,
+    NephrologyImagingModality,
 } from '@prisma/client';
 
 // Auth Schemas
@@ -842,6 +848,236 @@ export const updateCardiologyLabSchema = z.object({
     }),
 });
 
+// Nephrology Schemas
+export const createNephrologyVisitSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        status: z.nativeEnum(NephrologyVisitStatus).optional(),
+        visitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid visit date',
+        }),
+        reason: z.string().optional().nullable(),
+        symptoms: z.string().optional().nullable(),
+        ckdStage: z.nativeEnum(CkdStage).optional(),
+        egfr: z.number().optional(),
+        bpSystolic: z.number().optional(),
+        bpDiastolic: z.number().optional(),
+        diagnosis: z.string().optional().nullable(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNephrologyVisitSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Visit ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        status: z.nativeEnum(NephrologyVisitStatus).optional(),
+        visitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid visit date',
+        }).optional(),
+        reason: z.string().optional().nullable(),
+        symptoms: z.string().optional().nullable(),
+        ckdStage: z.nativeEnum(CkdStage).optional(),
+        egfr: z.number().optional(),
+        bpSystolic: z.number().optional(),
+        bpDiastolic: z.number().optional(),
+        diagnosis: z.string().optional().nullable(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createNephrologyLabSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        collectedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid collection date',
+        }),
+        creatinine: z.number().optional(),
+        bun: z.number().optional(),
+        egfr: z.number().optional(),
+        potassium: z.number().optional(),
+        sodium: z.number().optional(),
+        chloride: z.number().optional(),
+        bicarbonate: z.number().optional(),
+        calcium: z.number().optional(),
+        phosphorus: z.number().optional(),
+        albumin: z.number().optional(),
+        hemoglobin: z.number().optional(),
+        pth: z.number().optional(),
+        vitaminD: z.number().optional(),
+        uricAcid: z.number().optional(),
+        urineProtein: z.number().optional(),
+        urineAlbumin: z.number().optional(),
+        urineCreatinine: z.number().optional(),
+        uacr: z.number().optional(),
+        upcr: z.number().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNephrologyLabSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Lab result ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        collectedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid collection date',
+        }).optional(),
+        creatinine: z.number().optional(),
+        bun: z.number().optional(),
+        egfr: z.number().optional(),
+        potassium: z.number().optional(),
+        sodium: z.number().optional(),
+        chloride: z.number().optional(),
+        bicarbonate: z.number().optional(),
+        calcium: z.number().optional(),
+        phosphorus: z.number().optional(),
+        albumin: z.number().optional(),
+        hemoglobin: z.number().optional(),
+        pth: z.number().optional(),
+        vitaminD: z.number().optional(),
+        uricAcid: z.number().optional(),
+        urineProtein: z.number().optional(),
+        urineAlbumin: z.number().optional(),
+        urineCreatinine: z.number().optional(),
+        uacr: z.number().optional(),
+        upcr: z.number().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createNephrologyImagingSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NephrologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }),
+        modality: z.nativeEnum(NephrologyImagingModality),
+        studyType: z.string().optional().nullable(),
+        findings: z.string().optional().nullable(),
+        impression: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNephrologyImagingSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Imaging ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NephrologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }).optional(),
+        modality: z.nativeEnum(NephrologyImagingModality).optional(),
+        studyType: z.string().optional().nullable(),
+        findings: z.string().optional().nullable(),
+        impression: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createNephrologyBiopsySchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NephrologyProcedureStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid procedure date',
+        }),
+        indication: z.string().optional().nullable(),
+        specimenType: z.string().optional().nullable(),
+        pathologySummary: z.string().optional().nullable(),
+        complications: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNephrologyBiopsySchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Biopsy ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NephrologyProcedureStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid procedure date',
+        }).optional(),
+        indication: z.string().optional().nullable(),
+        specimenType: z.string().optional().nullable(),
+        pathologySummary: z.string().optional().nullable(),
+        complications: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createNephrologyMedicationSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        medicationName: z.string().min(1, 'Medication name is required'),
+        dose: z.string().optional().nullable(),
+        route: z.nativeEnum(NephrologyMedicationRoute).optional(),
+        frequency: z.string().optional().nullable(),
+        startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start date',
+        }).optional(),
+        endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end date',
+        }).optional(),
+        lastAdministeredAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid administration time',
+        }).optional(),
+        isActive: z.boolean().optional(),
+        indication: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNephrologyMedicationSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Medication order ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        medicationName: z.string().min(1).optional(),
+        dose: z.string().optional().nullable(),
+        route: z.nativeEnum(NephrologyMedicationRoute).optional(),
+        frequency: z.string().optional().nullable(),
+        startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start date',
+        }).optional(),
+        endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end date',
+        }).optional(),
+        lastAdministeredAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid administration time',
+        }).optional(),
+        isActive: z.boolean().optional(),
+        indication: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type CreatePatientInput = z.infer<typeof createPatientSchema>['body'];
@@ -880,3 +1116,13 @@ export type CreateCardiologyMedicationInput = z.infer<typeof createCardiologyMed
 export type UpdateCardiologyMedicationInput = z.infer<typeof updateCardiologyMedicationSchema>['body'];
 export type CreateCardiologyLabInput = z.infer<typeof createCardiologyLabSchema>['body'];
 export type UpdateCardiologyLabInput = z.infer<typeof updateCardiologyLabSchema>['body'];
+export type CreateNephrologyVisitInput = z.infer<typeof createNephrologyVisitSchema>['body'];
+export type UpdateNephrologyVisitInput = z.infer<typeof updateNephrologyVisitSchema>['body'];
+export type CreateNephrologyLabInput = z.infer<typeof createNephrologyLabSchema>['body'];
+export type UpdateNephrologyLabInput = z.infer<typeof updateNephrologyLabSchema>['body'];
+export type CreateNephrologyImagingInput = z.infer<typeof createNephrologyImagingSchema>['body'];
+export type UpdateNephrologyImagingInput = z.infer<typeof updateNephrologyImagingSchema>['body'];
+export type CreateNephrologyBiopsyInput = z.infer<typeof createNephrologyBiopsySchema>['body'];
+export type UpdateNephrologyBiopsyInput = z.infer<typeof updateNephrologyBiopsySchema>['body'];
+export type CreateNephrologyMedicationInput = z.infer<typeof createNephrologyMedicationSchema>['body'];
+export type UpdateNephrologyMedicationInput = z.infer<typeof updateNephrologyMedicationSchema>['body'];

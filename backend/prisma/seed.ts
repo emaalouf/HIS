@@ -8,6 +8,12 @@ import {
     DialysisScheduleRecurrence,
     DialysisStationStatus,
     DialysisStatus,
+    CkdStage,
+    NephrologyImagingModality,
+    NephrologyMedicationRoute,
+    NephrologyProcedureStatus,
+    NephrologyTestStatus,
+    NephrologyVisitStatus,
     PrismaClient,
     Role,
 } from '@prisma/client';
@@ -1043,6 +1049,251 @@ async function main() {
         },
     });
     console.log('Seeded cardiology lab results');
+
+    // Nephrology visits
+    const nephrologyVisitOne = await prisma.nephrologyVisit.upsert({
+        where: { id: 'nephrology-visit-1' },
+        update: {},
+        create: {
+            id: 'nephrology-visit-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            status: NephrologyVisitStatus.COMPLETED,
+            visitDate: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+            reason: 'CKD follow-up',
+            symptoms: 'Fatigue and lower extremity edema',
+            ckdStage: CkdStage.STAGE_4,
+            egfr: 24,
+            bpSystolic: 146,
+            bpDiastolic: 88,
+            diagnosis: 'Chronic kidney disease stage 4',
+            assessment: 'Progressive CKD with proteinuria.',
+            plan: 'Optimize BP control, dietary counseling, dialysis education.',
+            notes: 'Discussed transplant referral timing.',
+        },
+    });
+
+    const nephrologyVisitTwo = await prisma.nephrologyVisit.upsert({
+        where: { id: 'nephrology-visit-2' },
+        update: {},
+        create: {
+            id: 'nephrology-visit-2',
+            patientId: patientTwo.id,
+            providerId: doctor.id,
+            status: NephrologyVisitStatus.SCHEDULED,
+            visitDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000),
+            reason: 'Proteinuria evaluation',
+            symptoms: 'Foamy urine, mild hypertension',
+            ckdStage: CkdStage.STAGE_2,
+            egfr: 78,
+            bpSystolic: 132,
+            bpDiastolic: 82,
+            notes: 'Plan urine protein quantification and imaging.',
+        },
+    });
+
+    const nephrologyVisitThree = await prisma.nephrologyVisit.upsert({
+        where: { id: 'nephrology-visit-3' },
+        update: {},
+        create: {
+            id: 'nephrology-visit-3',
+            patientId: patientOne.id,
+            providerId: nurse.id,
+            status: NephrologyVisitStatus.CANCELLED,
+            visitDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            reason: 'Blood pressure check',
+            notes: 'Cancelled due to patient illness.',
+        },
+    });
+    console.log('Seeded nephrology visits');
+
+    // Nephrology imaging
+    await prisma.nephrologyImaging.upsert({
+        where: { id: 'nephrology-imaging-1' },
+        update: {},
+        create: {
+            id: 'nephrology-imaging-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            visitId: nephrologyVisitOne.id,
+            status: NephrologyTestStatus.COMPLETED,
+            performedAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000),
+            modality: NephrologyImagingModality.ULTRASOUND,
+            studyType: 'Renal ultrasound',
+            findings: 'Bilateral small echogenic kidneys with cortical thinning.',
+            impression: 'Findings consistent with chronic medical renal disease.',
+        },
+    });
+
+    await prisma.nephrologyImaging.upsert({
+        where: { id: 'nephrology-imaging-2' },
+        update: {},
+        create: {
+            id: 'nephrology-imaging-2',
+            patientId: patientTwo.id,
+            providerId: doctor.id,
+            visitId: nephrologyVisitTwo.id,
+            status: NephrologyTestStatus.ORDERED,
+            performedAt: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
+            modality: NephrologyImagingModality.CT,
+            studyType: 'CT urogram',
+            notes: 'Evaluate for structural causes of proteinuria.',
+        },
+    });
+    console.log('Seeded nephrology imaging');
+
+    // Nephrology biopsies
+    await prisma.nephrologyBiopsy.upsert({
+        where: { id: 'nephrology-biopsy-1' },
+        update: {},
+        create: {
+            id: 'nephrology-biopsy-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            visitId: nephrologyVisitOne.id,
+            status: NephrologyProcedureStatus.COMPLETED,
+            performedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+            indication: 'Nephrotic range proteinuria',
+            specimenType: 'Native kidney',
+            pathologySummary: 'FSGS with interstitial fibrosis and tubular atrophy.',
+            complications: 'None',
+            notes: 'Discussed immunosuppression risks.',
+        },
+    });
+
+    await prisma.nephrologyBiopsy.upsert({
+        where: { id: 'nephrology-biopsy-2' },
+        update: {},
+        create: {
+            id: 'nephrology-biopsy-2',
+            patientId: patientTwo.id,
+            providerId: doctor.id,
+            status: NephrologyProcedureStatus.SCHEDULED,
+            performedAt: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000),
+            indication: 'Persistent hematuria',
+            specimenType: 'Native kidney',
+            notes: 'Hold anticoagulation 5 days prior.',
+        },
+    });
+    console.log('Seeded nephrology biopsies');
+
+    // Nephrology lab results
+    await prisma.nephrologyLabResult.upsert({
+        where: { id: 'nephrology-lab-1' },
+        update: {},
+        create: {
+            id: 'nephrology-lab-1',
+            patientId: patientOne.id,
+            collectedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+            creatinine: 3.2,
+            bun: 48,
+            egfr: 22,
+            potassium: 5.2,
+            sodium: 138,
+            chloride: 102,
+            bicarbonate: 18,
+            calcium: 8.6,
+            phosphorus: 5.4,
+            albumin: 3.2,
+            hemoglobin: 10.4,
+            pth: 320,
+            vitaminD: 18,
+            uricAcid: 7.8,
+            urineProtein: 450,
+            urineAlbumin: 320,
+            urineCreatinine: 95,
+            uacr: 337,
+            upcr: 4.7,
+            notes: 'Metabolic acidosis and secondary hyperparathyroidism.',
+        },
+    });
+
+    await prisma.nephrologyLabResult.upsert({
+        where: { id: 'nephrology-lab-2' },
+        update: {},
+        create: {
+            id: 'nephrology-lab-2',
+            patientId: patientTwo.id,
+            collectedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            creatinine: 1.3,
+            bun: 18,
+            egfr: 78,
+            potassium: 4.3,
+            sodium: 139,
+            chloride: 104,
+            bicarbonate: 23,
+            calcium: 9.1,
+            phosphorus: 3.7,
+            albumin: 3.8,
+            hemoglobin: 13.2,
+            pth: 62,
+            vitaminD: 28,
+            uricAcid: 6.1,
+            urineProtein: 120,
+            urineAlbumin: 80,
+            urineCreatinine: 110,
+            uacr: 73,
+            upcr: 1.1,
+            notes: 'Mild proteinuria, monitor trend.',
+        },
+    });
+    console.log('Seeded nephrology lab results');
+
+    // Nephrology medication orders
+    await prisma.nephrologyMedicationOrder.upsert({
+        where: { id: 'nephrology-med-1' },
+        update: {},
+        create: {
+            id: 'nephrology-med-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            medicationName: 'Sodium bicarbonate',
+            dose: '650 mg',
+            route: NephrologyMedicationRoute.PO,
+            frequency: 'TID',
+            startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            isActive: true,
+            indication: 'Metabolic acidosis',
+            notes: 'Recheck bicarbonate in 4 weeks.',
+        },
+    });
+
+    await prisma.nephrologyMedicationOrder.upsert({
+        where: { id: 'nephrology-med-2' },
+        update: {},
+        create: {
+            id: 'nephrology-med-2',
+            patientId: patientTwo.id,
+            providerId: doctor.id,
+            medicationName: 'Lisinopril',
+            dose: '10 mg',
+            route: NephrologyMedicationRoute.PO,
+            frequency: 'Daily',
+            startDate: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000),
+            isActive: true,
+            indication: 'Proteinuria control',
+        },
+    });
+
+    await prisma.nephrologyMedicationOrder.upsert({
+        where: { id: 'nephrology-med-3' },
+        update: {},
+        create: {
+            id: 'nephrology-med-3',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            medicationName: 'Calcitriol',
+            dose: '0.25 mcg',
+            route: NephrologyMedicationRoute.PO,
+            frequency: 'Three times weekly',
+            startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
+            endDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+            isActive: false,
+            indication: 'Secondary hyperparathyroidism',
+            notes: 'Held due to hypercalcemia.',
+        },
+    });
+    console.log('Seeded nephrology medication orders');
 
     console.log('🎉 Database seed completed!');
 }

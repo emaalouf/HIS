@@ -3,6 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { patientService } from '../../services/patient.service';
 import { dialysisService } from '../../services/dialysis.service';
 import { dialysisPrescriptionService } from '../../services/dialysis-prescription.service';
+import { cardiologyService } from '../../services/cardiology.service';
+import { cardiologyDeviceService } from '../../services/cardiology-device.service';
+import { cardiologyMedicationService } from '../../services/cardiology-medication.service';
+import { cardiologyLabService } from '../../services/cardiology-lab.service';
+import { nephrologyService } from '../../services/nephrology.service';
+import { nephrologyLabService } from '../../services/nephrology-lab.service';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '../../components/ui';
 import { formatDate, formatDateTime, calculateAge, formatBloodType } from '../../lib/utils';
 import {
@@ -17,6 +23,8 @@ import {
     Heart,
     Calendar,
     Droplet,
+    HeartPulse,
+    Filter,
 } from 'lucide-react';
 
 export function PatientDetailPage() {
@@ -53,6 +61,90 @@ export function PatientDetailPage() {
         enabled: !!id,
     });
 
+    const { data: cardiologyVisits } = useQuery({
+        queryKey: ['cardiology-visits', 'patient', id],
+        queryFn: () =>
+            cardiologyService.getVisits({
+                patientId: id!,
+                limit: 1,
+                sortBy: 'visitDate',
+                sortOrder: 'desc',
+            }),
+        enabled: !!id,
+    });
+
+    const { data: upcomingCardiologyVisits } = useQuery({
+        queryKey: ['cardiology-visits', 'patient-upcoming', id],
+        queryFn: () =>
+            cardiologyService.getVisits({
+                patientId: id!,
+                status: 'SCHEDULED',
+                startDate: new Date().toISOString(),
+                limit: 1,
+                sortBy: 'visitDate',
+                sortOrder: 'asc',
+            }),
+        enabled: !!id,
+    });
+
+    const { data: cardiologyDevices } = useQuery({
+        queryKey: ['cardiology-devices', 'patient', id],
+        queryFn: () =>
+            cardiologyDeviceService.getDevices({
+                patientId: id!,
+                status: 'ACTIVE',
+                limit: 1,
+            }),
+        enabled: !!id,
+    });
+
+    const { data: cardiologyMedications } = useQuery({
+        queryKey: ['cardiology-medications', 'patient', id],
+        queryFn: () =>
+            cardiologyMedicationService.getOrders({
+                patientId: id!,
+                isActive: true,
+                limit: 1,
+            }),
+        enabled: !!id,
+    });
+
+    const { data: cardiologyLabs } = useQuery({
+        queryKey: ['cardiology-labs', 'patient', id],
+        queryFn: () =>
+            cardiologyLabService.getResults({
+                patientId: id!,
+                limit: 1,
+                sortBy: 'collectedAt',
+                sortOrder: 'desc',
+        }),
+        enabled: !!id,
+    });
+
+    const { data: nephrologyVisits } = useQuery({
+        queryKey: ['nephrology-visits', 'patient', id],
+        queryFn: () =>
+            nephrologyService.getVisits({
+                patientId: id!,
+                limit: 1,
+                sortBy: 'visitDate',
+                sortOrder: 'desc',
+            }),
+        enabled: !!id,
+    });
+
+    const { data: nephrologyLabs } = useQuery({
+        queryKey: ['nephrology-labs', 'patient', id],
+        queryFn: () =>
+            nephrologyLabService.getResults({
+                patientId: id!,
+                limit: 1,
+                sortBy: 'collectedAt',
+                sortOrder: 'desc',
+            }),
+        enabled: !!id,
+    });
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -79,6 +171,13 @@ export function PatientDetailPage() {
     const activePrescription = dialysisPrescriptions?.prescriptions?.[0];
     const recentSessions = dialysisSessions?.sessions ?? [];
     const accessType = activePrescription?.accessType || recentSessions[0]?.accessType;
+    const latestCardiologyVisit = cardiologyVisits?.visits?.[0];
+    const upcomingCardiologyVisit = upcomingCardiologyVisits?.visits?.[0];
+    const latestCardiologyLab = cardiologyLabs?.results?.[0];
+    const activeDeviceCount = cardiologyDevices?.pagination?.total;
+    const activeMedicationCount = cardiologyMedications?.pagination?.total;
+    const latestNephrologyVisit = nephrologyVisits?.visits?.[0];
+    const latestNephrologyLab = nephrologyLabs?.results?.[0];
 
     return (
         <div className="space-y-6">
@@ -293,6 +392,159 @@ export function PatientDetailPage() {
                                     ) : (
                                         <p className="text-sm text-gray-500">No recent sessions.</p>
                                     )}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Cardiology Overview */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <HeartPulse size={20} />
+                                Cardiology Overview
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <p className="text-sm text-gray-500">Latest Visit</p>
+                                        {id && (
+                                            <Link to={`/cardiology?patientId=${id}`} className="text-sm text-rose-600 hover:underline">
+                                                View all
+                                            </Link>
+                                        )}
+                                    </div>
+                                    {latestCardiologyVisit ? (
+                                        <div className="space-y-2 text-sm text-gray-700">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Date</span>
+                                                <span>{formatDateTime(latestCardiologyVisit.visitDate)}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Reason</span>
+                                                <span>{latestCardiologyVisit.reason || '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Diagnosis</span>
+                                                <span>{latestCardiologyVisit.diagnosis || '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Status</span>
+                                                <span>{latestCardiologyVisit.status.split('_').join(' ')}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No cardiology visits on file.</p>
+                                    )}
+                                    <div className="mt-4 border-t border-gray-100 pt-4">
+                                        <p className="text-sm text-gray-500 mb-2">Next Scheduled</p>
+                                        {upcomingCardiologyVisit ? (
+                                            <div className="text-sm text-gray-700">
+                                                <p className="font-medium">{formatDateTime(upcomingCardiologyVisit.visitDate)}</p>
+                                                <p className="text-xs text-gray-500">{upcomingCardiologyVisit.reason || 'No reason listed'}</p>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm text-gray-500">No upcoming cardiology visits.</p>
+                                        )}
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-3">Care Snapshot</p>
+                                    <div className="space-y-2 text-sm text-gray-700">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Active Devices</span>
+                                            <span>{activeDeviceCount ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Active Medications</span>
+                                            <span>{activeMedicationCount ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Last Troponin</span>
+                                            <span>{latestCardiologyLab?.troponin ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Last BNP</span>
+                                            <span>{latestCardiologyLab?.bnp ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Last LDL</span>
+                                            <span>{latestCardiologyLab?.ldl ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Last Lab Date</span>
+                                            <span>{latestCardiologyLab ? formatDateTime(latestCardiologyLab.collectedAt) : '--'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Nephrology Overview */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Filter size={20} />
+                                Nephrology Overview
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <p className="text-sm text-gray-500">Latest Visit</p>
+                                        {id && (
+                                            <Link to={`/nephrology?patientId=${id}`} className="text-sm text-emerald-600 hover:underline">
+                                                View all
+                                            </Link>
+                                        )}
+                                    </div>
+                                    {latestNephrologyVisit ? (
+                                        <div className="space-y-2 text-sm text-gray-700">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Date</span>
+                                                <span>{formatDateTime(latestNephrologyVisit.visitDate)}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">CKD Stage</span>
+                                                <span>{latestNephrologyVisit.ckdStage?.replace('_', ' ') || '--'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">eGFR</span>
+                                                <span>{latestNephrologyVisit.egfr ?? '--'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Status</span>
+                                                <span>{latestNephrologyVisit.status.split('_').join(' ')}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No nephrology visits on file.</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-3">Latest Labs</p>
+                                    <div className="space-y-2 text-sm text-gray-700">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Creatinine</span>
+                                            <span>{latestNephrologyLab?.creatinine ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">eGFR</span>
+                                            <span>{latestNephrologyLab?.egfr ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Potassium</span>
+                                            <span>{latestNephrologyLab?.potassium ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Last Lab Date</span>
+                                            <span>{latestNephrologyLab ? formatDateTime(latestNephrologyLab.collectedAt) : '--'}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>

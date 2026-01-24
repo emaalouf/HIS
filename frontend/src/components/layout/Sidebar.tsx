@@ -14,6 +14,7 @@ import {
     ClipboardList,
     Droplet,
     HeartPulse,
+    Filter,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
@@ -23,6 +24,7 @@ const navigation = [
     { name: 'Appointments', href: '/appointments', icon: CalendarClock },
     { name: 'Dialysis', href: '/dialysis', icon: Droplet },
     { name: 'Cardiology', href: '/cardiology', icon: HeartPulse },
+    { name: 'Nephrology', href: '/nephrology', icon: Filter },
     { name: 'Providers', href: '/providers', icon: Stethoscope },
     { name: 'Specialties', href: '/specialties', icon: ClipboardList },
     { name: 'Roles', href: '/roles', icon: Shield },

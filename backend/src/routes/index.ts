@@ -19,6 +19,12 @@ import cardiologyDeviceRoutes from './cardiology-device.routes';
 import cardiologyMedicationRoutes from './cardiology-medication.routes';
 import cardiologyLabRoutes from './cardiology-lab.routes';
 import cardiologyReportRoutes from './cardiology-report.routes';
+import nephrologyVisitRoutes from './nephrology-visit.routes';
+import nephrologyLabRoutes from './nephrology-lab.routes';
+import nephrologyImagingRoutes from './nephrology-imaging.routes';
+import nephrologyBiopsyRoutes from './nephrology-biopsy.routes';
+import nephrologyMedicationRoutes from './nephrology-medication.routes';
+import nephrologyReportRoutes from './nephrology-report.routes';
 
 const router = Router();
 
@@ -42,5 +48,11 @@ router.use('/cardiology-devices', cardiologyDeviceRoutes);
 router.use('/cardiology-medications', cardiologyMedicationRoutes);
 router.use('/cardiology-labs', cardiologyLabRoutes);
 router.use('/cardiology-reports', cardiologyReportRoutes);
+router.use('/nephrology-visits', nephrologyVisitRoutes);
+router.use('/nephrology-labs', nephrologyLabRoutes);
+router.use('/nephrology-imaging', nephrologyImagingRoutes);
+router.use('/nephrology-biopsies', nephrologyBiopsyRoutes);
+router.use('/nephrology-medications', nephrologyMedicationRoutes);
+router.use('/nephrology-reports', nephrologyReportRoutes);
 
 export default router;

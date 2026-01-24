@@ -46,6 +46,17 @@ import { CardiologyMedicationFormPage } from './pages/cardiology/CardiologyMedic
 import { CardiologyLabsPage } from './pages/cardiology/CardiologyLabsPage';
 import { CardiologyLabFormPage } from './pages/cardiology/CardiologyLabFormPage';
 import { CardiologyReportsPage } from './pages/cardiology/CardiologyReportsPage';
+import { NephrologyListPage } from './pages/nephrology/NephrologyListPage';
+import { NephrologyFormPage } from './pages/nephrology/NephrologyFormPage';
+import { NephrologyLabsPage } from './pages/nephrology/NephrologyLabsPage';
+import { NephrologyLabFormPage } from './pages/nephrology/NephrologyLabFormPage';
+import { NephrologyImagingPage } from './pages/nephrology/NephrologyImagingPage';
+import { NephrologyImagingFormPage } from './pages/nephrology/NephrologyImagingFormPage';
+import { NephrologyBiopsiesPage } from './pages/nephrology/NephrologyBiopsiesPage';
+import { NephrologyBiopsyFormPage } from './pages/nephrology/NephrologyBiopsyFormPage';
+import { NephrologyMedicationsPage } from './pages/nephrology/NephrologyMedicationsPage';
+import { NephrologyMedicationFormPage } from './pages/nephrology/NephrologyMedicationFormPage';
+import { NephrologyReportsPage } from './pages/nephrology/NephrologyReportsPage';
 import './index.css';
 
 function App() {
@@ -102,6 +113,22 @@ function App() {
         <Route path="/cardiology/labs/new" element={<CardiologyLabFormPage />} />
         <Route path="/cardiology/labs/:id/edit" element={<CardiologyLabFormPage />} />
         <Route path="/cardiology/reports" element={<CardiologyReportsPage />} />
+        <Route path="/nephrology" element={<NephrologyListPage />} />
+        <Route path="/nephrology/new" element={<NephrologyFormPage />} />
+        <Route path="/nephrology/:id/edit" element={<NephrologyFormPage />} />
+        <Route path="/nephrology/labs" element={<NephrologyLabsPage />} />
+        <Route path="/nephrology/labs/new" element={<NephrologyLabFormPage />} />
+        <Route path="/nephrology/labs/:id/edit" element={<NephrologyLabFormPage />} />
+        <Route path="/nephrology/imaging" element={<NephrologyImagingPage />} />
+        <Route path="/nephrology/imaging/new" element={<NephrologyImagingFormPage />} />
+        <Route path="/nephrology/imaging/:id/edit" element={<NephrologyImagingFormPage />} />
+        <Route path="/nephrology/biopsies" element={<NephrologyBiopsiesPage />} />
+        <Route path="/nephrology/biopsies/new" element={<NephrologyBiopsyFormPage />} />
+        <Route path="/nephrology/biopsies/:id/edit" element={<NephrologyBiopsyFormPage />} />
+        <Route path="/nephrology/medications" element={<NephrologyMedicationsPage />} />
+        <Route path="/nephrology/medications/new" element={<NephrologyMedicationFormPage />} />
+        <Route path="/nephrology/medications/:id/edit" element={<NephrologyMedicationFormPage />} />
+        <Route path="/nephrology/reports" element={<NephrologyReportsPage />} />
         <Route path="/providers" element={<ProviderListPage />} />
         <Route path="/providers/new" element={<ProviderFormPage />} />
         <Route path="/providers/:id/edit" element={<ProviderFormPage />} />

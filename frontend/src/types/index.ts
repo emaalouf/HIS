@@ -953,6 +953,271 @@ export interface CardiologyReportSummary {
     activeMedications?: number;
 }
 
+export type NephrologyVisitStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type NephrologyTestStatus = 'ORDERED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type NephrologyProcedureStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type NephrologyMedicationRoute = 'IV' | 'PO' | 'IM' | 'SC' | 'SL' | 'OTHER';
+export type CkdStage = 'STAGE_1' | 'STAGE_2' | 'STAGE_3A' | 'STAGE_3B' | 'STAGE_4' | 'STAGE_5' | 'ESRD';
+export type NephrologyImagingModality = 'ULTRASOUND' | 'CT' | 'MRI' | 'XRAY' | 'NUCLEAR' | 'OTHER';
+
+export interface NephrologyVisit {
+    id: string;
+    patientId: string;
+    providerId: string;
+    status: NephrologyVisitStatus;
+    visitDate: string;
+    reason?: string;
+    symptoms?: string;
+    ckdStage?: CkdStage;
+    egfr?: number;
+    bpSystolic?: number;
+    bpDiastolic?: number;
+    diagnosis?: string;
+    assessment?: string;
+    plan?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+        phone?: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateNephrologyVisitRequest {
+    patientId: string;
+    providerId: string;
+    status?: NephrologyVisitStatus;
+    visitDate: string;
+    reason?: string;
+    symptoms?: string;
+    ckdStage?: CkdStage;
+    egfr?: number;
+    bpSystolic?: number;
+    bpDiastolic?: number;
+    diagnosis?: string;
+    assessment?: string;
+    plan?: string;
+    notes?: string;
+}
+
+export interface NephrologyLabResult {
+    id: string;
+    patientId: string;
+    collectedAt: string;
+    creatinine?: number;
+    bun?: number;
+    egfr?: number;
+    potassium?: number;
+    sodium?: number;
+    chloride?: number;
+    bicarbonate?: number;
+    calcium?: number;
+    phosphorus?: number;
+    albumin?: number;
+    hemoglobin?: number;
+    pth?: number;
+    vitaminD?: number;
+    uricAcid?: number;
+    urineProtein?: number;
+    urineAlbumin?: number;
+    urineCreatinine?: number;
+    uacr?: number;
+    upcr?: number;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateNephrologyLabResultRequest {
+    patientId: string;
+    collectedAt: string;
+    creatinine?: number;
+    bun?: number;
+    egfr?: number;
+    potassium?: number;
+    sodium?: number;
+    chloride?: number;
+    bicarbonate?: number;
+    calcium?: number;
+    phosphorus?: number;
+    albumin?: number;
+    hemoglobin?: number;
+    pth?: number;
+    vitaminD?: number;
+    uricAcid?: number;
+    urineProtein?: number;
+    urineAlbumin?: number;
+    urineCreatinine?: number;
+    uacr?: number;
+    upcr?: number;
+    notes?: string;
+}
+
+export interface NephrologyImaging {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status: NephrologyTestStatus;
+    performedAt: string;
+    modality: NephrologyImagingModality;
+    studyType?: string;
+    findings?: string;
+    impression?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    visit?: {
+        id: string;
+        visitDate: string;
+    };
+}
+
+export interface CreateNephrologyImagingRequest {
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status?: NephrologyTestStatus;
+    performedAt: string;
+    modality: NephrologyImagingModality;
+    studyType?: string;
+    findings?: string;
+    impression?: string;
+    notes?: string;
+}
+
+export interface NephrologyBiopsy {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status: NephrologyProcedureStatus;
+    performedAt: string;
+    indication?: string;
+    specimenType?: string;
+    pathologySummary?: string;
+    complications?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    visit?: {
+        id: string;
+        visitDate: string;
+    };
+}
+
+export interface CreateNephrologyBiopsyRequest {
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status?: NephrologyProcedureStatus;
+    performedAt: string;
+    indication?: string;
+    specimenType?: string;
+    pathologySummary?: string;
+    complications?: string;
+    notes?: string;
+}
+
+export interface NephrologyMedicationOrder {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    medicationName: string;
+    dose?: string;
+    route?: NephrologyMedicationRoute;
+    frequency?: string;
+    startDate?: string;
+    endDate?: string;
+    lastAdministeredAt?: string;
+    isActive?: boolean;
+    indication?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateNephrologyMedicationOrderRequest {
+    patientId: string;
+    providerId?: string;
+    medicationName: string;
+    dose?: string;
+    route?: NephrologyMedicationRoute;
+    frequency?: string;
+    startDate?: string;
+    endDate?: string;
+    lastAdministeredAt?: string;
+    isActive?: boolean;
+    indication?: string;
+    notes?: string;
+}
+
+export interface NephrologyReportSummary {
+    totalVisits?: number;
+    completedVisits?: number;
+    cancelledVisits?: number;
+    totalImaging?: number;
+    completedImaging?: number;
+    totalBiopsies?: number;
+    completedBiopsies?: number;
+    averageEgfr?: number;
+    averageCreatinine?: number;
+    averageUacr?: number;
+    activeMedications?: number;
+}
+
 export interface AppointmentMeta {
     visitTypes: VisitType[];
     locations: Location[];
