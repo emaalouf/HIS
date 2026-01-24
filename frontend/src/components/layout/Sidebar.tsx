@@ -13,6 +13,7 @@ import {
     Key,
     ClipboardList,
     Droplet,
+    HeartPulse,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
@@ -21,6 +22,7 @@ const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'Appointments', href: '/appointments', icon: CalendarClock },
     { name: 'Dialysis', href: '/dialysis', icon: Droplet },
+    { name: 'Cardiology', href: '/cardiology', icon: HeartPulse },
     { name: 'Providers', href: '/providers', icon: Stethoscope },
     { name: 'Specialties', href: '/specialties', icon: ClipboardList },
     { name: 'Roles', href: '/roles', icon: Shield },

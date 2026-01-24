@@ -10,6 +10,15 @@ import dialysisScheduleRoutes from './dialysis-schedule.routes';
 import dialysisLabRoutes from './dialysis-lab.routes';
 import dialysisMedicationRoutes from './dialysis-medication.routes';
 import dialysisReportRoutes from './dialysis-report.routes';
+import cardiologyVisitRoutes from './cardiology-visit.routes';
+import cardiologyEcgRoutes from './cardiology-ecg.routes';
+import cardiologyEchoRoutes from './cardiology-echo.routes';
+import cardiologyStressTestRoutes from './cardiology-stress-test.routes';
+import cardiologyProcedureRoutes from './cardiology-procedure.routes';
+import cardiologyDeviceRoutes from './cardiology-device.routes';
+import cardiologyMedicationRoutes from './cardiology-medication.routes';
+import cardiologyLabRoutes from './cardiology-lab.routes';
+import cardiologyReportRoutes from './cardiology-report.routes';
 
 const router = Router();
 
@@ -24,5 +33,14 @@ router.use('/dialysis-schedules', dialysisScheduleRoutes);
 router.use('/dialysis-labs', dialysisLabRoutes);
 router.use('/dialysis-medications', dialysisMedicationRoutes);
 router.use('/dialysis-reports', dialysisReportRoutes);
+router.use('/cardiology-visits', cardiologyVisitRoutes);
+router.use('/cardiology-ecgs', cardiologyEcgRoutes);
+router.use('/cardiology-echos', cardiologyEchoRoutes);
+router.use('/cardiology-stress-tests', cardiologyStressTestRoutes);
+router.use('/cardiology-procedures', cardiologyProcedureRoutes);
+router.use('/cardiology-devices', cardiologyDeviceRoutes);
+router.use('/cardiology-medications', cardiologyMedicationRoutes);
+router.use('/cardiology-labs', cardiologyLabRoutes);
+router.use('/cardiology-reports', cardiologyReportRoutes);
 
 export default router;

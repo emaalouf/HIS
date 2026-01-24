@@ -8,6 +8,11 @@ import {
     DialysisStationStatus,
     DialysisScheduleRecurrence,
     DialysisMedicationRoute,
+    CardiologyVisitStatus,
+    CardiologyTestStatus,
+    CardiologyProcedureStatus,
+    CardiologyDeviceStatus,
+    CardiologyMedicationRoute,
 } from '@prisma/client';
 
 // Auth Schemas
@@ -478,6 +483,365 @@ export const updateDialysisMedicationSchema = z.object({
     }),
 });
 
+// Cardiology Schemas
+export const createCardiologyVisitSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        status: z.nativeEnum(CardiologyVisitStatus).optional(),
+        visitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid visit date',
+        }),
+        reason: z.string().optional().nullable(),
+        symptoms: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyVisitSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Visit ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        status: z.nativeEnum(CardiologyVisitStatus).optional(),
+        visitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid visit date',
+        }).optional(),
+        reason: z.string().optional().nullable(),
+        symptoms: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createCardiologyEcgSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        recordedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid recorded time',
+        }),
+        type: z.string().optional().nullable(),
+        rhythm: z.string().optional().nullable(),
+        heartRate: z.number().optional(),
+        prInterval: z.number().optional(),
+        qrsDuration: z.number().optional(),
+        qtInterval: z.number().optional(),
+        qtc: z.number().optional(),
+        interpretation: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyEcgSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'ECG ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        recordedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid recorded time',
+        }).optional(),
+        type: z.string().optional().nullable(),
+        rhythm: z.string().optional().nullable(),
+        heartRate: z.number().optional(),
+        prInterval: z.number().optional(),
+        qrsDuration: z.number().optional(),
+        qtInterval: z.number().optional(),
+        qtc: z.number().optional(),
+        interpretation: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createCardiologyEchoSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }),
+        type: z.string().optional().nullable(),
+        lvef: z.number().optional(),
+        lvEndDiastolicDia: z.number().optional(),
+        lvEndSystolicDia: z.number().optional(),
+        rvFunction: z.string().optional().nullable(),
+        valveFindings: z.string().optional().nullable(),
+        wallMotion: z.string().optional().nullable(),
+        pericardialEffusion: z.boolean().optional(),
+        summary: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyEchoSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Echo ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }).optional(),
+        type: z.string().optional().nullable(),
+        lvef: z.number().optional(),
+        lvEndDiastolicDia: z.number().optional(),
+        lvEndSystolicDia: z.number().optional(),
+        rvFunction: z.string().optional().nullable(),
+        valveFindings: z.string().optional().nullable(),
+        wallMotion: z.string().optional().nullable(),
+        pericardialEffusion: z.boolean().optional(),
+        summary: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createCardiologyStressTestSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }),
+        type: z.string().optional().nullable(),
+        protocol: z.string().optional().nullable(),
+        durationMinutes: z.number().optional(),
+        mets: z.number().optional(),
+        maxHeartRate: z.number().optional(),
+        maxBpSystolic: z.number().optional(),
+        maxBpDiastolic: z.number().optional(),
+        symptoms: z.string().optional().nullable(),
+        result: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyStressTestSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Stress test ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }).optional(),
+        type: z.string().optional().nullable(),
+        protocol: z.string().optional().nullable(),
+        durationMinutes: z.number().optional(),
+        mets: z.number().optional(),
+        maxHeartRate: z.number().optional(),
+        maxBpSystolic: z.number().optional(),
+        maxBpDiastolic: z.number().optional(),
+        symptoms: z.string().optional().nullable(),
+        result: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createCardiologyProcedureSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyProcedureStatus).optional(),
+        procedureDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid procedure date',
+        }),
+        type: z.string().optional().nullable(),
+        indication: z.string().optional().nullable(),
+        findings: z.string().optional().nullable(),
+        complications: z.string().optional().nullable(),
+        outcome: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyProcedureSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Procedure ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyProcedureStatus).optional(),
+        procedureDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid procedure date',
+        }).optional(),
+        type: z.string().optional().nullable(),
+        indication: z.string().optional().nullable(),
+        findings: z.string().optional().nullable(),
+        complications: z.string().optional().nullable(),
+        outcome: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createCardiologyDeviceSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        deviceType: z.string().min(1, 'Device type is required'),
+        manufacturer: z.string().optional().nullable(),
+        model: z.string().optional().nullable(),
+        serialNumber: z.string().optional().nullable(),
+        implantDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid implant date',
+        }).optional(),
+        status: z.nativeEnum(CardiologyDeviceStatus).optional(),
+        lastInterrogationDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid interrogation date',
+        }).optional(),
+        nextFollowUpDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid follow up date',
+        }).optional(),
+        batteryStatus: z.string().optional().nullable(),
+        settings: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyDeviceSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Device ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        deviceType: z.string().min(1).optional(),
+        manufacturer: z.string().optional().nullable(),
+        model: z.string().optional().nullable(),
+        serialNumber: z.string().optional().nullable(),
+        implantDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid implant date',
+        }).optional(),
+        status: z.nativeEnum(CardiologyDeviceStatus).optional(),
+        lastInterrogationDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid interrogation date',
+        }).optional(),
+        nextFollowUpDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid follow up date',
+        }).optional(),
+        batteryStatus: z.string().optional().nullable(),
+        settings: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createCardiologyMedicationSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        medicationName: z.string().min(1, 'Medication name is required'),
+        dose: z.string().optional().nullable(),
+        route: z.nativeEnum(CardiologyMedicationRoute).optional(),
+        frequency: z.string().optional().nullable(),
+        startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start date',
+        }).optional(),
+        endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end date',
+        }).optional(),
+        lastAdministeredAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid administration time',
+        }).optional(),
+        isActive: z.boolean().optional(),
+        indication: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyMedicationSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Medication order ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        medicationName: z.string().min(1).optional(),
+        dose: z.string().optional().nullable(),
+        route: z.nativeEnum(CardiologyMedicationRoute).optional(),
+        frequency: z.string().optional().nullable(),
+        startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start date',
+        }).optional(),
+        endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end date',
+        }).optional(),
+        lastAdministeredAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid administration time',
+        }).optional(),
+        isActive: z.boolean().optional(),
+        indication: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createCardiologyLabSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        collectedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid collection date',
+        }),
+        troponin: z.number().optional(),
+        bnp: z.number().optional(),
+        ntProBnp: z.number().optional(),
+        ckmb: z.number().optional(),
+        totalCholesterol: z.number().optional(),
+        ldl: z.number().optional(),
+        hdl: z.number().optional(),
+        triglycerides: z.number().optional(),
+        crp: z.number().optional(),
+        inr: z.number().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyLabSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Lab result ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        collectedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid collection date',
+        }).optional(),
+        troponin: z.number().optional(),
+        bnp: z.number().optional(),
+        ntProBnp: z.number().optional(),
+        ckmb: z.number().optional(),
+        totalCholesterol: z.number().optional(),
+        ldl: z.number().optional(),
+        hdl: z.number().optional(),
+        triglycerides: z.number().optional(),
+        crp: z.number().optional(),
+        inr: z.number().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type CreatePatientInput = z.infer<typeof createPatientSchema>['body'];
@@ -500,3 +864,19 @@ export type CreateDialysisLabInput = z.infer<typeof createDialysisLabSchema>['bo
 export type UpdateDialysisLabInput = z.infer<typeof updateDialysisLabSchema>['body'];
 export type CreateDialysisMedicationInput = z.infer<typeof createDialysisMedicationSchema>['body'];
 export type UpdateDialysisMedicationInput = z.infer<typeof updateDialysisMedicationSchema>['body'];
+export type CreateCardiologyVisitInput = z.infer<typeof createCardiologyVisitSchema>['body'];
+export type UpdateCardiologyVisitInput = z.infer<typeof updateCardiologyVisitSchema>['body'];
+export type CreateCardiologyEcgInput = z.infer<typeof createCardiologyEcgSchema>['body'];
+export type UpdateCardiologyEcgInput = z.infer<typeof updateCardiologyEcgSchema>['body'];
+export type CreateCardiologyEchoInput = z.infer<typeof createCardiologyEchoSchema>['body'];
+export type UpdateCardiologyEchoInput = z.infer<typeof updateCardiologyEchoSchema>['body'];
+export type CreateCardiologyStressTestInput = z.infer<typeof createCardiologyStressTestSchema>['body'];
+export type UpdateCardiologyStressTestInput = z.infer<typeof updateCardiologyStressTestSchema>['body'];
+export type CreateCardiologyProcedureInput = z.infer<typeof createCardiologyProcedureSchema>['body'];
+export type UpdateCardiologyProcedureInput = z.infer<typeof updateCardiologyProcedureSchema>['body'];
+export type CreateCardiologyDeviceInput = z.infer<typeof createCardiologyDeviceSchema>['body'];
+export type UpdateCardiologyDeviceInput = z.infer<typeof updateCardiologyDeviceSchema>['body'];
+export type CreateCardiologyMedicationInput = z.infer<typeof createCardiologyMedicationSchema>['body'];
+export type UpdateCardiologyMedicationInput = z.infer<typeof updateCardiologyMedicationSchema>['body'];
+export type CreateCardiologyLabInput = z.infer<typeof createCardiologyLabSchema>['body'];
+export type UpdateCardiologyLabInput = z.infer<typeof updateCardiologyLabSchema>['body'];

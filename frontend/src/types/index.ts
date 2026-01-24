@@ -547,6 +547,412 @@ export interface DialysisReportSummary {
     chairUtilizationPercent?: number;
 }
 
+export type CardiologyVisitStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type CardiologyTestStatus = 'ORDERED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type CardiologyProcedureStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type CardiologyDeviceStatus = 'ACTIVE' | 'INACTIVE' | 'REMOVED';
+export type CardiologyMedicationRoute = 'IV' | 'PO' | 'IM' | 'SC' | 'SL' | 'OTHER';
+
+export interface CardiologyVisit {
+    id: string;
+    patientId: string;
+    providerId: string;
+    status: CardiologyVisitStatus;
+    visitDate: string;
+    reason?: string;
+    symptoms?: string;
+    diagnosis?: string;
+    assessment?: string;
+    plan?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+        phone?: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateCardiologyVisitRequest {
+    patientId: string;
+    providerId: string;
+    status?: CardiologyVisitStatus;
+    visitDate: string;
+    reason?: string;
+    symptoms?: string;
+    diagnosis?: string;
+    assessment?: string;
+    plan?: string;
+    notes?: string;
+}
+
+export interface CardiologyEcg {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status: CardiologyTestStatus;
+    recordedAt: string;
+    type?: string;
+    rhythm?: string;
+    heartRate?: number;
+    prInterval?: number;
+    qrsDuration?: number;
+    qtInterval?: number;
+    qtc?: number;
+    interpretation?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    visit?: {
+        id: string;
+        visitDate: string;
+    };
+}
+
+export interface CreateCardiologyEcgRequest {
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status?: CardiologyTestStatus;
+    recordedAt: string;
+    type?: string;
+    rhythm?: string;
+    heartRate?: number;
+    prInterval?: number;
+    qrsDuration?: number;
+    qtInterval?: number;
+    qtc?: number;
+    interpretation?: string;
+    notes?: string;
+}
+
+export interface CardiologyEcho {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status: CardiologyTestStatus;
+    performedAt: string;
+    type?: string;
+    lvef?: number;
+    lvEndDiastolicDia?: number;
+    lvEndSystolicDia?: number;
+    rvFunction?: string;
+    valveFindings?: string;
+    wallMotion?: string;
+    pericardialEffusion?: boolean;
+    summary?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    visit?: {
+        id: string;
+        visitDate: string;
+    };
+}
+
+export interface CreateCardiologyEchoRequest {
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status?: CardiologyTestStatus;
+    performedAt: string;
+    type?: string;
+    lvef?: number;
+    lvEndDiastolicDia?: number;
+    lvEndSystolicDia?: number;
+    rvFunction?: string;
+    valveFindings?: string;
+    wallMotion?: string;
+    pericardialEffusion?: boolean;
+    summary?: string;
+    notes?: string;
+}
+
+export interface CardiologyStressTest {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status: CardiologyTestStatus;
+    performedAt: string;
+    type?: string;
+    protocol?: string;
+    durationMinutes?: number;
+    mets?: number;
+    maxHeartRate?: number;
+    maxBpSystolic?: number;
+    maxBpDiastolic?: number;
+    symptoms?: string;
+    result?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    visit?: {
+        id: string;
+        visitDate: string;
+    };
+}
+
+export interface CreateCardiologyStressTestRequest {
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status?: CardiologyTestStatus;
+    performedAt: string;
+    type?: string;
+    protocol?: string;
+    durationMinutes?: number;
+    mets?: number;
+    maxHeartRate?: number;
+    maxBpSystolic?: number;
+    maxBpDiastolic?: number;
+    symptoms?: string;
+    result?: string;
+    notes?: string;
+}
+
+export interface CardiologyProcedure {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status: CardiologyProcedureStatus;
+    procedureDate: string;
+    type?: string;
+    indication?: string;
+    findings?: string;
+    complications?: string;
+    outcome?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    visit?: {
+        id: string;
+        visitDate: string;
+    };
+}
+
+export interface CreateCardiologyProcedureRequest {
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status?: CardiologyProcedureStatus;
+    procedureDate: string;
+    type?: string;
+    indication?: string;
+    findings?: string;
+    complications?: string;
+    outcome?: string;
+    notes?: string;
+}
+
+export interface CardiologyDevice {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    deviceType: string;
+    manufacturer?: string;
+    model?: string;
+    serialNumber?: string;
+    implantDate?: string;
+    status: CardiologyDeviceStatus;
+    lastInterrogationDate?: string;
+    nextFollowUpDate?: string;
+    batteryStatus?: string;
+    settings?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateCardiologyDeviceRequest {
+    patientId: string;
+    providerId?: string;
+    deviceType: string;
+    manufacturer?: string;
+    model?: string;
+    serialNumber?: string;
+    implantDate?: string;
+    status?: CardiologyDeviceStatus;
+    lastInterrogationDate?: string;
+    nextFollowUpDate?: string;
+    batteryStatus?: string;
+    settings?: string;
+    notes?: string;
+}
+
+export interface CardiologyMedicationOrder {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    medicationName: string;
+    dose?: string;
+    route?: CardiologyMedicationRoute;
+    frequency?: string;
+    startDate?: string;
+    endDate?: string;
+    lastAdministeredAt?: string;
+    isActive?: boolean;
+    indication?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateCardiologyMedicationOrderRequest {
+    patientId: string;
+    providerId?: string;
+    medicationName: string;
+    dose?: string;
+    route?: CardiologyMedicationRoute;
+    frequency?: string;
+    startDate?: string;
+    endDate?: string;
+    lastAdministeredAt?: string;
+    isActive?: boolean;
+    indication?: string;
+    notes?: string;
+}
+
+export interface CardiologyLabResult {
+    id: string;
+    patientId: string;
+    collectedAt: string;
+    troponin?: number;
+    bnp?: number;
+    ntProBnp?: number;
+    ckmb?: number;
+    totalCholesterol?: number;
+    ldl?: number;
+    hdl?: number;
+    triglycerides?: number;
+    crp?: number;
+    inr?: number;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateCardiologyLabResultRequest {
+    patientId: string;
+    collectedAt: string;
+    troponin?: number;
+    bnp?: number;
+    ntProBnp?: number;
+    ckmb?: number;
+    totalCholesterol?: number;
+    ldl?: number;
+    hdl?: number;
+    triglycerides?: number;
+    crp?: number;
+    inr?: number;
+    notes?: string;
+}
+
+export interface CardiologyReportSummary {
+    totalVisits?: number;
+    completedVisits?: number;
+    cancelledVisits?: number;
+    totalEcgs?: number;
+    totalEchos?: number;
+    totalStressTests?: number;
+    totalProcedures?: number;
+    completedProcedures?: number;
+    averageLvef?: number;
+    averageTroponin?: number;
+    activeDevices?: number;
+    activeMedications?: number;
+}
+
 export interface AppointmentMeta {
     visitTypes: VisitType[];
     locations: Location[];

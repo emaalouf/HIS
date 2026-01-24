@@ -55,6 +55,13 @@ model User {
   dialysisSessions DialysisSession[]
   dialysisPrescriptions DialysisPrescription[]
   dialysisSchedules DialysisSchedule[]
+  cardiologyVisits CardiologyVisit[]
+  cardiologyEcgs CardiologyEcg[]
+  cardiologyEchos CardiologyEcho[]
+  cardiologyStressTests CardiologyStressTest[]
+  cardiologyProcedures CardiologyProcedure[]
+  cardiologyDevices CardiologyDevice[]
+  cardiologyMedicationOrders CardiologyMedicationOrder[]
 
   @@map("users")
 }
@@ -101,6 +108,14 @@ model Patient {
   dialysisSchedules       DialysisSchedule[]
   dialysisLabResults       DialysisLabResult[]
   dialysisMedicationOrders DialysisMedicationOrder[]
+  cardiologyVisits         CardiologyVisit[]
+  cardiologyEcgs           CardiologyEcg[]
+  cardiologyEchos          CardiologyEcho[]
+  cardiologyStressTests    CardiologyStressTest[]
+  cardiologyProcedures     CardiologyProcedure[]
+  cardiologyDevices        CardiologyDevice[]
+  cardiologyMedicationOrders CardiologyMedicationOrder[]
+  cardiologyLabResults       CardiologyLabResult[]
 
   @@map("patients")
 }
@@ -182,6 +197,42 @@ enum DialysisMedicationRoute {
   PO
   IM
   SC
+  OTHER
+}
+
+enum CardiologyVisitStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum CardiologyTestStatus {
+  ORDERED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum CardiologyProcedureStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum CardiologyDeviceStatus {
+  ACTIVE
+  INACTIVE
+  REMOVED
+}
+
+enum CardiologyMedicationRoute {
+  IV
+  PO
+  IM
+  SC
+  SL
   OTHER
 }
 
@@ -435,6 +486,237 @@ model DialysisMedicationOrder {
   @@index([patientId])
   @@index([isActive])
   @@map("dialysis_medication_orders")
+}
+
+model CardiologyVisit {
+  id           String                @id @default(cuid())
+  patientId    String
+  providerId   String
+  status       CardiologyVisitStatus @default(SCHEDULED)
+  visitDate    DateTime
+  reason       String?               @db.Text
+  symptoms     String?               @db.Text
+  diagnosis    String?               @db.Text
+  assessment   String?               @db.Text
+  plan         String?               @db.Text
+  notes        String?               @db.Text
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  patient      Patient               @relation(fields: [patientId], references: [id])
+  provider     User                  @relation(fields: [providerId], references: [id])
+  ecgs         CardiologyEcg[]
+  echos        CardiologyEcho[]
+  stressTests  CardiologyStressTest[]
+  procedures   CardiologyProcedure[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitDate])
+  @@index([status])
+  @@map("cardiology_visits")
+}
+
+model CardiologyEcg {
+  id             String               @id @default(cuid())
+  patientId      String
+  providerId     String?
+  visitId        String?
+  status         CardiologyTestStatus @default(ORDERED)
+  recordedAt     DateTime
+  type           String?
+  rhythm         String?
+  heartRate      Int?
+  prInterval     Int?
+  qrsDuration    Int?
+  qtInterval     Int?
+  qtc            Int?
+  interpretation String?              @db.Text
+  notes          String?              @db.Text
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  patient        Patient              @relation(fields: [patientId], references: [id])
+  provider       User?                @relation(fields: [providerId], references: [id])
+  visit          CardiologyVisit?     @relation(fields: [visitId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitId])
+  @@index([recordedAt])
+  @@index([status])
+  @@map("cardiology_ecgs")
+}
+
+model CardiologyEcho {
+  id                 String               @id @default(cuid())
+  patientId          String
+  providerId         String?
+  visitId            String?
+  status             CardiologyTestStatus @default(ORDERED)
+  performedAt        DateTime
+  type               String?
+  lvef               Float?
+  lvEndDiastolicDia  Float?
+  lvEndSystolicDia   Float?
+  rvFunction         String?
+  valveFindings      String?              @db.Text
+  wallMotion         String?              @db.Text
+  pericardialEffusion Boolean?
+  summary            String?              @db.Text
+  notes              String?              @db.Text
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  patient            Patient              @relation(fields: [patientId], references: [id])
+  provider           User?                @relation(fields: [providerId], references: [id])
+  visit              CardiologyVisit?     @relation(fields: [visitId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitId])
+  @@index([performedAt])
+  @@index([status])
+  @@map("cardiology_echos")
+}
+
+model CardiologyStressTest {
+  id               String               @id @default(cuid())
+  patientId        String
+  providerId       String?
+  visitId          String?
+  status           CardiologyTestStatus @default(ORDERED)
+  performedAt      DateTime
+  type             String?
+  protocol         String?
+  durationMinutes  Int?
+  mets             Float?
+  maxHeartRate     Int?
+  maxBpSystolic    Int?
+  maxBpDiastolic   Int?
+  symptoms         String?              @db.Text
+  result           String?              @db.Text
+  notes            String?              @db.Text
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  patient          Patient              @relation(fields: [patientId], references: [id])
+  provider         User?                @relation(fields: [providerId], references: [id])
+  visit            CardiologyVisit?     @relation(fields: [visitId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitId])
+  @@index([performedAt])
+  @@index([status])
+  @@map("cardiology_stress_tests")
+}
+
+model CardiologyProcedure {
+  id             String                   @id @default(cuid())
+  patientId      String
+  providerId     String?
+  visitId        String?
+  status         CardiologyProcedureStatus @default(SCHEDULED)
+  procedureDate  DateTime
+  type           String?
+  indication     String?                  @db.Text
+  findings       String?                  @db.Text
+  complications  String?                  @db.Text
+  outcome        String?                  @db.Text
+  notes          String?                  @db.Text
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  patient        Patient                  @relation(fields: [patientId], references: [id])
+  provider       User?                    @relation(fields: [providerId], references: [id])
+  visit          CardiologyVisit?         @relation(fields: [visitId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitId])
+  @@index([procedureDate])
+  @@index([status])
+  @@map("cardiology_procedures")
+}
+
+model CardiologyDevice {
+  id                   String                 @id @default(cuid())
+  patientId            String
+  providerId           String?
+  deviceType           String
+  manufacturer         String?
+  model                String?
+  serialNumber         String?
+  implantDate          DateTime?
+  status               CardiologyDeviceStatus @default(ACTIVE)
+  lastInterrogationDate DateTime?
+  nextFollowUpDate     DateTime?
+  batteryStatus        String?
+  settings             String?                @db.Text
+  notes                String?                @db.Text
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  patient              Patient                @relation(fields: [patientId], references: [id])
+  provider             User?                  @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([implantDate])
+  @@index([status])
+  @@map("cardiology_devices")
+}
+
+model CardiologyMedicationOrder {
+  id                String                   @id @default(cuid())
+  patientId         String
+  providerId        String?
+  medicationName    String
+  dose              String?
+  route             CardiologyMedicationRoute?
+  frequency         String?
+  startDate         DateTime?
+  endDate           DateTime?
+  lastAdministeredAt DateTime?
+  isActive          Boolean                  @default(true)
+  indication        String?                  @db.Text
+  notes             String?                  @db.Text
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  patient           Patient                  @relation(fields: [patientId], references: [id])
+  provider          User?                    @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([isActive])
+  @@map("cardiology_medication_orders")
+}
+
+model CardiologyLabResult {
+  id               String   @id @default(cuid())
+  patientId        String
+  collectedAt      DateTime
+  troponin         Float?
+  bnp              Float?
+  ntProBnp         Float?
+  ckmb             Float?
+  totalCholesterol Float?
+  ldl              Float?
+  hdl              Float?
+  triglycerides    Float?
+  crp              Float?
+  inr              Float?
+  notes            String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  patient          Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([collectedAt])
+  @@map("cardiology_lab_results")
 }
 
 model Encounter {

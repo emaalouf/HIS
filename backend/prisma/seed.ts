@@ -1,4 +1,9 @@
 import {
+    CardiologyDeviceStatus,
+    CardiologyMedicationRoute,
+    CardiologyProcedureStatus,
+    CardiologyTestStatus,
+    CardiologyVisitStatus,
     DialysisMedicationRoute,
     DialysisScheduleRecurrence,
     DialysisStationStatus,
@@ -745,6 +750,299 @@ async function main() {
         },
     });
     console.log('Seeded dialysis medication orders');
+
+    // Cardiology visits
+    const visitOne = await prisma.cardiologyVisit.upsert({
+        where: { id: 'cardiology-visit-1' },
+        update: {},
+        create: {
+            id: 'cardiology-visit-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            status: CardiologyVisitStatus.COMPLETED,
+            visitDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+            reason: 'Chest pain with exertion',
+            symptoms: 'Chest tightness, shortness of breath, fatigue',
+            diagnosis: 'Stable angina',
+            assessment: 'Likely ischemic heart disease, moderate risk factors.',
+            plan: 'Start beta blocker, order stress test, follow-up in 2 weeks.',
+            notes: 'Discussed lifestyle modifications and medication adherence.',
+        },
+    });
+
+    const visitTwo = await prisma.cardiologyVisit.upsert({
+        where: { id: 'cardiology-visit-2' },
+        update: {},
+        create: {
+            id: 'cardiology-visit-2',
+            patientId: patientTwo.id,
+            providerId: doctor.id,
+            status: CardiologyVisitStatus.SCHEDULED,
+            visitDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+            reason: 'Palpitations and dizziness',
+            symptoms: 'Intermittent palpitations, lightheadedness',
+            notes: 'Holter monitor planned.',
+        },
+    });
+
+    const visitThree = await prisma.cardiologyVisit.upsert({
+        where: { id: 'cardiology-visit-3' },
+        update: {},
+        create: {
+            id: 'cardiology-visit-3',
+            patientId: patientOne.id,
+            providerId: nurse.id,
+            status: CardiologyVisitStatus.CANCELLED,
+            visitDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+            reason: 'Follow-up visit',
+            notes: 'Cancelled due to patient illness.',
+        },
+    });
+    console.log('Seeded cardiology visits');
+
+    // Cardiology ECGs
+    await prisma.cardiologyEcg.upsert({
+        where: { id: 'cardiology-ecg-1' },
+        update: {},
+        create: {
+            id: 'cardiology-ecg-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            visitId: visitOne.id,
+            status: CardiologyTestStatus.COMPLETED,
+            recordedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+            type: 'Resting ECG',
+            rhythm: 'Normal sinus rhythm',
+            heartRate: 72,
+            prInterval: 160,
+            qrsDuration: 92,
+            qtInterval: 380,
+            qtc: 410,
+            interpretation: 'No acute ischemic changes.',
+        },
+    });
+
+    await prisma.cardiologyEcg.upsert({
+        where: { id: 'cardiology-ecg-2' },
+        update: {},
+        create: {
+            id: 'cardiology-ecg-2',
+            patientId: patientTwo.id,
+            providerId: nurse.id,
+            status: CardiologyTestStatus.COMPLETED,
+            recordedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+            type: 'Holter (24h)',
+            rhythm: 'Frequent PVCs',
+            heartRate: 88,
+            interpretation: 'Occasional ventricular ectopy.',
+            notes: 'Consider beta blocker if symptomatic.',
+        },
+    });
+    console.log('Seeded cardiology ECGs');
+
+    // Cardiology echos
+    await prisma.cardiologyEcho.upsert({
+        where: { id: 'cardiology-echo-1' },
+        update: {},
+        create: {
+            id: 'cardiology-echo-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            visitId: visitOne.id,
+            status: CardiologyTestStatus.COMPLETED,
+            performedAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000),
+            type: 'Transthoracic',
+            lvef: 55,
+            lvEndDiastolicDia: 5.1,
+            lvEndSystolicDia: 3.2,
+            rvFunction: 'Normal',
+            valveFindings: 'Mild mitral regurgitation.',
+            wallMotion: 'No regional wall motion abnormalities.',
+            pericardialEffusion: false,
+            summary: 'Normal LV size and function.',
+        },
+    });
+    console.log('Seeded cardiology echos');
+
+    // Cardiology stress tests
+    await prisma.cardiologyStressTest.upsert({
+        where: { id: 'cardiology-stress-1' },
+        update: {},
+        create: {
+            id: 'cardiology-stress-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            visitId: visitOne.id,
+            status: CardiologyTestStatus.COMPLETED,
+            performedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+            type: 'Treadmill',
+            protocol: 'Bruce',
+            durationMinutes: 9,
+            mets: 10.1,
+            maxHeartRate: 148,
+            maxBpSystolic: 168,
+            maxBpDiastolic: 82,
+            symptoms: 'Mild chest pressure at peak exertion.',
+            result: 'Positive for inducible ischemia.',
+        },
+    });
+    console.log('Seeded cardiology stress tests');
+
+    // Cardiology procedures
+    await prisma.cardiologyProcedure.upsert({
+        where: { id: 'cardiology-procedure-1' },
+        update: {},
+        create: {
+            id: 'cardiology-procedure-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            visitId: visitOne.id,
+            status: CardiologyProcedureStatus.COMPLETED,
+            procedureDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+            type: 'Coronary angiography',
+            indication: 'Positive stress test',
+            findings: 'Moderate LAD stenosis',
+            outcome: 'Medical management recommended',
+            notes: 'No complications.',
+        },
+    });
+
+    await prisma.cardiologyProcedure.upsert({
+        where: { id: 'cardiology-procedure-2' },
+        update: {},
+        create: {
+            id: 'cardiology-procedure-2',
+            patientId: patientTwo.id,
+            providerId: doctor.id,
+            status: CardiologyProcedureStatus.SCHEDULED,
+            procedureDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+            type: 'Electrophysiology study',
+            indication: 'Recurrent palpitations',
+            notes: 'Pre-op labs pending.',
+        },
+    });
+    console.log('Seeded cardiology procedures');
+
+    // Cardiology devices
+    await prisma.cardiologyDevice.upsert({
+        where: { id: 'cardiology-device-1' },
+        update: {},
+        create: {
+            id: 'cardiology-device-1',
+            patientId: patientTwo.id,
+            providerId: doctor.id,
+            deviceType: 'Dual chamber pacemaker',
+            manufacturer: 'Medtronic',
+            model: 'Azure XT',
+            serialNumber: 'MDT-88901',
+            implantDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+            status: CardiologyDeviceStatus.ACTIVE,
+            lastInterrogationDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            nextFollowUpDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+            batteryStatus: 'Good',
+            notes: 'No arrhythmic events detected.',
+        },
+    });
+    console.log('Seeded cardiology devices');
+
+    // Cardiology medication orders
+    await prisma.cardiologyMedicationOrder.upsert({
+        where: { id: 'cardiology-med-1' },
+        update: {},
+        create: {
+            id: 'cardiology-med-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            medicationName: 'Metoprolol succinate',
+            dose: '50 mg',
+            route: CardiologyMedicationRoute.PO,
+            frequency: 'Daily',
+            startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            isActive: true,
+            indication: 'Angina control',
+        },
+    });
+
+    await prisma.cardiologyMedicationOrder.upsert({
+        where: { id: 'cardiology-med-2' },
+        update: {},
+        create: {
+            id: 'cardiology-med-2',
+            patientId: patientTwo.id,
+            providerId: doctor.id,
+            medicationName: 'Atorvastatin',
+            dose: '40 mg',
+            route: CardiologyMedicationRoute.PO,
+            frequency: 'Nightly',
+            startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
+            isActive: true,
+            indication: 'Hyperlipidemia',
+        },
+    });
+
+    await prisma.cardiologyMedicationOrder.upsert({
+        where: { id: 'cardiology-med-3' },
+        update: {},
+        create: {
+            id: 'cardiology-med-3',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            medicationName: 'Aspirin',
+            dose: '81 mg',
+            route: CardiologyMedicationRoute.PO,
+            frequency: 'Daily',
+            startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+            endDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+            isActive: false,
+            indication: 'Primary prevention',
+            notes: 'Stopped due to GI upset.',
+        },
+    });
+    console.log('Seeded cardiology medication orders');
+
+    // Cardiology lab results
+    await prisma.cardiologyLabResult.upsert({
+        where: { id: 'cardiology-lab-1' },
+        update: {},
+        create: {
+            id: 'cardiology-lab-1',
+            patientId: patientOne.id,
+            collectedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+            troponin: 0.02,
+            bnp: 180,
+            ntProBnp: 420,
+            ckmb: 3.2,
+            totalCholesterol: 190,
+            ldl: 112,
+            hdl: 48,
+            triglycerides: 140,
+            crp: 2.1,
+            inr: 1.0,
+            notes: 'Mildly elevated BNP.',
+        },
+    });
+
+    await prisma.cardiologyLabResult.upsert({
+        where: { id: 'cardiology-lab-2' },
+        update: {},
+        create: {
+            id: 'cardiology-lab-2',
+            patientId: patientTwo.id,
+            collectedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+            troponin: 0.01,
+            bnp: 230,
+            ntProBnp: 520,
+            ckmb: 2.6,
+            totalCholesterol: 225,
+            ldl: 142,
+            hdl: 42,
+            triglycerides: 180,
+            crp: 3.4,
+            inr: 1.1,
+            notes: 'LDL above goal.',
+        },
+    });
+    console.log('Seeded cardiology lab results');
 
     console.log('🎉 Database seed completed!');
 }

@@ -29,6 +29,23 @@ import { DialysisLabFormPage } from './pages/dialysis/DialysisLabFormPage';
 import { DialysisMedicationsPage } from './pages/dialysis/DialysisMedicationsPage';
 import { DialysisMedicationFormPage } from './pages/dialysis/DialysisMedicationFormPage';
 import { DialysisReportsPage } from './pages/dialysis/DialysisReportsPage';
+import { CardiologyListPage } from './pages/cardiology/CardiologyListPage';
+import { CardiologyFormPage } from './pages/cardiology/CardiologyFormPage';
+import { CardiologyEcgsPage } from './pages/cardiology/CardiologyEcgsPage';
+import { CardiologyEcgFormPage } from './pages/cardiology/CardiologyEcgFormPage';
+import { CardiologyEchosPage } from './pages/cardiology/CardiologyEchosPage';
+import { CardiologyEchoFormPage } from './pages/cardiology/CardiologyEchoFormPage';
+import { CardiologyStressTestsPage } from './pages/cardiology/CardiologyStressTestsPage';
+import { CardiologyStressTestFormPage } from './pages/cardiology/CardiologyStressTestFormPage';
+import { CardiologyProceduresPage } from './pages/cardiology/CardiologyProceduresPage';
+import { CardiologyProcedureFormPage } from './pages/cardiology/CardiologyProcedureFormPage';
+import { CardiologyDevicesPage } from './pages/cardiology/CardiologyDevicesPage';
+import { CardiologyDeviceFormPage } from './pages/cardiology/CardiologyDeviceFormPage';
+import { CardiologyMedicationsPage } from './pages/cardiology/CardiologyMedicationsPage';
+import { CardiologyMedicationFormPage } from './pages/cardiology/CardiologyMedicationFormPage';
+import { CardiologyLabsPage } from './pages/cardiology/CardiologyLabsPage';
+import { CardiologyLabFormPage } from './pages/cardiology/CardiologyLabFormPage';
+import { CardiologyReportsPage } from './pages/cardiology/CardiologyReportsPage';
 import './index.css';
 
 function App() {
@@ -60,6 +77,31 @@ function App() {
         <Route path="/dialysis/medications/new" element={<DialysisMedicationFormPage />} />
         <Route path="/dialysis/medications/:id/edit" element={<DialysisMedicationFormPage />} />
         <Route path="/dialysis/reports" element={<DialysisReportsPage />} />
+        <Route path="/cardiology" element={<CardiologyListPage />} />
+        <Route path="/cardiology/new" element={<CardiologyFormPage />} />
+        <Route path="/cardiology/:id/edit" element={<CardiologyFormPage />} />
+        <Route path="/cardiology/ecgs" element={<CardiologyEcgsPage />} />
+        <Route path="/cardiology/ecgs/new" element={<CardiologyEcgFormPage />} />
+        <Route path="/cardiology/ecgs/:id/edit" element={<CardiologyEcgFormPage />} />
+        <Route path="/cardiology/echos" element={<CardiologyEchosPage />} />
+        <Route path="/cardiology/echos/new" element={<CardiologyEchoFormPage />} />
+        <Route path="/cardiology/echos/:id/edit" element={<CardiologyEchoFormPage />} />
+        <Route path="/cardiology/stress-tests" element={<CardiologyStressTestsPage />} />
+        <Route path="/cardiology/stress-tests/new" element={<CardiologyStressTestFormPage />} />
+        <Route path="/cardiology/stress-tests/:id/edit" element={<CardiologyStressTestFormPage />} />
+        <Route path="/cardiology/procedures" element={<CardiologyProceduresPage />} />
+        <Route path="/cardiology/procedures/new" element={<CardiologyProcedureFormPage />} />
+        <Route path="/cardiology/procedures/:id/edit" element={<CardiologyProcedureFormPage />} />
+        <Route path="/cardiology/devices" element={<CardiologyDevicesPage />} />
+        <Route path="/cardiology/devices/new" element={<CardiologyDeviceFormPage />} />
+        <Route path="/cardiology/devices/:id/edit" element={<CardiologyDeviceFormPage />} />
+        <Route path="/cardiology/medications" element={<CardiologyMedicationsPage />} />
+        <Route path="/cardiology/medications/new" element={<CardiologyMedicationFormPage />} />
+        <Route path="/cardiology/medications/:id/edit" element={<CardiologyMedicationFormPage />} />
+        <Route path="/cardiology/labs" element={<CardiologyLabsPage />} />
+        <Route path="/cardiology/labs/new" element={<CardiologyLabFormPage />} />
+        <Route path="/cardiology/labs/:id/edit" element={<CardiologyLabFormPage />} />
+        <Route path="/cardiology/reports" element={<CardiologyReportsPage />} />
         <Route path="/providers" element={<ProviderListPage />} />
         <Route path="/providers/new" element={<ProviderFormPage />} />
         <Route path="/providers/:id/edit" element={<ProviderFormPage />} />
