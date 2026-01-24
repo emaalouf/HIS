@@ -62,8 +62,8 @@ export function PatientFormPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
-            <div className="flex items-center gap-4">
+        <div className="w-full max-w-5xl mx-auto space-y-6 lg:pl-0">
+            <div className="flex items-center gap-4 pt-2 lg:pt-0">
                 <Link to="/patients">
                     <Button variant="ghost" size="sm">
                         <ArrowLeft size={18} className="mr-2" />
