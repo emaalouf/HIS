@@ -14,6 +14,7 @@ import {
     NephrologyProcedureStatus,
     NephrologyTestStatus,
     NephrologyVisitStatus,
+    NeurologyVisitStatus,
     PrismaClient,
     Role,
 } from '@prisma/client';
@@ -1294,6 +1295,51 @@ async function main() {
         },
     });
     console.log('Seeded nephrology medication orders');
+
+    const neurologyVisitOne = await prisma.neurologyVisit.upsert({
+        where: { id: 'neurology-visit-1' },
+        update: {},
+        create: {
+            id: 'neurology-visit-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            status: NeurologyVisitStatus.COMPLETED,
+            visitDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+            reason: 'New onset headaches',
+            symptoms: 'Occipital headache with photophobia and nausea',
+            mentalStatus: 'Alert and oriented x4.',
+            cranialNerves: 'II-XII intact.',
+            motorExam: '5/5 strength in all extremities.',
+            sensoryExam: 'Intact to light touch and pinprick.',
+            reflexes: '2+ symmetric.',
+            coordination: 'No dysmetria on finger-to-nose.',
+            gait: 'Normal steady gait.',
+            speech: 'Fluent with normal comprehension.',
+            nihssScore: 0,
+            gcsScore: 15,
+            diagnosis: 'Migraine without aura',
+            assessment: 'Symptoms consistent with migraine.',
+            plan: 'Start prophylactic therapy and lifestyle modification.',
+            notes: 'Return precautions reviewed.',
+        },
+    });
+
+    await prisma.neurologyVisit.upsert({
+        where: { id: 'neurology-visit-2' },
+        update: {},
+        create: {
+            id: 'neurology-visit-2',
+            patientId: patientTwo.id,
+            providerId: nurse.id,
+            status: NeurologyVisitStatus.SCHEDULED,
+            visitDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+            reason: 'Post-concussion follow-up',
+            symptoms: 'Intermittent dizziness, mild memory issues',
+            notes: `Scheduled for neurologic exam and cognitive screening.`,
+        },
+    });
+
+    console.log('Seeded neurology visits');
 
     console.log('🎉 Database seed completed!');
 }

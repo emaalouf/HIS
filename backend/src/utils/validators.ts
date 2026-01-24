@@ -19,6 +19,7 @@ import {
     NephrologyProcedureStatus,
     NephrologyMedicationRoute,
     NephrologyImagingModality,
+    NeurologyVisitStatus,
 } from '@prisma/client';
 
 // Auth Schemas
@@ -1078,6 +1079,64 @@ export const updateNephrologyMedicationSchema = z.object({
     }),
 });
 
+// Neurology Schemas
+export const createNeurologyVisitSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        status: z.nativeEnum(NeurologyVisitStatus).optional(),
+        visitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid visit date',
+        }),
+        reason: z.string().optional().nullable(),
+        symptoms: z.string().optional().nullable(),
+        mentalStatus: z.string().optional().nullable(),
+        cranialNerves: z.string().optional().nullable(),
+        motorExam: z.string().optional().nullable(),
+        sensoryExam: z.string().optional().nullable(),
+        reflexes: z.string().optional().nullable(),
+        coordination: z.string().optional().nullable(),
+        gait: z.string().optional().nullable(),
+        speech: z.string().optional().nullable(),
+        nihssScore: z.number().optional(),
+        gcsScore: z.number().optional(),
+        diagnosis: z.string().optional().nullable(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNeurologyVisitSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Visit ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        status: z.nativeEnum(NeurologyVisitStatus).optional(),
+        visitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid visit date',
+        }).optional(),
+        reason: z.string().optional().nullable(),
+        symptoms: z.string().optional().nullable(),
+        mentalStatus: z.string().optional().nullable(),
+        cranialNerves: z.string().optional().nullable(),
+        motorExam: z.string().optional().nullable(),
+        sensoryExam: z.string().optional().nullable(),
+        reflexes: z.string().optional().nullable(),
+        coordination: z.string().optional().nullable(),
+        gait: z.string().optional().nullable(),
+        speech: z.string().optional().nullable(),
+        nihssScore: z.number().optional(),
+        gcsScore: z.number().optional(),
+        diagnosis: z.string().optional().nullable(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type CreatePatientInput = z.infer<typeof createPatientSchema>['body'];
@@ -1126,3 +1185,5 @@ export type CreateNephrologyBiopsyInput = z.infer<typeof createNephrologyBiopsyS
 export type UpdateNephrologyBiopsyInput = z.infer<typeof updateNephrologyBiopsySchema>['body'];
 export type CreateNephrologyMedicationInput = z.infer<typeof createNephrologyMedicationSchema>['body'];
 export type UpdateNephrologyMedicationInput = z.infer<typeof updateNephrologyMedicationSchema>['body'];
+export type CreateNeurologyVisitInput = z.infer<typeof createNeurologyVisitSchema>['body'];
+export type UpdateNeurologyVisitInput = z.infer<typeof updateNeurologyVisitSchema>['body'];

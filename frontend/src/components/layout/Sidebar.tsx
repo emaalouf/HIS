@@ -15,6 +15,7 @@ import {
     Droplet,
     HeartPulse,
     Filter,
+    Brain,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
@@ -25,6 +26,7 @@ const navigation = [
     { name: 'Dialysis', href: '/dialysis', icon: Droplet },
     { name: 'Cardiology', href: '/cardiology', icon: HeartPulse },
     { name: 'Nephrology', href: '/nephrology', icon: Filter },
+    { name: 'Neurology', href: '/neurology', icon: Brain },
     { name: 'Providers', href: '/providers', icon: Stethoscope },
     { name: 'Specialties', href: '/specialties', icon: ClipboardList },
     { name: 'Roles', href: '/roles', icon: Shield },

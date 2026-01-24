@@ -66,6 +66,7 @@ model User {
   nephrologyImagingStudies NephrologyImaging[]
   nephrologyBiopsies NephrologyBiopsy[]
   nephrologyMedicationOrders NephrologyMedicationOrder[]
+  neurologyVisits NeurologyVisit[]
 
   @@map("users")
 }
@@ -125,6 +126,7 @@ model Patient {
   nephrologyImagingStudies   NephrologyImaging[]
   nephrologyBiopsies         NephrologyBiopsy[]
   nephrologyMedicationOrders NephrologyMedicationOrder[]
+  neurologyVisits            NeurologyVisit[]
 
   @@map("patients")
 }
@@ -254,6 +256,13 @@ enum NephrologyVisitStatus {
 
 enum NephrologyTestStatus {
   ORDERED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NeurologyVisitStatus {
+  SCHEDULED
   IN_PROGRESS
   COMPLETED
   CANCELLED
@@ -807,6 +816,41 @@ model NephrologyVisit {
   @@index([status])
   @@index([ckdStage])
   @@map("nephrology_visits")
+}
+
+model NeurologyVisit {
+  id           String               @id @default(cuid())
+  patientId    String
+  providerId   String
+  status       NeurologyVisitStatus @default(SCHEDULED)
+  visitDate    DateTime
+  reason       String?              @db.Text
+  symptoms     String?              @db.Text
+  mentalStatus String?              @db.Text
+  cranialNerves String?             @db.Text
+  motorExam    String?              @db.Text
+  sensoryExam  String?              @db.Text
+  reflexes     String?              @db.Text
+  coordination String?              @db.Text
+  gait         String?              @db.Text
+  speech       String?              @db.Text
+  nihssScore   Int?
+  gcsScore     Int?
+  diagnosis    String?              @db.Text
+  assessment   String?              @db.Text
+  plan         String?              @db.Text
+  notes        String?              @db.Text
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  patient      Patient              @relation(fields: [patientId], references: [id])
+  provider     User                 @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitDate])
+  @@index([status])
+  @@map("neurology_visits")
 }
 
 model NephrologyLabResult {

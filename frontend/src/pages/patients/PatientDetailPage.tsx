@@ -9,6 +9,7 @@ import { cardiologyMedicationService } from '../../services/cardiology-medicatio
 import { cardiologyLabService } from '../../services/cardiology-lab.service';
 import { nephrologyService } from '../../services/nephrology.service';
 import { nephrologyLabService } from '../../services/nephrology-lab.service';
+import { neurologyService } from '../../services/neurology.service';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '../../components/ui';
 import { formatDate, formatDateTime, calculateAge, formatBloodType } from '../../lib/utils';
 import {
@@ -25,6 +26,7 @@ import {
     Droplet,
     HeartPulse,
     Filter,
+    Brain,
 } from 'lucide-react';
 
 export function PatientDetailPage() {
@@ -145,6 +147,18 @@ export function PatientDetailPage() {
         enabled: !!id,
     });
 
+    const { data: neurologyVisits } = useQuery({
+        queryKey: ['neurology-visits', 'patient', id],
+        queryFn: () =>
+            neurologyService.getVisits({
+                patientId: id!,
+                limit: 1,
+                sortBy: 'visitDate',
+                sortOrder: 'desc',
+            }),
+        enabled: !!id,
+    });
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -178,6 +192,7 @@ export function PatientDetailPage() {
     const activeMedicationCount = cardiologyMedications?.pagination?.total;
     const latestNephrologyVisit = nephrologyVisits?.visits?.[0];
     const latestNephrologyLab = nephrologyLabs?.results?.[0];
+    const latestNeurologyVisit = neurologyVisits?.visits?.[0];
 
     return (
         <div className="space-y-6">
@@ -543,6 +558,73 @@ export function PatientDetailPage() {
                                         <div className="flex items-center justify-between">
                                             <span className="text-gray-500">Last Lab Date</span>
                                             <span>{latestNephrologyLab ? formatDateTime(latestNephrologyLab.collectedAt) : '--'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Neurology Overview */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Brain size={20} />
+                                Neurology Overview
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <p className="text-sm text-gray-500">Latest Visit</p>
+                                        {id && (
+                                            <Link to={`/neurology?patientId=${id}`} className="text-sm text-sky-600 hover:underline">
+                                                View all
+                                            </Link>
+                                        )}
+                                    </div>
+                                    {latestNeurologyVisit ? (
+                                        <div className="space-y-2 text-sm text-gray-700">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Date</span>
+                                                <span>{formatDateTime(latestNeurologyVisit.visitDate)}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Reason</span>
+                                                <span>{latestNeurologyVisit.reason || '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Diagnosis</span>
+                                                <span>{latestNeurologyVisit.diagnosis || '-'}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-500">Status</span>
+                                                <span>{latestNeurologyVisit.status.split('_').join(' ')}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No neurology visits on file.</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-3">Score Snapshot</p>
+                                    <div className="space-y-2 text-sm text-gray-700">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">NIHSS</span>
+                                            <span>{latestNeurologyVisit?.nihssScore ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">GCS</span>
+                                            <span>{latestNeurologyVisit?.gcsScore ?? '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Mental Status</span>
+                                            <span>{latestNeurologyVisit?.mentalStatus || '--'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Cranial Nerves</span>
+                                            <span>{latestNeurologyVisit?.cranialNerves || '--'}</span>
                                         </div>
                                     </div>
                                 </div>

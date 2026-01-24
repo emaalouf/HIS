@@ -1218,6 +1218,70 @@ export interface NephrologyReportSummary {
     activeMedications?: number;
 }
 
+export type NeurologyVisitStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
+export interface NeurologyVisit {
+    id: string;
+    patientId: string;
+    providerId: string;
+    status: NeurologyVisitStatus;
+    visitDate: string;
+    reason?: string;
+    symptoms?: string;
+    mentalStatus?: string;
+    cranialNerves?: string;
+    motorExam?: string;
+    sensoryExam?: string;
+    reflexes?: string;
+    coordination?: string;
+    gait?: string;
+    speech?: string;
+    nihssScore?: number;
+    gcsScore?: number;
+    diagnosis?: string;
+    assessment?: string;
+    plan?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+        phone?: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateNeurologyVisitRequest {
+    patientId: string;
+    providerId: string;
+    status?: NeurologyVisitStatus;
+    visitDate: string;
+    reason?: string;
+    symptoms?: string;
+    mentalStatus?: string;
+    cranialNerves?: string;
+    motorExam?: string;
+    sensoryExam?: string;
+    reflexes?: string;
+    coordination?: string;
+    gait?: string;
+    speech?: string;
+    nihssScore?: number;
+    gcsScore?: number;
+    diagnosis?: string;
+    assessment?: string;
+    plan?: string;
+    notes?: string;
+}
+
 export interface AppointmentMeta {
     visitTypes: VisitType[];
     locations: Location[];

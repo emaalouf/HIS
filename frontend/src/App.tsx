@@ -57,6 +57,8 @@ import { NephrologyBiopsyFormPage } from './pages/nephrology/NephrologyBiopsyFor
 import { NephrologyMedicationsPage } from './pages/nephrology/NephrologyMedicationsPage';
 import { NephrologyMedicationFormPage } from './pages/nephrology/NephrologyMedicationFormPage';
 import { NephrologyReportsPage } from './pages/nephrology/NephrologyReportsPage';
+import { NeurologyListPage } from './pages/neurology/NeurologyListPage';
+import { NeurologyFormPage } from './pages/neurology/NeurologyFormPage';
 import './index.css';
 
 function App() {
@@ -129,6 +131,9 @@ function App() {
         <Route path="/nephrology/medications/new" element={<NephrologyMedicationFormPage />} />
         <Route path="/nephrology/medications/:id/edit" element={<NephrologyMedicationFormPage />} />
         <Route path="/nephrology/reports" element={<NephrologyReportsPage />} />
+        <Route path="/neurology" element={<NeurologyListPage />} />
+        <Route path="/neurology/new" element={<NeurologyFormPage />} />
+        <Route path="/neurology/:id/edit" element={<NeurologyFormPage />} />
         <Route path="/providers" element={<ProviderListPage />} />
         <Route path="/providers/new" element={<ProviderFormPage />} />
         <Route path="/providers/:id/edit" element={<ProviderFormPage />} />

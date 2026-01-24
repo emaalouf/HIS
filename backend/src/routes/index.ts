@@ -25,6 +25,7 @@ import nephrologyImagingRoutes from './nephrology-imaging.routes';
 import nephrologyBiopsyRoutes from './nephrology-biopsy.routes';
 import nephrologyMedicationRoutes from './nephrology-medication.routes';
 import nephrologyReportRoutes from './nephrology-report.routes';
+import neurologyVisitRoutes from './neurology-visit.routes';
 
 const router = Router();
 
@@ -54,5 +55,6 @@ router.use('/nephrology-imaging', nephrologyImagingRoutes);
 router.use('/nephrology-biopsies', nephrologyBiopsyRoutes);
 router.use('/nephrology-medications', nephrologyMedicationRoutes);
 router.use('/nephrology-reports', nephrologyReportRoutes);
+router.use('/neurology-visits', neurologyVisitRoutes);
 
 export default router;
