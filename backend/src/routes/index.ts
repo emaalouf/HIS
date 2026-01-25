@@ -26,6 +26,17 @@ import nephrologyBiopsyRoutes from './nephrology-biopsy.routes';
 import nephrologyMedicationRoutes from './nephrology-medication.routes';
 import nephrologyReportRoutes from './nephrology-report.routes';
 import neurologyVisitRoutes from './neurology-visit.routes';
+import encounterRoutes from './encounter.routes';
+import clinicalOrderRoutes from './clinical-order.routes';
+import clinicalResultRoutes from './clinical-result.routes';
+import medicationOrderRoutes from './medication-order.routes';
+import medicationAdministrationRoutes from './medication-administration.routes';
+import wardRoutes from './ward.routes';
+import bedRoutes from './bed.routes';
+import admissionRoutes from './admission.routes';
+import invoiceRoutes from './invoice.routes';
+import paymentRoutes from './payment.routes';
+import claimRoutes from './claim.routes';
 
 const router = Router();
 
@@ -56,5 +67,16 @@ router.use('/nephrology-biopsies', nephrologyBiopsyRoutes);
 router.use('/nephrology-medications', nephrologyMedicationRoutes);
 router.use('/nephrology-reports', nephrologyReportRoutes);
 router.use('/neurology-visits', neurologyVisitRoutes);
+router.use('/encounters', encounterRoutes);
+router.use('/clinical-orders', clinicalOrderRoutes);
+router.use('/clinical-results', clinicalResultRoutes);
+router.use('/medication-orders', medicationOrderRoutes);
+router.use('/medication-administrations', medicationAdministrationRoutes);
+router.use('/wards', wardRoutes);
+router.use('/beds', bedRoutes);
+router.use('/admissions', admissionRoutes);
+router.use('/invoices', invoiceRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/claims', claimRoutes);
 
 export default router;

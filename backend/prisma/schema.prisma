@@ -67,6 +67,12 @@ model User {
   nephrologyBiopsies NephrologyBiopsy[]
   nephrologyMedicationOrders NephrologyMedicationOrder[]
   neurologyVisits NeurologyVisit[]
+  clinicalOrders ClinicalOrder[]
+  medicationOrders MedicationOrder[]
+  medicationAdministrations MedicationAdministration[]
+  invoicesCreated Invoice[]
+  paymentsReceived Payment[]
+  admissions Admission[]
 
   @@map("users")
 }
@@ -127,6 +133,14 @@ model Patient {
   nephrologyBiopsies         NephrologyBiopsy[]
   nephrologyMedicationOrders NephrologyMedicationOrder[]
   neurologyVisits            NeurologyVisit[]
+  clinicalOrders             ClinicalOrder[]
+  clinicalResults            ClinicalResult[]
+  medicationOrders           MedicationOrder[]
+  medicationAdministrations  MedicationAdministration[]
+  invoices                   Invoice[]
+  payments                   Payment[]
+  claims                     Claim[]
+  admissions                 Admission[]
 
   @@map("patients")
 }
@@ -266,6 +280,111 @@ enum NeurologyVisitStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum EncounterStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum OrderType {
+  LAB
+  IMAGING
+  MEDICATION
+  PROCEDURE
+  OTHER
+}
+
+enum OrderStatus {
+  ORDERED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum OrderPriority {
+  ROUTINE
+  URGENT
+  STAT
+}
+
+enum ResultStatus {
+  PENDING
+  FINAL
+  AMENDED
+}
+
+enum ResultFlag {
+  NORMAL
+  ABNORMAL
+  CRITICAL
+}
+
+enum MedicationOrderStatus {
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  DISCONTINUED
+}
+
+enum MedicationRoute {
+  IV
+  PO
+  IM
+  SC
+  SL
+  INHALATION
+  TOPICAL
+  OTHER
+}
+
+enum MedicationAdministrationStatus {
+  GIVEN
+  HELD
+  REFUSED
+  MISSED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  SUBMITTED
+  PARTIAL
+  PAID
+  DENIED
+  VOID
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+  CHECK
+  OTHER
+}
+
+enum ClaimStatus {
+  DRAFT
+  SUBMITTED
+  ACCEPTED
+  DENIED
+  PAID
+}
+
+enum AdmissionStatus {
+  ADMITTED
+  TRANSFERRED
+  DISCHARGED
+  CANCELLED
+}
+
+enum BedStatus {
+  AVAILABLE
+  OCCUPIED
+  CLEANING
+  MAINTENANCE
 }
 
 enum NephrologyProcedureStatus {
@@ -973,8 +1092,12 @@ model Encounter {
   providerId    String
   appointmentId String?    @unique
   createdById   String
-  status        String     @default("OPEN")
+  admissionId   String?
+  status        EncounterStatus @default(OPEN)
   reasonForVisit String?
+  diagnosis     String?    @db.Text
+  assessment    String?    @db.Text
+  plan          String?    @db.Text
   startTime     DateTime   @default(now())
   endTime       DateTime?
   notes         String?
@@ -985,8 +1108,273 @@ model Encounter {
   provider   User      @relation("EncounterProvider", fields: [providerId], references: [id])
   appointment Appointment? @relation(fields: [appointmentId], references: [id])
   createdBy  User      @relation("EncounterCreatedBy", fields: [createdById], references: [id])
+  admission Admission? @relation(fields: [admissionId], references: [id])
+  orders    ClinicalOrder[]
+  medicationOrders MedicationOrder[]
+  invoices  Invoice[]
 
   @@index([patientId])
   @@index([providerId])
+  @@index([admissionId])
   @@map("encounters")
+}
+
+model ClinicalOrder {
+  id          String       @id @default(cuid())
+  patientId   String
+  providerId  String
+  encounterId String?
+  orderType   OrderType
+  status      OrderStatus  @default(ORDERED)
+  priority    OrderPriority @default(ROUTINE)
+  orderedAt   DateTime     @default(now())
+  orderName   String
+  description String?      @db.Text
+  notes       String?      @db.Text
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  patient     Patient      @relation(fields: [patientId], references: [id])
+  provider    User         @relation(fields: [providerId], references: [id])
+  encounter   Encounter?   @relation(fields: [encounterId], references: [id], onDelete: SetNull)
+  results     ClinicalResult[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([encounterId])
+  @@index([orderType])
+  @@index([status])
+  @@map("clinical_orders")
+}
+
+model ClinicalResult {
+  id             String       @id @default(cuid())
+  orderId        String
+  patientId      String
+  reportedAt     DateTime     @default(now())
+  resultName     String
+  value          String?
+  unit           String?
+  referenceRange String?
+  status         ResultStatus @default(PENDING)
+  flag           ResultFlag   @default(NORMAL)
+  notes          String?      @db.Text
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  order          ClinicalOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  patient        Patient       @relation(fields: [patientId], references: [id])
+
+  @@index([orderId])
+  @@index([patientId])
+  @@index([reportedAt])
+  @@index([status])
+  @@index([flag])
+  @@map("clinical_results")
+}
+
+model MedicationOrder {
+  id                 String               @id @default(cuid())
+  patientId          String
+  providerId         String?
+  encounterId        String?
+  status             MedicationOrderStatus @default(ACTIVE)
+  medicationName     String
+  dose               String?
+  route              MedicationRoute?
+  frequency          String?
+  startDate          DateTime?
+  endDate            DateTime?
+  lastAdministeredAt DateTime?
+  indication         String?              @db.Text
+  notes              String?              @db.Text
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  patient            Patient              @relation(fields: [patientId], references: [id])
+  provider           User?                @relation(fields: [providerId], references: [id])
+  encounter          Encounter?           @relation(fields: [encounterId], references: [id], onDelete: SetNull)
+  administrations    MedicationAdministration[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([encounterId])
+  @@index([status])
+  @@map("medication_orders")
+}
+
+model MedicationAdministration {
+  id                 String                        @id @default(cuid())
+  medicationOrderId  String
+  patientId          String
+  administeredById   String?
+  administeredAt     DateTime                      @default(now())
+  doseGiven          String?
+  status             MedicationAdministrationStatus @default(GIVEN)
+  notes              String?                       @db.Text
+  createdAt          DateTime                      @default(now())
+  updatedAt          DateTime                      @updatedAt
+
+  medicationOrder    MedicationOrder               @relation(fields: [medicationOrderId], references: [id], onDelete: Cascade)
+  patient            Patient                        @relation(fields: [patientId], references: [id])
+  administeredBy     User?                          @relation(fields: [administeredById], references: [id])
+
+  @@index([medicationOrderId])
+  @@index([patientId])
+  @@index([administeredById])
+  @@index([administeredAt])
+  @@index([status])
+  @@map("medication_administrations")
+}
+
+model Ward {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  departmentId String?
+  notes        String?  @db.Text
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  department   Department? @relation(fields: [departmentId], references: [id])
+  beds         Bed[]
+  admissions   Admission[]
+
+  @@map("wards")
+}
+
+model Bed {
+  id         String   @id @default(cuid())
+  wardId     String
+  roomNumber String?
+  bedLabel   String
+  status     BedStatus @default(AVAILABLE)
+  isActive   Boolean  @default(true)
+  notes      String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  ward       Ward     @relation(fields: [wardId], references: [id])
+  admissions Admission[]
+
+  @@index([wardId])
+  @@index([status])
+  @@map("beds")
+}
+
+model Admission {
+  id           String          @id @default(cuid())
+  patientId    String
+  providerId   String
+  wardId       String?
+  bedId        String?
+  departmentId String?
+  status       AdmissionStatus @default(ADMITTED)
+  admitDate    DateTime        @default(now())
+  dischargeDate DateTime?
+  reason       String?         @db.Text
+  diagnosis    String?         @db.Text
+  notes        String?         @db.Text
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  patient      Patient         @relation(fields: [patientId], references: [id])
+  provider     User            @relation(fields: [providerId], references: [id])
+  ward         Ward?           @relation(fields: [wardId], references: [id])
+  bed          Bed?            @relation(fields: [bedId], references: [id])
+  department   Department?     @relation(fields: [departmentId], references: [id])
+  encounters   Encounter[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([status])
+  @@index([admitDate])
+  @@map("admissions")
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  patientId     String
+  encounterId   String?
+  status        InvoiceStatus @default(DRAFT)
+  totalAmount   Float         @default(0)
+  dueDate       DateTime?
+  notes         String?       @db.Text
+  createdById   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  patient       Patient       @relation(fields: [patientId], references: [id])
+  encounter     Encounter?    @relation(fields: [encounterId], references: [id], onDelete: SetNull)
+  createdBy     User?         @relation(fields: [createdById], references: [id])
+  items         InvoiceItem[]
+  payments      Payment[]
+  claims        Claim[]
+
+  @@index([patientId])
+  @@index([encounterId])
+  @@index([status])
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float
+  totalPrice  Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@map("invoice_items")
+}
+
+model Payment {
+  id           String       @id @default(cuid())
+  invoiceId    String
+  patientId    String
+  amount       Float
+  method       PaymentMethod
+  paidAt       DateTime     @default(now())
+  reference    String?
+  receivedById String?
+  notes        String?      @db.Text
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  patient      Patient      @relation(fields: [patientId], references: [id])
+  receivedBy   User?        @relation(fields: [receivedById], references: [id])
+
+  @@index([invoiceId])
+  @@index([patientId])
+  @@index([paidAt])
+  @@index([method])
+  @@map("payments")
+}
+
+model Claim {
+  id          String      @id @default(cuid())
+  invoiceId   String
+  patientId   String
+  payerName   String
+  status      ClaimStatus @default(DRAFT)
+  submittedAt DateTime?
+  resolvedAt  DateTime?
+  notes       String?     @db.Text
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  invoice     Invoice     @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  patient     Patient     @relation(fields: [patientId], references: [id])
+
+  @@index([invoiceId])
+  @@index([patientId])
+  @@index([status])
+  @@map("claims")
 }

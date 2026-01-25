@@ -1218,6 +1218,486 @@ export interface NephrologyReportSummary {
     activeMedications?: number;
 }
 
+export type EncounterStatus = 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type OrderType = 'LAB' | 'IMAGING' | 'MEDICATION' | 'PROCEDURE' | 'OTHER';
+export type OrderStatus = 'ORDERED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type OrderPriority = 'ROUTINE' | 'URGENT' | 'STAT';
+export type ResultStatus = 'PENDING' | 'FINAL' | 'AMENDED';
+export type ResultFlag = 'NORMAL' | 'ABNORMAL' | 'CRITICAL';
+export type MedicationOrderStatus = 'ACTIVE' | 'ON_HOLD' | 'COMPLETED' | 'DISCONTINUED';
+export type MedicationRoute = 'IV' | 'PO' | 'IM' | 'SC' | 'SL' | 'INHALATION' | 'TOPICAL' | 'OTHER';
+export type MedicationAdministrationStatus = 'GIVEN' | 'HELD' | 'REFUSED' | 'MISSED';
+export type InvoiceStatus = 'DRAFT' | 'ISSUED' | 'SUBMITTED' | 'PARTIAL' | 'PAID' | 'DENIED' | 'VOID';
+export type PaymentMethod = 'CASH' | 'CARD' | 'TRANSFER' | 'CHECK' | 'OTHER';
+export type ClaimStatus = 'DRAFT' | 'SUBMITTED' | 'ACCEPTED' | 'DENIED' | 'PAID';
+export type AdmissionStatus = 'ADMITTED' | 'TRANSFERRED' | 'DISCHARGED' | 'CANCELLED';
+export type BedStatus = 'AVAILABLE' | 'OCCUPIED' | 'CLEANING' | 'MAINTENANCE';
+
+export interface Encounter {
+    id: string;
+    patientId: string;
+    providerId: string;
+    appointmentId?: string;
+    admissionId?: string;
+    status: EncounterStatus;
+    reasonForVisit?: string;
+    diagnosis?: string;
+    assessment?: string;
+    plan?: string;
+    startTime: string;
+    endTime?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+        phone?: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    appointment?: {
+        id: string;
+        startTime: string;
+        endTime: string;
+        status: AppointmentStatus;
+    };
+    admission?: {
+        id: string;
+        status: AdmissionStatus;
+        admitDate: string;
+        dischargeDate?: string;
+    };
+}
+
+export interface CreateEncounterRequest {
+    patientId: string;
+    providerId: string;
+    appointmentId?: string;
+    admissionId?: string;
+    status?: EncounterStatus;
+    reasonForVisit?: string;
+    diagnosis?: string;
+    assessment?: string;
+    plan?: string;
+    startTime?: string;
+    endTime?: string;
+    notes?: string;
+}
+
+export interface ClinicalOrder {
+    id: string;
+    patientId: string;
+    providerId: string;
+    encounterId?: string;
+    orderType: OrderType;
+    status: OrderStatus;
+    priority: OrderPriority;
+    orderedAt: string;
+    orderName: string;
+    description?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    encounter?: {
+        id: string;
+        status: EncounterStatus;
+        startTime: string;
+    };
+}
+
+export interface CreateClinicalOrderRequest {
+    patientId: string;
+    providerId: string;
+    encounterId?: string;
+    orderType: OrderType;
+    status?: OrderStatus;
+    priority?: OrderPriority;
+    orderedAt?: string;
+    orderName: string;
+    description?: string;
+    notes?: string;
+}
+
+export interface ClinicalResult {
+    id: string;
+    orderId: string;
+    patientId: string;
+    reportedAt: string;
+    resultName: string;
+    value?: string;
+    unit?: string;
+    referenceRange?: string;
+    status: ResultStatus;
+    flag: ResultFlag;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    order?: {
+        id: string;
+        orderName: string;
+        orderType: OrderType;
+        status: OrderStatus;
+    };
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateClinicalResultRequest {
+    orderId: string;
+    patientId: string;
+    reportedAt?: string;
+    resultName: string;
+    value?: string;
+    unit?: string;
+    referenceRange?: string;
+    status?: ResultStatus;
+    flag?: ResultFlag;
+    notes?: string;
+}
+
+export interface MedicationOrder {
+    id: string;
+    patientId: string;
+    providerId?: string;
+    encounterId?: string;
+    status: MedicationOrderStatus;
+    medicationName: string;
+    dose?: string;
+    route?: MedicationRoute;
+    frequency?: string;
+    startDate?: string;
+    endDate?: string;
+    lastAdministeredAt?: string;
+    indication?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    encounter?: {
+        id: string;
+        status: EncounterStatus;
+        startTime: string;
+    };
+}
+
+export interface CreateMedicationOrderRequest {
+    patientId: string;
+    providerId?: string;
+    encounterId?: string;
+    status?: MedicationOrderStatus;
+    medicationName: string;
+    dose?: string;
+    route?: MedicationRoute;
+    frequency?: string;
+    startDate?: string;
+    endDate?: string;
+    lastAdministeredAt?: string;
+    indication?: string;
+    notes?: string;
+}
+
+export interface MedicationAdministration {
+    id: string;
+    medicationOrderId: string;
+    patientId: string;
+    administeredById?: string;
+    administeredAt: string;
+    doseGiven?: string;
+    status: MedicationAdministrationStatus;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    medicationOrder?: {
+        id: string;
+        medicationName: string;
+        dose?: string;
+        route?: MedicationRoute;
+        frequency?: string;
+    };
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    administeredBy?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreateMedicationAdministrationRequest {
+    medicationOrderId: string;
+    patientId: string;
+    administeredById?: string;
+    administeredAt?: string;
+    doseGiven?: string;
+    status?: MedicationAdministrationStatus;
+    notes?: string;
+}
+
+export interface Ward {
+    id: string;
+    name: string;
+    departmentId?: string;
+    notes?: string;
+    isActive: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+    department?: {
+        id: string;
+        name: string;
+    };
+}
+
+export interface CreateWardRequest {
+    name: string;
+    departmentId?: string;
+    notes?: string;
+    isActive?: boolean;
+}
+
+export interface Bed {
+    id: string;
+    wardId: string;
+    roomNumber?: string;
+    bedLabel: string;
+    status: BedStatus;
+    isActive: boolean;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    ward?: {
+        id: string;
+        name: string;
+    };
+}
+
+export interface CreateBedRequest {
+    wardId: string;
+    roomNumber?: string;
+    bedLabel: string;
+    status?: BedStatus;
+    isActive?: boolean;
+    notes?: string;
+}
+
+export interface Admission {
+    id: string;
+    patientId: string;
+    providerId: string;
+    wardId?: string;
+    bedId?: string;
+    departmentId?: string;
+    status: AdmissionStatus;
+    admitDate: string;
+    dischargeDate?: string;
+    reason?: string;
+    diagnosis?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+    ward?: {
+        id: string;
+        name: string;
+    };
+    bed?: {
+        id: string;
+        bedLabel: string;
+        roomNumber?: string;
+        status: BedStatus;
+    };
+    department?: {
+        id: string;
+        name: string;
+    };
+}
+
+export interface CreateAdmissionRequest {
+    patientId: string;
+    providerId: string;
+    wardId?: string;
+    bedId?: string;
+    departmentId?: string;
+    status?: AdmissionStatus;
+    admitDate?: string;
+    dischargeDate?: string;
+    reason?: string;
+    diagnosis?: string;
+    notes?: string;
+}
+
+export interface InvoiceItem {
+    id?: string;
+    description: string;
+    quantity?: number;
+    unitPrice: number;
+    totalPrice?: number;
+}
+
+export interface Invoice {
+    id: string;
+    invoiceNumber: string;
+    patientId: string;
+    encounterId?: string;
+    status: InvoiceStatus;
+    totalAmount: number;
+    dueDate?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    encounter?: {
+        id: string;
+        status: EncounterStatus;
+        startTime: string;
+    };
+    items?: InvoiceItem[];
+    payments?: Payment[];
+    claims?: Claim[];
+}
+
+export interface CreateInvoiceRequest {
+    patientId: string;
+    encounterId?: string;
+    status?: InvoiceStatus;
+    totalAmount?: number;
+    dueDate?: string;
+    notes?: string;
+    items?: InvoiceItem[];
+}
+
+export interface Payment {
+    id: string;
+    invoiceId: string;
+    patientId: string;
+    amount: number;
+    method: PaymentMethod;
+    paidAt: string;
+    reference?: string;
+    receivedById?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    invoice?: {
+        id: string;
+        invoiceNumber: string;
+        status: InvoiceStatus;
+        totalAmount: number;
+    };
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    receivedBy?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+    };
+}
+
+export interface CreatePaymentRequest {
+    invoiceId: string;
+    patientId: string;
+    amount: number;
+    method: PaymentMethod;
+    paidAt?: string;
+    reference?: string;
+    receivedById?: string;
+    notes?: string;
+}
+
+export interface Claim {
+    id: string;
+    invoiceId: string;
+    patientId: string;
+    payerName: string;
+    status: ClaimStatus;
+    submittedAt?: string;
+    resolvedAt?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    invoice?: {
+        id: string;
+        invoiceNumber: string;
+        status: InvoiceStatus;
+        totalAmount: number;
+    };
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateClaimRequest {
+    invoiceId: string;
+    patientId: string;
+    payerName: string;
+    status?: ClaimStatus;
+    submittedAt?: string;
+    resolvedAt?: string;
+    notes?: string;
+}
+
 export type NeurologyVisitStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export interface NeurologyVisit {

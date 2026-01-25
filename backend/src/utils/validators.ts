@@ -20,6 +20,20 @@ import {
     NephrologyMedicationRoute,
     NephrologyImagingModality,
     NeurologyVisitStatus,
+    EncounterStatus,
+    OrderType,
+    OrderStatus,
+    OrderPriority,
+    ResultStatus,
+    ResultFlag,
+    MedicationOrderStatus,
+    MedicationRoute,
+    MedicationAdministrationStatus,
+    InvoiceStatus,
+    PaymentMethod,
+    ClaimStatus,
+    AdmissionStatus,
+    BedStatus,
 } from '@prisma/client';
 
 // Auth Schemas
@@ -1137,6 +1151,409 @@ export const updateNeurologyVisitSchema = z.object({
     }),
 });
 
+// Encounter Schemas
+export const createEncounterSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        appointmentId: z.string().optional().nullable(),
+        admissionId: z.string().optional().nullable(),
+        status: z.nativeEnum(EncounterStatus).optional(),
+        reasonForVisit: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        startTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start time',
+        }).optional(),
+        endTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end time',
+        }).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateEncounterSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Encounter ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        appointmentId: z.string().optional().nullable(),
+        admissionId: z.string().optional().nullable(),
+        status: z.nativeEnum(EncounterStatus).optional(),
+        reasonForVisit: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        startTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start time',
+        }).optional(),
+        endTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end time',
+        }).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Clinical Order Schemas
+export const createClinicalOrderSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        encounterId: z.string().optional().nullable(),
+        orderType: z.nativeEnum(OrderType),
+        status: z.nativeEnum(OrderStatus).optional(),
+        priority: z.nativeEnum(OrderPriority).optional(),
+        orderedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid order time',
+        }).optional(),
+        orderName: z.string().min(1, 'Order name is required'),
+        description: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateClinicalOrderSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Order ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        encounterId: z.string().optional().nullable(),
+        orderType: z.nativeEnum(OrderType).optional(),
+        status: z.nativeEnum(OrderStatus).optional(),
+        priority: z.nativeEnum(OrderPriority).optional(),
+        orderedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid order time',
+        }).optional(),
+        orderName: z.string().min(1).optional(),
+        description: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Clinical Result Schemas
+export const createClinicalResultSchema = z.object({
+    body: z.object({
+        orderId: z.string().min(1, 'Order ID is required'),
+        patientId: z.string().min(1, 'Patient ID is required'),
+        reportedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid report time',
+        }).optional(),
+        resultName: z.string().min(1, 'Result name is required'),
+        value: z.string().optional().nullable(),
+        unit: z.string().optional().nullable(),
+        referenceRange: z.string().optional().nullable(),
+        status: z.nativeEnum(ResultStatus).optional(),
+        flag: z.nativeEnum(ResultFlag).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateClinicalResultSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Result ID is required'),
+    }),
+    body: z.object({
+        orderId: z.string().min(1).optional(),
+        patientId: z.string().min(1).optional(),
+        reportedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid report time',
+        }).optional(),
+        resultName: z.string().min(1).optional(),
+        value: z.string().optional().nullable(),
+        unit: z.string().optional().nullable(),
+        referenceRange: z.string().optional().nullable(),
+        status: z.nativeEnum(ResultStatus).optional(),
+        flag: z.nativeEnum(ResultFlag).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Medication Schemas
+export const createMedicationOrderSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        encounterId: z.string().optional().nullable(),
+        status: z.nativeEnum(MedicationOrderStatus).optional(),
+        medicationName: z.string().min(1, 'Medication name is required'),
+        dose: z.string().optional().nullable(),
+        route: z.nativeEnum(MedicationRoute).optional(),
+        frequency: z.string().optional().nullable(),
+        startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start date',
+        }).optional(),
+        endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end date',
+        }).optional(),
+        lastAdministeredAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid administration time',
+        }).optional(),
+        indication: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateMedicationOrderSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Medication order ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        encounterId: z.string().optional().nullable(),
+        status: z.nativeEnum(MedicationOrderStatus).optional(),
+        medicationName: z.string().min(1).optional(),
+        dose: z.string().optional().nullable(),
+        route: z.nativeEnum(MedicationRoute).optional(),
+        frequency: z.string().optional().nullable(),
+        startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid start date',
+        }).optional(),
+        endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid end date',
+        }).optional(),
+        lastAdministeredAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid administration time',
+        }).optional(),
+        indication: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createMedicationAdministrationSchema = z.object({
+    body: z.object({
+        medicationOrderId: z.string().min(1, 'Medication order ID is required'),
+        patientId: z.string().min(1, 'Patient ID is required'),
+        administeredById: z.string().optional().nullable(),
+        administeredAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid administration time',
+        }).optional(),
+        doseGiven: z.string().optional().nullable(),
+        status: z.nativeEnum(MedicationAdministrationStatus).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateMedicationAdministrationSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Administration ID is required'),
+    }),
+    body: z.object({
+        medicationOrderId: z.string().min(1).optional(),
+        patientId: z.string().min(1).optional(),
+        administeredById: z.string().optional().nullable(),
+        administeredAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid administration time',
+        }).optional(),
+        doseGiven: z.string().optional().nullable(),
+        status: z.nativeEnum(MedicationAdministrationStatus).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Admissions Schemas
+export const createWardSchema = z.object({
+    body: z.object({
+        name: z.string().min(1, 'Ward name is required'),
+        departmentId: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+    }),
+});
+
+export const updateWardSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Ward ID is required'),
+    }),
+    body: z.object({
+        name: z.string().min(1).optional(),
+        departmentId: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+    }),
+});
+
+export const createBedSchema = z.object({
+    body: z.object({
+        wardId: z.string().min(1, 'Ward ID is required'),
+        roomNumber: z.string().optional().nullable(),
+        bedLabel: z.string().min(1, 'Bed label is required'),
+        status: z.nativeEnum(BedStatus).optional(),
+        isActive: z.boolean().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateBedSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Bed ID is required'),
+    }),
+    body: z.object({
+        wardId: z.string().min(1).optional(),
+        roomNumber: z.string().optional().nullable(),
+        bedLabel: z.string().min(1).optional(),
+        status: z.nativeEnum(BedStatus).optional(),
+        isActive: z.boolean().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createAdmissionSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        wardId: z.string().optional().nullable(),
+        bedId: z.string().optional().nullable(),
+        departmentId: z.string().optional().nullable(),
+        status: z.nativeEnum(AdmissionStatus).optional(),
+        admitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid admit date',
+        }).optional(),
+        dischargeDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid discharge date',
+        }).optional(),
+        reason: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateAdmissionSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Admission ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        wardId: z.string().optional().nullable(),
+        bedId: z.string().optional().nullable(),
+        departmentId: z.string().optional().nullable(),
+        status: z.nativeEnum(AdmissionStatus).optional(),
+        admitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid admit date',
+        }).optional(),
+        dischargeDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid discharge date',
+        }).optional(),
+        reason: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Billing Schemas
+export const createInvoiceSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        encounterId: z.string().optional().nullable(),
+        status: z.nativeEnum(InvoiceStatus).optional(),
+        totalAmount: z.number().optional(),
+        dueDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid due date',
+        }).optional(),
+        notes: z.string().optional().nullable(),
+        items: z.array(z.object({
+            description: z.string().min(1, 'Item description is required'),
+            quantity: z.number().int().min(1).optional(),
+            unitPrice: z.number(),
+        })).optional(),
+    }),
+});
+
+export const updateInvoiceSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Invoice ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        encounterId: z.string().optional().nullable(),
+        status: z.nativeEnum(InvoiceStatus).optional(),
+        totalAmount: z.number().optional(),
+        dueDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid due date',
+        }).optional(),
+        notes: z.string().optional().nullable(),
+        items: z.array(z.object({
+            description: z.string().min(1, 'Item description is required'),
+            quantity: z.number().int().min(1).optional(),
+            unitPrice: z.number(),
+        })).optional(),
+    }),
+});
+
+export const createPaymentSchema = z.object({
+    body: z.object({
+        invoiceId: z.string().min(1, 'Invoice ID is required'),
+        patientId: z.string().min(1, 'Patient ID is required'),
+        amount: z.number().min(0.01, 'Amount is required'),
+        method: z.nativeEnum(PaymentMethod),
+        paidAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid payment date',
+        }).optional(),
+        reference: z.string().optional().nullable(),
+        receivedById: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updatePaymentSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Payment ID is required'),
+    }),
+    body: z.object({
+        invoiceId: z.string().min(1).optional(),
+        patientId: z.string().min(1).optional(),
+        amount: z.number().optional(),
+        method: z.nativeEnum(PaymentMethod).optional(),
+        paidAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid payment date',
+        }).optional(),
+        reference: z.string().optional().nullable(),
+        receivedById: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createClaimSchema = z.object({
+    body: z.object({
+        invoiceId: z.string().min(1, 'Invoice ID is required'),
+        patientId: z.string().min(1, 'Patient ID is required'),
+        payerName: z.string().min(1, 'Payer name is required'),
+        status: z.nativeEnum(ClaimStatus).optional(),
+        submittedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid submitted date',
+        }).optional(),
+        resolvedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid resolved date',
+        }).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateClaimSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Claim ID is required'),
+    }),
+    body: z.object({
+        invoiceId: z.string().min(1).optional(),
+        patientId: z.string().min(1).optional(),
+        payerName: z.string().min(1).optional(),
+        status: z.nativeEnum(ClaimStatus).optional(),
+        submittedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid submitted date',
+        }).optional(),
+        resolvedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid resolved date',
+        }).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type CreatePatientInput = z.infer<typeof createPatientSchema>['body'];
@@ -1187,3 +1604,25 @@ export type CreateNephrologyMedicationInput = z.infer<typeof createNephrologyMed
 export type UpdateNephrologyMedicationInput = z.infer<typeof updateNephrologyMedicationSchema>['body'];
 export type CreateNeurologyVisitInput = z.infer<typeof createNeurologyVisitSchema>['body'];
 export type UpdateNeurologyVisitInput = z.infer<typeof updateNeurologyVisitSchema>['body'];
+export type CreateEncounterInput = z.infer<typeof createEncounterSchema>['body'];
+export type UpdateEncounterInput = z.infer<typeof updateEncounterSchema>['body'];
+export type CreateClinicalOrderInput = z.infer<typeof createClinicalOrderSchema>['body'];
+export type UpdateClinicalOrderInput = z.infer<typeof updateClinicalOrderSchema>['body'];
+export type CreateClinicalResultInput = z.infer<typeof createClinicalResultSchema>['body'];
+export type UpdateClinicalResultInput = z.infer<typeof updateClinicalResultSchema>['body'];
+export type CreateMedicationOrderInput = z.infer<typeof createMedicationOrderSchema>['body'];
+export type UpdateMedicationOrderInput = z.infer<typeof updateMedicationOrderSchema>['body'];
+export type CreateMedicationAdministrationInput = z.infer<typeof createMedicationAdministrationSchema>['body'];
+export type UpdateMedicationAdministrationInput = z.infer<typeof updateMedicationAdministrationSchema>['body'];
+export type CreateWardInput = z.infer<typeof createWardSchema>['body'];
+export type UpdateWardInput = z.infer<typeof updateWardSchema>['body'];
+export type CreateBedInput = z.infer<typeof createBedSchema>['body'];
+export type UpdateBedInput = z.infer<typeof updateBedSchema>['body'];
+export type CreateAdmissionInput = z.infer<typeof createAdmissionSchema>['body'];
+export type UpdateAdmissionInput = z.infer<typeof updateAdmissionSchema>['body'];
+export type CreateInvoiceInput = z.infer<typeof createInvoiceSchema>['body'];
+export type UpdateInvoiceInput = z.infer<typeof updateInvoiceSchema>['body'];
+export type CreatePaymentInput = z.infer<typeof createPaymentSchema>['body'];
+export type UpdatePaymentInput = z.infer<typeof updatePaymentSchema>['body'];
+export type CreateClaimInput = z.infer<typeof createClaimSchema>['body'];
+export type UpdateClaimInput = z.infer<typeof updateClaimSchema>['body'];

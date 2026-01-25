@@ -15,6 +15,20 @@ import {
     NephrologyTestStatus,
     NephrologyVisitStatus,
     NeurologyVisitStatus,
+    AdmissionStatus,
+    BedStatus,
+    EncounterStatus,
+    OrderStatus,
+    OrderType,
+    OrderPriority,
+    ResultStatus,
+    ResultFlag,
+    MedicationOrderStatus,
+    MedicationRoute,
+    MedicationAdministrationStatus,
+    InvoiceStatus,
+    PaymentMethod,
+    ClaimStatus,
     PrismaClient,
     Role,
 } from '@prisma/client';
@@ -1340,6 +1354,220 @@ async function main() {
     });
 
     console.log('Seeded neurology visits');
+
+    const wardGeneral = await prisma.ward.upsert({
+        where: { name: 'General Ward' },
+        update: {},
+        create: {
+            name: 'General Ward',
+            departmentId: department.id,
+            notes: 'General inpatient ward.',
+        },
+    });
+
+    const wardNeuro = await prisma.ward.upsert({
+        where: { name: 'Neuro Ward' },
+        update: {},
+        create: {
+            name: 'Neuro Ward',
+            departmentId: department.id,
+            notes: 'Neurology inpatient ward.',
+        },
+    });
+
+    const bedA1 = await prisma.bed.upsert({
+        where: { id: 'bed-a1' },
+        update: {},
+        create: {
+            id: 'bed-a1',
+            wardId: wardGeneral.id,
+            roomNumber: '101',
+            bedLabel: 'A1',
+            status: BedStatus.OCCUPIED,
+        },
+    });
+
+    const bedN1 = await prisma.bed.upsert({
+        where: { id: 'bed-n1' },
+        update: {},
+        create: {
+            id: 'bed-n1',
+            wardId: wardNeuro.id,
+            roomNumber: '201',
+            bedLabel: 'N1',
+            status: BedStatus.AVAILABLE,
+        },
+    });
+
+    const admissionOne = await prisma.admission.upsert({
+        where: { id: 'admission-1' },
+        update: {},
+        create: {
+            id: 'admission-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            wardId: wardGeneral.id,
+            bedId: bedA1.id,
+            departmentId: department.id,
+            status: AdmissionStatus.ADMITTED,
+            admitDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            reason: 'Observation for headache',
+            diagnosis: 'Migraine',
+            notes: 'Monitor neuro status overnight.',
+        },
+    });
+
+    console.log('Seeded wards, beds, and admissions');
+
+    const encounterOne = await prisma.encounter.upsert({
+        where: { id: 'encounter-1' },
+        update: {},
+        create: {
+            id: 'encounter-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            createdById: doctor.id,
+            admissionId: admissionOne.id,
+            status: EncounterStatus.IN_PROGRESS,
+            reasonForVisit: 'Headache evaluation',
+            diagnosis: 'Migraine',
+            assessment: 'Likely migraine without red flags.',
+            plan: 'Analgesia and follow-up in clinic.',
+            startTime: new Date(Date.now() - 6 * 60 * 60 * 1000),
+        },
+    });
+
+    const orderOne = await prisma.clinicalOrder.upsert({
+        where: { id: 'order-1' },
+        update: {},
+        create: {
+            id: 'order-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            encounterId: encounterOne.id,
+            orderType: OrderType.LAB,
+            status: OrderStatus.COMPLETED,
+            priority: OrderPriority.ROUTINE,
+            orderedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+            orderName: 'CBC',
+            description: 'Complete blood count',
+            notes: 'Baseline labs.',
+        },
+    });
+
+    await prisma.clinicalResult.upsert({
+        where: { id: 'result-1' },
+        update: {},
+        create: {
+            id: 'result-1',
+            orderId: orderOne.id,
+            patientId: patientOne.id,
+            reportedAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
+            resultName: 'WBC',
+            value: '7.2',
+            unit: 'x10^3/uL',
+            referenceRange: '4.0-10.0',
+            status: ResultStatus.FINAL,
+            flag: ResultFlag.NORMAL,
+            notes: 'Within normal range.',
+        },
+    });
+
+    const medOrder = await prisma.medicationOrder.upsert({
+        where: { id: 'med-order-1' },
+        update: {},
+        create: {
+            id: 'med-order-1',
+            patientId: patientOne.id,
+            providerId: doctor.id,
+            encounterId: encounterOne.id,
+            status: MedicationOrderStatus.ACTIVE,
+            medicationName: 'Sumatriptan',
+            dose: '50 mg',
+            route: MedicationRoute.PO,
+            frequency: 'Once',
+            startDate: new Date(),
+            indication: 'Migraine abortive',
+        },
+    });
+
+    await prisma.medicationAdministration.upsert({
+        where: { id: 'med-admin-1' },
+        update: {},
+        create: {
+            id: 'med-admin-1',
+            medicationOrderId: medOrder.id,
+            patientId: patientOne.id,
+            administeredById: nurse.id,
+            administeredAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+            doseGiven: '50 mg',
+            status: MedicationAdministrationStatus.GIVEN,
+            notes: 'Patient tolerated dose.',
+        },
+    });
+
+    const invoiceOne = await prisma.invoice.upsert({
+        where: { id: 'invoice-1' },
+        update: {},
+        create: {
+            id: 'invoice-1',
+            invoiceNumber: 'INV-0001',
+            patientId: patientOne.id,
+            encounterId: encounterOne.id,
+            status: InvoiceStatus.ISSUED,
+            totalAmount: 320,
+            dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+            notes: 'Observation stay charges.',
+            createdById: receptionist.id,
+            items: {
+                create: [
+                    {
+                        description: 'Observation bed',
+                        quantity: 1,
+                        unitPrice: 200,
+                        totalPrice: 200,
+                    },
+                    {
+                        description: 'Lab panel',
+                        quantity: 1,
+                        unitPrice: 120,
+                        totalPrice: 120,
+                    },
+                ],
+            },
+        },
+    });
+
+    await prisma.payment.upsert({
+        where: { id: 'payment-1' },
+        update: {},
+        create: {
+            id: 'payment-1',
+            invoiceId: invoiceOne.id,
+            patientId: patientOne.id,
+            amount: 120,
+            method: PaymentMethod.CARD,
+            paidAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+            reference: 'AUTH-12345',
+            receivedById: receptionist.id,
+        },
+    });
+
+    await prisma.claim.upsert({
+        where: { id: 'claim-1' },
+        update: {},
+        create: {
+            id: 'claim-1',
+            invoiceId: invoiceOne.id,
+            patientId: patientOne.id,
+            payerName: 'Blue Shield',
+            status: ClaimStatus.SUBMITTED,
+            submittedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+            notes: 'Submitted via clearinghouse.',
+        },
+    });
+
+    console.log('Seeded encounters, orders, pharmacy, and billing');
 
     console.log('🎉 Database seed completed!');
 }
