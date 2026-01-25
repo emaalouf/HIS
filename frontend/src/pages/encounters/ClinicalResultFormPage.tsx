@@ -107,7 +107,7 @@ export function ClinicalResultFormPage() {
             setPatientInput(result.patientId);
         }
         if (result.order) {
-            setOrderInput(`${result.order.orderName} · ${result.order.orderType}`);
+            setOrderInput(`${result.order.orderName} - ${result.order.orderType}`);
         } else {
             setOrderInput(result.orderId);
         }
@@ -185,7 +185,7 @@ export function ClinicalResultFormPage() {
     const orderOptions: SelectOption[] = orders.map((order) => ({
         id: order.id,
         label: order.orderName,
-        subLabel: `${order.orderType} · ${order.patient ? `${order.patient.firstName} ${order.patient.lastName}` : order.patientId}`,
+        subLabel: `${order.orderType} - ${order.patient ? `${order.patient.firstName} ${order.patient.lastName}` : order.patientId}`,
     }));
 
     if (isEditMode && isLoading) {

@@ -8,6 +8,7 @@ import {
     X,
     Activity,
     CalendarClock,
+    ClipboardCheck,
     Stethoscope,
     Shield,
     Key,
@@ -16,6 +17,9 @@ import {
     HeartPulse,
     Filter,
     Brain,
+    Pill,
+    Receipt,
+    BedDouble,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
@@ -23,6 +27,10 @@ import { cn } from '../../lib/utils';
 const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'Appointments', href: '/appointments', icon: CalendarClock },
+    { name: 'Encounters', href: '/encounters', icon: ClipboardCheck },
+    { name: 'Admissions', href: '/admissions', icon: BedDouble },
+    { name: 'Pharmacy', href: '/pharmacy', icon: Pill },
+    { name: 'Billing', href: '/billing', icon: Receipt },
     { name: 'Dialysis', href: '/dialysis', icon: Droplet },
     { name: 'Cardiology', href: '/cardiology', icon: HeartPulse },
     { name: 'Nephrology', href: '/nephrology', icon: Filter },

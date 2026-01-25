@@ -158,7 +158,7 @@ export function MedicationOrderFormPage() {
             setProviderInput(order.providerId);
         }
         if (order.encounter) {
-            setEncounterInput(`${formatDateTime(order.encounter.startTime)} · ${order.encounter.id}`);
+            setEncounterInput(`${formatDateTime(order.encounter.startTime)} - ${order.encounter.id}`);
         } else if (order.encounterId) {
             setEncounterInput(order.encounterId);
         }
@@ -240,7 +240,7 @@ export function MedicationOrderFormPage() {
         label: encounter.patient
             ? `${encounter.patient.firstName} ${encounter.patient.lastName}`
             : encounter.patientId,
-        subLabel: `${formatDateTime(encounter.startTime)} · ${encounter.status}`,
+        subLabel: `${formatDateTime(encounter.startTime)} - ${encounter.status}`,
     }));
 
     if (isEditMode && isLoading) {

@@ -1,62 +1,39 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { clinicalOrderService } from '../../services/clinical-order.service';
-import { encounterService } from '../../services/encounter.service';
+import { admissionService } from '../../services/admission.service';
+import { wardService } from '../../services/ward.service';
+import { bedService } from '../../services/bed.service';
 import { providerService } from '../../services/provider.service';
 import { patientService } from '../../services/patient.service';
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, SearchableSelect } from '../../components/ui';
 import { ArrowLeft, Save } from 'lucide-react';
-import type {
-    CreateClinicalOrderRequest,
-    OrderPriority,
-    OrderStatus,
-    OrderType,
-} from '../../types';
+import type { AdmissionStatus, CreateAdmissionRequest } from '../../types';
 import type { SelectOption } from '../../components/ui/SearchableSelect';
-import { formatDateTime } from '../../lib/utils';
-import { ClinicalNav } from './ClinicalNav';
+import { AdmissionsNav } from './AdmissionsNav';
 
-const statusOptions: OrderStatus[] = [
-    'ORDERED',
-    'IN_PROGRESS',
-    'COMPLETED',
+const statusOptions: AdmissionStatus[] = [
+    'ADMITTED',
+    'TRANSFERRED',
+    'DISCHARGED',
     'CANCELLED',
 ];
 
-const typeOptions: OrderType[] = [
-    'LAB',
-    'IMAGING',
-    'MEDICATION',
-    'PROCEDURE',
-    'OTHER',
-];
-
-const priorityOptions: OrderPriority[] = [
-    'ROUTINE',
-    'URGENT',
-    'STAT',
-];
-
-const formatDateTimeLocal = (value: Date) => {
-    const local = new Date(value.getTime() - value.getTimezoneOffset() * 60000);
-    return local.toISOString().slice(0, 16);
-};
-
-type ClinicalOrderFormState = {
+type AdmissionFormState = {
     patientId: string;
     providerId: string;
-    encounterId: string;
-    orderType: OrderType;
-    status: OrderStatus;
-    priority: OrderPriority;
-    orderedAt: string;
-    orderName: string;
-    description: string;
+    wardId: string;
+    bedId: string;
+    departmentId: string;
+    status: AdmissionStatus;
+    admitDate: string;
+    dischargeDate: string;
+    reason: string;
+    diagnosis: string;
     notes: string;
 };
 
-export function ClinicalOrderFormPage() {
+export function AdmissionFormPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -64,35 +41,38 @@ export function ClinicalOrderFormPage() {
     const isEditMode = Boolean(id);
     const [patientInput, setPatientInput] = useState('');
     const [providerInput, setProviderInput] = useState('');
-    const [encounterInput, setEncounterInput] = useState('');
+    const [wardInput, setWardInput] = useState('');
+    const [bedInput, setBedInput] = useState('');
 
-    const defaultOrderedAt = useMemo(() => formatDateTimeLocal(new Date()), []);
+    const defaultAdmitDate = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
-    const [formData, setFormData] = useState<ClinicalOrderFormState>({
+    const [formData, setFormData] = useState<AdmissionFormState>({
         patientId: '',
         providerId: '',
-        encounterId: '',
-        orderType: 'LAB',
-        status: 'ORDERED',
-        priority: 'ROUTINE',
-        orderedAt: defaultOrderedAt,
-        orderName: '',
-        description: '',
+        wardId: '',
+        bedId: '',
+        departmentId: '',
+        status: 'ADMITTED',
+        admitDate: defaultAdmitDate,
+        dischargeDate: '',
+        reason: '',
+        diagnosis: '',
         notes: '',
     });
 
-    const { data: order, isLoading } = useQuery({
-        queryKey: ['clinical-order', id],
-        queryFn: () => clinicalOrderService.getOrder(id!),
+    const { data: admission, isLoading } = useQuery({
+        queryKey: ['admission', id],
+        queryFn: () => admissionService.getAdmission(id!),
         enabled: isEditMode,
     });
 
     const patientSearch = patientInput.trim();
     const providerSearch = providerInput.trim();
-    const encounterSearch = encounterInput.trim();
+    const wardSearch = wardInput.trim();
+    const bedSearch = bedInput.trim();
 
     const { data: patientsData, isLoading: isPatientsLoading } = useQuery({
-        queryKey: ['patients', 'clinical-order-picker', patientSearch],
+        queryKey: ['patients', 'admission-picker', patientSearch],
         queryFn: () =>
             patientService.getPatients({
                 page: 1,
@@ -104,7 +84,7 @@ export function ClinicalOrderFormPage() {
     });
 
     const { data: providersData, isLoading: isProvidersLoading } = useQuery({
-        queryKey: ['providers', 'clinical-order-picker', providerSearch],
+        queryKey: ['providers', 'admission-picker', providerSearch],
         queryFn: () =>
             providerService.getProviders({
                 page: 1,
@@ -115,53 +95,70 @@ export function ClinicalOrderFormPage() {
             }),
     });
 
-    const { data: encountersData, isLoading: isEncountersLoading } = useQuery({
-        queryKey: ['encounters', 'clinical-order-picker', encounterSearch],
+    const { data: wardsData, isLoading: isWardsLoading } = useQuery({
+        queryKey: ['wards', 'admission-picker', wardSearch],
         queryFn: () =>
-            encounterService.getEncounters({
+            wardService.getWards({
                 page: 1,
                 limit: 10,
-                search: encounterSearch || undefined,
+                search: wardSearch || undefined,
+            }),
+    });
+
+    const { data: bedsData, isLoading: isBedsLoading } = useQuery({
+        queryKey: ['beds', 'admission-picker', bedSearch, formData.wardId],
+        queryFn: () =>
+            bedService.getBeds({
+                page: 1,
+                limit: 10,
+                search: bedSearch || undefined,
+                wardId: formData.wardId || undefined,
             }),
     });
 
     useEffect(() => {
-        if (!order) return;
+        if (!admission) return;
         setFormData({
-            patientId: order.patientId,
-            providerId: order.providerId,
-            encounterId: order.encounterId || '',
-            orderType: order.orderType,
-            status: order.status,
-            priority: order.priority,
-            orderedAt: formatDateTimeLocal(new Date(order.orderedAt)),
-            orderName: order.orderName,
-            description: order.description || '',
-            notes: order.notes || '',
+            patientId: admission.patientId,
+            providerId: admission.providerId,
+            wardId: admission.wardId || '',
+            bedId: admission.bedId || '',
+            departmentId: admission.departmentId || '',
+            status: admission.status,
+            admitDate: admission.admitDate.slice(0, 10),
+            dischargeDate: admission.dischargeDate ? admission.dischargeDate.slice(0, 10) : '',
+            reason: admission.reason || '',
+            diagnosis: admission.diagnosis || '',
+            notes: admission.notes || '',
         });
-        if (order.patient) {
-            setPatientInput(`${order.patient.firstName} ${order.patient.lastName}`);
+        if (admission.patient) {
+            setPatientInput(`${admission.patient.firstName} ${admission.patient.lastName}`);
         } else {
-            setPatientInput(order.patientId);
+            setPatientInput(admission.patientId);
         }
-        if (order.provider) {
-            const prefix = order.provider.role === 'DOCTOR' ? 'Dr. ' : '';
-            setProviderInput(`${prefix}${order.provider.firstName} ${order.provider.lastName}`);
+        if (admission.provider) {
+            const prefix = admission.provider.role === 'DOCTOR' ? 'Dr. ' : '';
+            setProviderInput(`${prefix}${admission.provider.firstName} ${admission.provider.lastName}`);
         } else {
-            setProviderInput(order.providerId);
+            setProviderInput(admission.providerId);
         }
-        if (order.encounter) {
-            setEncounterInput(`${formatDateTime(order.encounter.startTime)} - ${order.encounter.id}`);
-        } else if (order.encounterId) {
-            setEncounterInput(order.encounterId);
+        if (admission.ward) {
+            setWardInput(admission.ward.name);
+        } else if (admission.wardId) {
+            setWardInput(admission.wardId);
         }
-    }, [order]);
+        if (admission.bed) {
+            setBedInput(admission.bed.bedLabel);
+        } else if (admission.bedId) {
+            setBedInput(admission.bedId);
+        }
+    }, [admission]);
 
     const createMutation = useMutation({
-        mutationFn: (payload: CreateClinicalOrderRequest) => clinicalOrderService.createOrder(payload),
+        mutationFn: (payload: CreateAdmissionRequest) => admissionService.createAdmission(payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['clinical-orders'] });
-            navigate('/clinical-orders');
+            queryClient.invalidateQueries({ queryKey: ['admissions'] });
+            navigate('/admissions');
         },
         onError: (err: Error) => {
             setError(err.message);
@@ -169,11 +166,11 @@ export function ClinicalOrderFormPage() {
     });
 
     const updateMutation = useMutation({
-        mutationFn: (payload: CreateClinicalOrderRequest) => clinicalOrderService.updateOrder(id!, payload),
+        mutationFn: (payload: CreateAdmissionRequest) => admissionService.updateAdmission(id!, payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['clinical-orders'] });
-            queryClient.invalidateQueries({ queryKey: ['clinical-order', id] });
-            navigate('/clinical-orders');
+            queryClient.invalidateQueries({ queryKey: ['admissions'] });
+            queryClient.invalidateQueries({ queryKey: ['admission', id] });
+            navigate('/admissions');
         },
         onError: (err: Error) => {
             setError(err.message);
@@ -192,21 +189,22 @@ export function ClinicalOrderFormPage() {
             setError('Please select a provider.');
             return;
         }
-        if (!formData.orderName.trim()) {
-            setError('Please provide an order name.');
+        if (!formData.admitDate) {
+            setError('Please provide an admit date.');
             return;
         }
 
-        const payload: CreateClinicalOrderRequest = {
+        const payload: CreateAdmissionRequest = {
             patientId: formData.patientId,
             providerId: formData.providerId,
-            encounterId: formData.encounterId || undefined,
-            orderType: formData.orderType,
+            wardId: formData.wardId || undefined,
+            bedId: formData.bedId || undefined,
+            departmentId: formData.departmentId || undefined,
             status: formData.status,
-            priority: formData.priority,
-            orderedAt: formData.orderedAt || undefined,
-            orderName: formData.orderName.trim(),
-            description: formData.description || undefined,
+            admitDate: formData.admitDate,
+            dischargeDate: formData.dischargeDate || undefined,
+            reason: formData.reason || undefined,
+            diagnosis: formData.diagnosis || undefined,
             notes: formData.notes || undefined,
         };
 
@@ -229,12 +227,18 @@ export function ClinicalOrderFormPage() {
         subLabel: provider.role,
     }));
 
-    const encounterOptions: SelectOption[] = (encountersData?.encounters || []).map((encounter) => ({
-        id: encounter.id,
-        label: encounter.patient
-            ? `${encounter.patient.firstName} ${encounter.patient.lastName}`
-            : encounter.patientId,
-        subLabel: `${formatDateTime(encounter.startTime)} - ${encounter.status}`,
+    const wardOptions: SelectOption[] = (wardsData?.wards || []).map((ward) => ({
+        id: ward.id,
+        label: ward.name,
+        subLabel: ward.department?.name || ward.departmentId || undefined,
+    }));
+
+    const beds = bedsData?.beds || [];
+    const bedsById = new Map(beds.map((bed) => [bed.id, bed]));
+    const bedOptions: SelectOption[] = beds.map((bed) => ({
+        id: bed.id,
+        label: bed.bedLabel,
+        subLabel: bed.roomNumber ? `Room ${bed.roomNumber}` : undefined,
     }));
 
     if (isEditMode && isLoading) {
@@ -245,12 +249,12 @@ export function ClinicalOrderFormPage() {
         );
     }
 
-    if (isEditMode && !order) {
+    if (isEditMode && !admission) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-500">Order not found</p>
-                <Link to="/clinical-orders" className="text-blue-600 hover:underline mt-2 inline-block">
-                    Back to orders
+                <p className="text-gray-500">Admission not found</p>
+                <Link to="/admissions" className="text-blue-600 hover:underline mt-2 inline-block">
+                    Back to admissions
                 </Link>
             </div>
         );
@@ -261,18 +265,18 @@ export function ClinicalOrderFormPage() {
     return (
         <div className="w-full max-w-5xl mx-auto space-y-6 lg:pl-0">
             <div className="flex items-center gap-4 pt-2 lg:pt-0">
-                <Link to="/clinical-orders">
+                <Link to="/admissions">
                     <Button variant="ghost" size="sm">
                         <ArrowLeft size={18} className="mr-2" />
                         Back
                     </Button>
                 </Link>
                 <h1 className="text-3xl font-bold text-gray-900">
-                    {isEditMode ? 'Edit Clinical Order' : 'New Clinical Order'}
+                    {isEditMode ? 'Edit Admission' : 'New Admission'}
                 </h1>
             </div>
 
-            <ClinicalNav />
+            <AdmissionsNav />
 
             {error && (
                 <Card className="border-red-200 bg-red-50">
@@ -285,7 +289,7 @@ export function ClinicalOrderFormPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Order Details</CardTitle>
+                        <CardTitle>Admission Details</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -304,7 +308,7 @@ export function ClinicalOrderFormPage() {
                                 }}
                             />
                             <SearchableSelect
-                                label="Ordering Provider"
+                                label="Admitting Provider"
                                 value={providerInput}
                                 required
                                 options={providerOptions}
@@ -319,27 +323,25 @@ export function ClinicalOrderFormPage() {
                             />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="w-full">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Order Type</label>
-                                <select
-                                    className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                                    value={formData.orderType}
-                                    onChange={(e) =>
-                                        setFormData((prev) => ({ ...prev, orderType: e.target.value as OrderType }))
-                                    }
-                                >
-                                    {typeOptions.map((option) => (
-                                        <option key={option} value={option}>{option}</option>
-                                    ))}
-                                </select>
-                            </div>
+                            <Input
+                                label="Admit Date"
+                                type="date"
+                                value={formData.admitDate}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, admitDate: e.target.value }))}
+                            />
+                            <Input
+                                label="Discharge Date"
+                                type="date"
+                                value={formData.dischargeDate}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, dischargeDate: e.target.value }))}
+                            />
                             <div className="w-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                                 <select
                                     className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
                                     value={formData.status}
                                     onChange={(e) =>
-                                        setFormData((prev) => ({ ...prev, status: e.target.value as OrderStatus }))
+                                        setFormData((prev) => ({ ...prev, status: e.target.value as AdmissionStatus }))
                                     }
                                 >
                                     {statusOptions.map((option) => (
@@ -347,54 +349,61 @@ export function ClinicalOrderFormPage() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="w-full">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                                <select
-                                    className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                                    value={formData.priority}
-                                    onChange={(e) =>
-                                        setFormData((prev) => ({ ...prev, priority: e.target.value as OrderPriority }))
-                                    }
-                                >
-                                    {priorityOptions.map((option) => (
-                                        <option key={option} value={option}>{option}</option>
-                                    ))}
-                                </select>
-                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Input
-                                label="Ordered At"
-                                type="datetime-local"
-                                value={formData.orderedAt}
-                                onChange={(e) => setFormData((prev) => ({ ...prev, orderedAt: e.target.value }))}
+                            <SearchableSelect
+                                label="Ward (optional)"
+                                value={wardInput}
+                                options={wardOptions}
+                                selectedId={formData.wardId}
+                                isLoading={isWardsLoading}
+                                placeholder="Search wards"
+                                onInputChange={setWardInput}
+                                onSelect={(option) => {
+                                    setFormData((prev) => ({ ...prev, wardId: option.id, bedId: '' }));
+                                    setWardInput(option.label);
+                                    setBedInput('');
+                                }}
                             />
                             <SearchableSelect
-                                label="Encounter (optional)"
-                                value={encounterInput}
-                                options={encounterOptions}
-                                selectedId={formData.encounterId}
-                                isLoading={isEncountersLoading}
-                                placeholder="Search encounters"
-                                onInputChange={setEncounterInput}
+                                label="Bed (optional)"
+                                value={bedInput}
+                                options={bedOptions}
+                                selectedId={formData.bedId}
+                                isLoading={isBedsLoading}
+                                placeholder="Search beds"
+                                onInputChange={setBedInput}
                                 onSelect={(option) => {
-                                    setFormData((prev) => ({ ...prev, encounterId: option.id }));
-                                    setEncounterInput(option.label);
+                                    const selectedBed = bedsById.get(option.id);
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        bedId: option.id,
+                                        wardId: prev.wardId || selectedBed?.wardId || '',
+                                    }));
+                                    setBedInput(option.label);
+                                    if (!formData.wardId && selectedBed?.ward) {
+                                        setWardInput(selectedBed.ward.name);
+                                    }
                                 }}
                             />
                         </div>
                         <Input
-                            label="Order Name"
-                            value={formData.orderName}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, orderName: e.target.value }))}
-                            placeholder="e.g., CMP, CT Head"
-                            required
+                            label="Department ID"
+                            value={formData.departmentId}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, departmentId: e.target.value }))}
+                            placeholder="Optional department ID"
                         />
                         <Input
-                            label="Description"
-                            value={formData.description}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                            placeholder="Optional clinical details"
+                            label="Reason for Admission"
+                            value={formData.reason}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, reason: e.target.value }))}
+                            placeholder="Optional"
+                        />
+                        <Input
+                            label="Diagnosis"
+                            value={formData.diagnosis}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, diagnosis: e.target.value }))}
+                            placeholder="Optional"
                         />
                     </CardContent>
                 </Card>
@@ -417,7 +426,7 @@ export function ClinicalOrderFormPage() {
                 <div className="flex justify-end">
                     <Button type="submit" size="lg" isLoading={isSaving}>
                         <Save size={18} className="mr-2" />
-                        {isEditMode ? 'Update Order' : 'Save Order'}
+                        {isEditMode ? 'Update Admission' : 'Save Admission'}
                     </Button>
                 </div>
             </form>

@@ -135,7 +135,7 @@ export function ClinicalResultsPage() {
                 {(patientIdParam || orderIdParam) && (
                     <p className="mt-3 text-sm text-indigo-600">
                         {patientIdParam && `Filtered by patient ID: ${patientIdParam}`}
-                        {patientIdParam && orderIdParam ? ' • ' : ''}
+                        {patientIdParam && orderIdParam ? ' | ' : ''}
                         {orderIdParam && `Order ID: ${orderIdParam}`}
                     </p>
                 )}
@@ -185,7 +185,7 @@ export function ClinicalResultsPage() {
                                             <div className="font-medium text-gray-900">{result.resultName}</div>
                                             <div className="text-xs text-gray-500">
                                                 {result.value ? `${result.value}${result.unit ? ` ${result.unit}` : ''}` : '--'}
-                                                {result.referenceRange ? ` · ${result.referenceRange}` : ''}
+                                                {result.referenceRange ? ` - ${result.referenceRange}` : ''}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-700">

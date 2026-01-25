@@ -6,6 +6,28 @@ import { PatientListPage } from './pages/patients/PatientListPage';
 import { PatientDetailPage } from './pages/patients/PatientDetailPage';
 import { PatientFormPage } from './pages/patients/PatientFormPage';
 import { AppointmentListPage } from './pages/appointments/AppointmentListPage';
+import { EncounterListPage } from './pages/encounters/EncounterListPage';
+import { EncounterFormPage } from './pages/encounters/EncounterFormPage';
+import { ClinicalOrdersPage } from './pages/encounters/ClinicalOrdersPage';
+import { ClinicalOrderFormPage } from './pages/encounters/ClinicalOrderFormPage';
+import { ClinicalResultsPage } from './pages/encounters/ClinicalResultsPage';
+import { ClinicalResultFormPage } from './pages/encounters/ClinicalResultFormPage';
+import { MedicationOrdersPage } from './pages/pharmacy/MedicationOrdersPage';
+import { MedicationOrderFormPage } from './pages/pharmacy/MedicationOrderFormPage';
+import { MedicationAdministrationsPage } from './pages/pharmacy/MedicationAdministrationsPage';
+import { MedicationAdministrationFormPage } from './pages/pharmacy/MedicationAdministrationFormPage';
+import { AdmissionsListPage } from './pages/admissions/AdmissionsListPage';
+import { AdmissionFormPage } from './pages/admissions/AdmissionFormPage';
+import { WardsListPage } from './pages/admissions/WardsListPage';
+import { WardFormPage } from './pages/admissions/WardFormPage';
+import { BedsListPage } from './pages/admissions/BedsListPage';
+import { BedFormPage } from './pages/admissions/BedFormPage';
+import { InvoicesPage } from './pages/billing/InvoicesPage';
+import { InvoiceFormPage } from './pages/billing/InvoiceFormPage';
+import { PaymentsPage } from './pages/billing/PaymentsPage';
+import { PaymentFormPage } from './pages/billing/PaymentFormPage';
+import { ClaimsPage } from './pages/billing/ClaimsPage';
+import { ClaimFormPage } from './pages/billing/ClaimFormPage';
 import { ProviderListPage } from './pages/providers/ProviderListPage';
 import { ProviderFormPage } from './pages/providers/ProviderFormPage';
 import { RoleListPage } from './pages/roles/RoleListPage';
@@ -68,6 +90,41 @@ function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/appointments" element={<AppointmentListPage />} />
+        <Route path="/encounters" element={<EncounterListPage />} />
+        <Route path="/encounters/new" element={<EncounterFormPage />} />
+        <Route path="/encounters/:id/edit" element={<EncounterFormPage />} />
+        <Route path="/clinical-orders" element={<ClinicalOrdersPage />} />
+        <Route path="/clinical-orders/new" element={<ClinicalOrderFormPage />} />
+        <Route path="/clinical-orders/:id/edit" element={<ClinicalOrderFormPage />} />
+        <Route path="/clinical-results" element={<ClinicalResultsPage />} />
+        <Route path="/clinical-results/new" element={<ClinicalResultFormPage />} />
+        <Route path="/clinical-results/:id/edit" element={<ClinicalResultFormPage />} />
+        <Route path="/pharmacy" element={<MedicationOrdersPage />} />
+        <Route path="/pharmacy/medication-orders" element={<MedicationOrdersPage />} />
+        <Route path="/pharmacy/medication-orders/new" element={<MedicationOrderFormPage />} />
+        <Route path="/pharmacy/medication-orders/:id/edit" element={<MedicationOrderFormPage />} />
+        <Route path="/pharmacy/administrations" element={<MedicationAdministrationsPage />} />
+        <Route path="/pharmacy/administrations/new" element={<MedicationAdministrationFormPage />} />
+        <Route path="/pharmacy/administrations/:id/edit" element={<MedicationAdministrationFormPage />} />
+        <Route path="/admissions" element={<AdmissionsListPage />} />
+        <Route path="/admissions/new" element={<AdmissionFormPage />} />
+        <Route path="/admissions/:id/edit" element={<AdmissionFormPage />} />
+        <Route path="/admissions/wards" element={<WardsListPage />} />
+        <Route path="/admissions/wards/new" element={<WardFormPage />} />
+        <Route path="/admissions/wards/:id/edit" element={<WardFormPage />} />
+        <Route path="/admissions/beds" element={<BedsListPage />} />
+        <Route path="/admissions/beds/new" element={<BedFormPage />} />
+        <Route path="/admissions/beds/:id/edit" element={<BedFormPage />} />
+        <Route path="/billing" element={<InvoicesPage />} />
+        <Route path="/billing/invoices" element={<InvoicesPage />} />
+        <Route path="/billing/invoices/new" element={<InvoiceFormPage />} />
+        <Route path="/billing/invoices/:id/edit" element={<InvoiceFormPage />} />
+        <Route path="/billing/payments" element={<PaymentsPage />} />
+        <Route path="/billing/payments/new" element={<PaymentFormPage />} />
+        <Route path="/billing/payments/:id/edit" element={<PaymentFormPage />} />
+        <Route path="/billing/claims" element={<ClaimsPage />} />
+        <Route path="/billing/claims/new" element={<ClaimFormPage />} />
+        <Route path="/billing/claims/:id/edit" element={<ClaimFormPage />} />
         <Route path="/dialysis" element={<DialysisListPage />} />
         <Route path="/dialysis/new" element={<DialysisFormPage />} />
         <Route path="/dialysis/:id/edit" element={<DialysisFormPage />} />
