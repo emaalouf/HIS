@@ -69,6 +69,10 @@ import { CardiologyMedicationsPage } from './pages/cardiology/CardiologyMedicati
 import { CardiologyMedicationFormPage } from './pages/cardiology/CardiologyMedicationFormPage';
 import { CardiologyLabsPage } from './pages/cardiology/CardiologyLabsPage';
 import { CardiologyLabFormPage } from './pages/cardiology/CardiologyLabFormPage';
+import { CardiologyElectrophysiologyPage } from './pages/cardiology/CardiologyElectrophysiologyPage';
+import { CardiologyElectrophysiologyFormPage } from './pages/cardiology/CardiologyElectrophysiologyFormPage';
+import { CardiologyHeartFailurePage } from './pages/cardiology/CardiologyHeartFailurePage';
+import { CardiologyHeartFailureFormPage } from './pages/cardiology/CardiologyHeartFailureFormPage';
 import { CardiologyReportsPage } from './pages/cardiology/CardiologyReportsPage';
 import { NephrologyListPage } from './pages/nephrology/NephrologyListPage';
 import { NephrologyFormPage } from './pages/nephrology/NephrologyFormPage';
@@ -169,11 +173,17 @@ function App() {
         <Route path="/cardiology/devices/:id/edit" element={<CardiologyDeviceFormPage />} />
         <Route path="/cardiology/medications" element={<CardiologyMedicationsPage />} />
         <Route path="/cardiology/medications/new" element={<CardiologyMedicationFormPage />} />
-        <Route path="/cardiology/medications/:id/edit" element={<CardiologyMedicationFormPage />} />
-        <Route path="/cardiology/labs" element={<CardiologyLabsPage />} />
-        <Route path="/cardiology/labs/new" element={<CardiologyLabFormPage />} />
-        <Route path="/cardiology/labs/:id/edit" element={<CardiologyLabFormPage />} />
-        <Route path="/cardiology/reports" element={<CardiologyReportsPage />} />
+<Route path="/cardiology/medications/:id/edit" element={<CardiologyMedicationFormPage />} />
+<Route path="/cardiology/labs" element={<CardiologyLabsPage />} />
+<Route path="/cardiology/labs/new" element={<CardiologyLabFormPage />} />
+<Route path="/cardiology/labs/:id/edit" element={<CardiologyLabFormPage />} />
+<Route path="/cardiology/electrophysiology" element={<CardiologyElectrophysiologyPage />} />
+<Route path="/cardiology/electrophysiology/new" element={<CardiologyElectrophysiologyFormPage />} />
+<Route path="/cardiology/electrophysiology/:id/edit" element={<CardiologyElectrophysiologyFormPage />} />
+<Route path="/cardiology/heart-failure" element={<CardiologyHeartFailurePage />} />
+<Route path="/cardiology/heart-failure/new" element={<CardiologyHeartFailureFormPage />} />
+<Route path="/cardiology/heart-failure/:id/edit" element={<CardiologyHeartFailureFormPage />} />
+<Route path="/cardiology/reports" element={<CardiologyReportsPage />} />
         <Route path="/nephrology" element={<NephrologyListPage />} />
         <Route path="/nephrology/new" element={<NephrologyFormPage />} />
         <Route path="/nephrology/:id/edit" element={<NephrologyFormPage />} />

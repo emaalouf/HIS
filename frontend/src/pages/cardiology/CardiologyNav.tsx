@@ -8,6 +8,8 @@ const navItems = [
     { name: 'Stress Tests', href: '/cardiology/stress-tests' },
     { name: 'Procedures', href: '/cardiology/procedures' },
     { name: 'Devices', href: '/cardiology/devices' },
+    { name: 'Electrophysiology', href: '/cardiology/electrophysiology' },
+    { name: 'Heart Failure', href: '/cardiology/heart-failure' },
     { name: 'Medications', href: '/cardiology/medications' },
     { name: 'Labs', href: '/cardiology/labs' },
     { name: 'Reports', href: '/cardiology/reports' },

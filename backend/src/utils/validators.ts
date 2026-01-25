@@ -13,6 +13,9 @@ import {
     CardiologyProcedureStatus,
     CardiologyDeviceStatus,
     CardiologyMedicationRoute,
+    ElectrophysiologyProcedureType,
+    NYHAClass,
+    HeartFailureStage,
     CkdStage,
     NephrologyVisitStatus,
     NephrologyTestStatus,
@@ -898,6 +901,138 @@ export const updateCardiologyLabSchema = z.object({
     }),
 });
 
+export const createCardiologyElectrophysiologySchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }),
+        procedureType: z.nativeEnum(ElectrophysiologyProcedureType),
+        indication: z.string().optional().nullable(),
+        arrhythmiaType: z.string().optional().nullable(),
+        deviceType: z.string().optional().nullable(),
+        manufacturer: z.string().optional().nullable(),
+        model: z.string().optional().nullable(),
+        serialNumber: z.string().optional().nullable(),
+        implantDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid implant date',
+        }).optional().nullable(),
+        ablationTarget: z.string().optional().nullable(),
+        fluoroscopyTime: z.number().optional(),
+        complications: z.string().optional().nullable(),
+        outcome: z.string().optional().nullable(),
+        followUpDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid follow-up date',
+        }).optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyElectrophysiologySchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Electrophysiology ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }).optional(),
+        procedureType: z.nativeEnum(ElectrophysiologyProcedureType).optional(),
+        indication: z.string().optional().nullable(),
+        arrhythmiaType: z.string().optional().nullable(),
+        deviceType: z.string().optional().nullable(),
+        manufacturer: z.string().optional().nullable(),
+        model: z.string().optional().nullable(),
+        serialNumber: z.string().optional().nullable(),
+        implantDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid implant date',
+        }).optional().nullable(),
+        ablationTarget: z.string().optional().nullable(),
+        fluoroscopyTime: z.number().optional(),
+        complications: z.string().optional().nullable(),
+        outcome: z.string().optional().nullable(),
+        followUpDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid follow-up date',
+        }).optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createCardiologyHeartFailureSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        assessmentDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid assessment date',
+        }),
+        etiology: z.string().optional().nullable(),
+        nyhaClass: z.nativeEnum(NYHAClass).optional(),
+        heartFailureStage: z.nativeEnum(HeartFailureStage).optional(),
+        lvef: z.number().optional(),
+        symptoms: z.string().optional().nullable(),
+        medications: z.string().optional().nullable(),
+        mechanicalSupport: z.string().optional().nullable(),
+        transplantStatus: z.string().optional().nullable(),
+        implantableDevices: z.string().optional().nullable(),
+        rehospitalizations: z.number().optional(),
+        lastHospitalization: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid hospitalization date',
+        }).optional().nullable(),
+        bnp: z.number().optional(),
+        ntProBnp: z.number().optional(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        nextFollowUpDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid follow-up date',
+        }).optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateCardiologyHeartFailureSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Heart Failure ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(CardiologyTestStatus).optional(),
+        assessmentDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid assessment date',
+        }).optional(),
+        etiology: z.string().optional().nullable(),
+        nyhaClass: z.nativeEnum(NYHAClass).optional(),
+        heartFailureStage: z.nativeEnum(HeartFailureStage).optional(),
+        lvef: z.number().optional(),
+        symptoms: z.string().optional().nullable(),
+        medications: z.string().optional().nullable(),
+        mechanicalSupport: z.string().optional().nullable(),
+        transplantStatus: z.string().optional().nullable(),
+        implantableDevices: z.string().optional().nullable(),
+        rehospitalizations: z.number().optional(),
+        lastHospitalization: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid hospitalization date',
+        }).optional().nullable(),
+        bnp: z.number().optional(),
+        ntProBnp: z.number().optional(),
+        assessment: z.string().optional().nullable(),
+        plan: z.string().optional().nullable(),
+        nextFollowUpDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid follow-up date',
+        }).optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
 // Nephrology Schemas
 export const createNephrologyVisitSchema = z.object({
     body: z.object({
@@ -1647,6 +1782,10 @@ export type CreateCardiologyMedicationInput = z.infer<typeof createCardiologyMed
 export type UpdateCardiologyMedicationInput = z.infer<typeof updateCardiologyMedicationSchema>['body'];
 export type CreateCardiologyLabInput = z.infer<typeof createCardiologyLabSchema>['body'];
 export type UpdateCardiologyLabInput = z.infer<typeof updateCardiologyLabSchema>['body'];
+export type CreateCardiologyElectrophysiologyInput = z.infer<typeof createCardiologyElectrophysiologySchema>['body'];
+export type UpdateCardiologyElectrophysiologyInput = z.infer<typeof updateCardiologyElectrophysiologySchema>['body'];
+export type CreateCardiologyHeartFailureInput = z.infer<typeof createCardiologyHeartFailureSchema>['body'];
+export type UpdateCardiologyHeartFailureInput = z.infer<typeof updateCardiologyHeartFailureSchema>['body'];
 export type CreateNephrologyVisitInput = z.infer<typeof createNephrologyVisitSchema>['body'];
 export type UpdateNephrologyVisitInput = z.infer<typeof updateNephrologyVisitSchema>['body'];
 export type CreateNephrologyLabInput = z.infer<typeof createNephrologyLabSchema>['body'];

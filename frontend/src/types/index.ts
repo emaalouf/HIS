@@ -581,6 +581,9 @@ export type CardiologyTestStatus = 'ORDERED' | 'IN_PROGRESS' | 'COMPLETED' | 'CA
 export type CardiologyProcedureStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 export type CardiologyDeviceStatus = 'ACTIVE' | 'INACTIVE' | 'REMOVED';
 export type CardiologyMedicationRoute = 'IV' | 'PO' | 'IM' | 'SC' | 'SL' | 'OTHER';
+export type ElectrophysiologyProcedureType = 'PACEMAKER_IMPLANT' | 'ICD_IMPLANT' | 'CRT_IMPLANT' | 'ABLATION' | 'ELECTROPHYSIOLOGY_STUDY' | 'LOOP_RECORDER_IMPLANT' | 'LEAD_EXTRACTION' | 'OTHER';
+export type NYHAClass = 'CLASS_I' | 'CLASS_II' | 'CLASS_III' | 'CLASS_IV';
+export type HeartFailureStage = 'STAGE_A' | 'STAGE_B' | 'STAGE_C' | 'STAGE_D';
 
 export interface CardiologyVisit {
     id: string;
@@ -964,6 +967,53 @@ export interface CreateCardiologyLabResultRequest {
     triglycerides?: number;
     crp?: number;
     inr?: number;
+    notes?: string;
+}
+
+export interface CreateCardiologyElectrophysiologyRequest {
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status?: CardiologyTestStatus;
+    performedAt: string;
+    procedureType: ElectrophysiologyProcedureType;
+    indication?: string;
+    arrhythmiaType?: string;
+    deviceType?: string;
+    manufacturer?: string;
+    model?: string;
+    serialNumber?: string;
+    implantDate?: string;
+    ablationTarget?: string;
+    fluoroscopyTime?: number;
+    complications?: string;
+    outcome?: string;
+    followUpDate?: string;
+    notes?: string;
+}
+
+export interface CreateCardiologyHeartFailureRequest {
+    patientId: string;
+    providerId?: string;
+    visitId?: string;
+    status?: CardiologyTestStatus;
+    assessmentDate: string;
+    etiology?: string;
+    nyhaClass?: NYHAClass;
+    heartFailureStage?: HeartFailureStage;
+    lvef?: number;
+    symptoms?: string;
+    medications?: string;
+    mechanicalSupport?: string;
+    transplantStatus?: string;
+    implantableDevices?: string;
+    rehospitalizations?: number;
+    lastHospitalization?: string;
+    bnp?: number;
+    ntProBnp?: number;
+    assessment?: string;
+    plan?: string;
+    nextFollowUpDate?: string;
     notes?: string;
 }
 

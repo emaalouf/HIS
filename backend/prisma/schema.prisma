@@ -65,6 +65,8 @@ model User {
   cardiologyProcedures CardiologyProcedure[]
   cardiologyDevices CardiologyDevice[]
   cardiologyMedicationOrders CardiologyMedicationOrder[]
+  cardiologyElectrophysiologyStudies CardiologyElectrophysiology[]
+  cardiologyHeartFailureAssessments CardiologyHeartFailure[]
   nephrologyVisits NephrologyVisit[]
   nephrologyImagingStudies NephrologyImaging[]
   nephrologyBiopsies NephrologyBiopsy[]
@@ -130,6 +132,8 @@ model Patient {
   cardiologyDevices        CardiologyDevice[]
   cardiologyMedicationOrders CardiologyMedicationOrder[]
   cardiologyLabResults       CardiologyLabResult[]
+  cardiologyElectrophysiologyStudies CardiologyElectrophysiology[]
+  cardiologyHeartFailureAssessments CardiologyHeartFailure[]
   nephrologyVisits           NephrologyVisit[]
   nephrologyLabResults       NephrologyLabResult[]
   nephrologyImagingStudies   NephrologyImaging[]
@@ -700,6 +704,8 @@ model CardiologyVisit {
   echos        CardiologyEcho[]
   stressTests  CardiologyStressTest[]
   procedures   CardiologyProcedure[]
+  electrophysiologyStudies CardiologyElectrophysiology[]
+  heartFailureAssessments CardiologyHeartFailure[]
 
   @@index([patientId])
   @@index([providerId])
@@ -908,6 +914,109 @@ model CardiologyLabResult {
   @@index([patientId])
   @@index([collectedAt])
   @@map("cardiology_lab_results")
+}
+
+enum ElectrophysiologyProcedureType {
+  PACEMAKER_IMPLANT
+  ICD_IMPLANT
+  CRT_IMPLANT
+  ABLATION
+  ELECTROPHYSIOLOGY_STUDY
+  LOOP_RECORDER_IMPLANT
+  LEAD_EXTRACTION
+  OTHER
+}
+
+model CardiologyElectrophysiology {
+  id               String                         @id @default(cuid())
+  patientId        String
+  providerId       String?
+  visitId          String?
+  status           CardiologyTestStatus           @default(ORDERED)
+  performedAt      DateTime
+  procedureType    ElectrophysiologyProcedureType
+  indication       String?                        @db.Text
+  arrhythmiaType   String?
+  deviceType       String?
+  manufacturer     String?
+  model            String?
+  serialNumber     String?
+  implantDate      DateTime?
+  ablationTarget  String?
+  fluoroscopyTime Int?
+  complications    String?                        @db.Text
+  outcome          String?                        @db.Text
+  followUpDate     DateTime?
+  notes            String?                        @db.Text
+  createdAt        DateTime                       @default(now())
+  updatedAt        DateTime                       @updatedAt
+
+  patient          Patient                        @relation(fields: [patientId], references: [id])
+  provider         User?                          @relation(fields: [providerId], references: [id])
+  visit            CardiologyVisit?               @relation(fields: [visitId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitId])
+  @@index([performedAt])
+  @@index([status])
+  @@index([procedureType])
+  @@map("cardiology_electrophysiology")
+}
+
+enum HeartFailureStage {
+  STAGE_A
+  STAGE_B
+  STAGE_C
+  STAGE_D
+}
+
+enum NYHAClass {
+  CLASS_I
+  CLASS_II
+  CLASS_III
+  CLASS_IV
+}
+
+model CardiologyHeartFailure {
+  id                 String                @id @default(cuid())
+  patientId          String
+  providerId         String?
+  visitId            String?
+  status             CardiologyTestStatus  @default(ORDERED)
+  assessmentDate     DateTime
+  etiology           String?               @db.Text
+  nyhaClass          NYHAClass?
+  heartFailureStage  HeartFailureStage?
+  lvef               Float?
+  symptoms           String?               @db.Text
+  medications        String?               @db.Text
+  mechanicalSupport   String?
+  transplantStatus   String?
+  implantableDevices String?               @db.Text
+  rehospitalizations  Int?
+  lastHospitalization DateTime?
+  bnp                Float?
+  ntProBnp           Float?
+  assessment         String?               @db.Text
+  plan               String?               @db.Text
+  nextFollowUpDate   DateTime?
+  notes              String?               @db.Text
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  patient            Patient               @relation(fields: [patientId], references: [id])
+  provider           User?                 @relation(fields: [providerId], references: [id])
+  visit              CardiologyVisit?      @relation(fields: [visitId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([visitId])
+  @@index([assessmentDate])
+  @@index([status])
+  @@index([nyhaClass])
+  @@index([heartFailureStage])
+  @@map("cardiology_heart_failure")
 }
 
 model NephrologyVisit {
