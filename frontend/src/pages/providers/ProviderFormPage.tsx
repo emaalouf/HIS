@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { providerService } from '../../services/provider.service';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '../../components/ui';
+import { departmentService } from '../../services/department.service';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, SearchableSelect } from '../../components/ui';
 import { ArrowLeft, Save } from 'lucide-react';
 import type { CreateProviderRequest, Role } from '../../types';
+import type { SelectOption } from '../../components/ui/SearchableSelect';
 
 const providerRoles: Role[] = ['DOCTOR', 'NURSE'];
 
@@ -15,7 +17,7 @@ const defaultFormData: CreateProviderRequest = {
     email: '',
     phone: '',
     specialty: '',
-    department: '',
+    departmentId: '',
     licenseNumber: '',
     isActive: true,
 };
@@ -27,11 +29,24 @@ export function ProviderFormPage() {
     const [error, setError] = useState('');
     const [formData, setFormData] = useState<CreateProviderRequest>(defaultFormData);
     const isEditMode = Boolean(id);
+    const [departmentInput, setDepartmentInput] = useState('');
 
     const { data: provider, isLoading } = useQuery({
         queryKey: ['provider', id],
         queryFn: () => providerService.getProvider(id!),
         enabled: isEditMode,
+    });
+
+    const departmentSearch = departmentInput.trim();
+
+    const { data: departmentsData, isLoading: isDepartmentsLoading } = useQuery({
+        queryKey: ['departments', 'provider-picker', departmentSearch],
+        queryFn: () =>
+            departmentService.getDepartments({
+                page: 1,
+                limit: 10,
+                search: departmentSearch || undefined,
+            }),
     });
 
     useEffect(() => {
@@ -43,10 +58,15 @@ export function ProviderFormPage() {
                 email: provider.email || '',
                 phone: provider.phone || '',
                 specialty: provider.specialty || '',
-                department: provider.department || '',
+                departmentId: provider.departmentId || '',
                 licenseNumber: provider.licenseNumber || '',
                 isActive: provider.isActive ?? true,
             });
+            if (provider.department) {
+                setDepartmentInput(provider.department.name);
+            } else if (provider.departmentId) {
+                setDepartmentInput(provider.departmentId);
+            }
         }
     }, [provider]);
 
@@ -79,10 +99,26 @@ export function ProviderFormPage() {
         e.preventDefault();
         setError('');
 
+        if (!formData.email.trim()) {
+            setError('Please enter an email address.');
+            return;
+        }
+
+        const payload: CreateProviderRequest = {
+            ...formData,
+            email: formData.email.trim(),
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            phone: formData.phone || undefined,
+            specialty: formData.specialty || undefined,
+            licenseNumber: formData.licenseNumber || undefined,
+            departmentId: formData.departmentId || undefined,
+        };
+
         if (isEditMode) {
-            updateMutation.mutate(formData);
+            updateMutation.mutate(payload);
         } else {
-            createMutation.mutate(formData);
+            createMutation.mutate(payload);
         }
     };
 
@@ -115,6 +151,11 @@ export function ProviderFormPage() {
         : providerRoles;
 
     const isSaving = createMutation.isPending || updateMutation.isPending;
+    const departmentOptions: SelectOption[] = (departmentsData?.departments || []).map((department) => ({
+        id: department.id,
+        label: department.name,
+        subLabel: department.description || undefined,
+    }));
 
     return (
         <div className="w-full max-w-5xl mx-auto space-y-6 lg:pl-0">
@@ -189,6 +230,7 @@ export function ProviderFormPage() {
                                 type="email"
                                 value={formData.email}
                                 onChange={handleChange}
+                                required
                             />
                             <Input
                                 label="Phone"
@@ -212,11 +254,18 @@ export function ProviderFormPage() {
                                 value={formData.specialty}
                                 onChange={handleChange}
                             />
-                            <Input
+                            <SearchableSelect
                                 label="Department"
-                                name="department"
-                                value={formData.department}
-                                onChange={handleChange}
+                                value={departmentInput}
+                                options={departmentOptions}
+                                selectedId={formData.departmentId}
+                                isLoading={isDepartmentsLoading}
+                                placeholder="Search departments"
+                                onInputChange={setDepartmentInput}
+                                onSelect={(option) => {
+                                    setFormData(prev => ({ ...prev, departmentId: option.id }));
+                                    setDepartmentInput(option.label);
+                                }}
                             />
                             <Input
                                 label="License Number"

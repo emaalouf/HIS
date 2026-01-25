@@ -41,6 +41,15 @@ export interface Specialty {
     updatedAt?: string;
 }
 
+export interface Department {
+    id: string;
+    name: string;
+    description?: string;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
 export interface CreatePermissionRequest {
     name: string;
     description?: string;
@@ -60,6 +69,12 @@ export interface CreateSpecialtyRequest {
     isActive?: boolean;
 }
 
+export interface CreateDepartmentRequest {
+    name: string;
+    description?: string;
+    isActive?: boolean;
+}
+
 export interface Provider {
     id: string;
     firstName: string;
@@ -68,8 +83,12 @@ export interface Provider {
     email?: string;
     phone?: string;
     specialty?: string;
-    department?: string;
     licenseNumber?: string;
+    departmentId?: string | null;
+    department?: {
+        id: string;
+        name: string;
+    };
     isActive?: boolean;
     createdAt?: string;
     updatedAt?: string;
@@ -184,10 +203,10 @@ export interface CreateProviderRequest {
     firstName: string;
     lastName: string;
     role: Role;
-    email?: string;
+    email: string;
     phone?: string;
     specialty?: string;
-    department?: string;
+    departmentId?: string;
     licenseNumber?: string;
     isActive?: boolean;
 }
@@ -212,6 +231,11 @@ export interface Location {
     id: string;
     name: string;
     type?: string | null;
+    departmentId?: string | null;
+    department?: {
+        id: string;
+        name: string;
+    } | null;
 }
 
 export interface Appointment {
@@ -238,6 +262,11 @@ export interface Appointment {
         firstName: string;
         lastName: string;
         role: Role;
+        departmentId?: string | null;
+        department?: {
+            id: string;
+            name: string;
+        } | null;
     };
     visitType?: VisitType | null;
     location?: Location | null;

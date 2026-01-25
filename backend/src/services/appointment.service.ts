@@ -17,6 +17,13 @@ const appointmentInclude = {
             firstName: true,
             lastName: true,
             role: true,
+            departmentId: true,
+            department: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
         },
     },
     visitType: {
@@ -33,6 +40,13 @@ const appointmentInclude = {
             id: true,
             name: true,
             type: true,
+            departmentId: true,
+            department: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
         },
     },
 };
@@ -185,6 +199,18 @@ export class AppointmentService {
         return prisma.location.findMany({
             where: { isActive: true },
             orderBy: { name: 'asc' },
+            select: {
+                id: true,
+                name: true,
+                type: true,
+                departmentId: true,
+                department: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
         });
     }
 
@@ -197,6 +223,13 @@ export class AppointmentService {
                 lastName: true,
                 email: true,
                 role: true,
+                departmentId: true,
+                department: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
             },
             orderBy: { firstName: 'asc' },
         });

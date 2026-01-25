@@ -38,6 +38,9 @@ model User {
   password      String
   firstName     String
   lastName      String
+  phone         String?
+  specialty     String?
+  licenseNumber String?
   role          Role      @default(RECEPTIONIST)
   isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())

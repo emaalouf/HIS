@@ -17,6 +17,7 @@ export interface GetProvidersParams {
     search?: string;
     role?: string;
     specialty?: string;
+    departmentId?: string;
     isActive?: boolean;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';

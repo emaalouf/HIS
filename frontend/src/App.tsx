@@ -36,6 +36,8 @@ import { PermissionListPage } from './pages/permissions/PermissionListPage';
 import { PermissionFormPage } from './pages/permissions/PermissionFormPage';
 import { SpecialtyListPage } from './pages/specialties/SpecialtyListPage';
 import { SpecialtyFormPage } from './pages/specialties/SpecialtyFormPage';
+import { DepartmentListPage } from './pages/departments/DepartmentListPage';
+import { DepartmentFormPage } from './pages/departments/DepartmentFormPage';
 import { DialysisListPage } from './pages/dialysis/DialysisListPage';
 import { DialysisFormPage } from './pages/dialysis/DialysisFormPage';
 import { DialysisPrescriptionsPage } from './pages/dialysis/DialysisPrescriptionsPage';
@@ -197,6 +199,9 @@ function App() {
         <Route path="/specialties" element={<SpecialtyListPage />} />
         <Route path="/specialties/new" element={<SpecialtyFormPage />} />
         <Route path="/specialties/:id/edit" element={<SpecialtyFormPage />} />
+        <Route path="/departments" element={<DepartmentListPage />} />
+        <Route path="/departments/new" element={<DepartmentFormPage />} />
+        <Route path="/departments/:id/edit" element={<DepartmentFormPage />} />
         <Route path="/roles" element={<RoleListPage />} />
         <Route path="/roles/new" element={<RoleFormPage />} />
         <Route path="/roles/:id/edit" element={<RoleFormPage />} />

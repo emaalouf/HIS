@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { appointmentService } from '../../services/appointment.service';
+import { departmentService } from '../../services/department.service';
 import type { Appointment, AppointmentStatus } from '../../types';
 import { Button, Card, Input } from '../../components/ui';
 import { Plus, RefreshCcw } from 'lucide-react';
@@ -39,6 +40,7 @@ export function AppointmentListPage() {
     const [status, setStatus] = useState<AppointmentStatus | ''>('');
     const [providerId, setProviderId] = useState('');
     const [search, setSearch] = useState('');
+    const [departmentId, setDepartmentId] = useState('');
     const [dateRange, setDateRange] = useState(() => {
         const start = new Date();
         start.setHours(0, 0, 0, 0);
@@ -76,6 +78,11 @@ export function AppointmentListPage() {
     const { data: meta } = useQuery({
         queryKey: ['appointments-meta'],
         queryFn: () => appointmentService.getMeta(),
+    });
+
+    const { data: departmentsData } = useQuery({
+        queryKey: ['departments', 'appointments'],
+        queryFn: () => departmentService.getDepartments({ page: 1, limit: 100 }),
     });
 
     const { data, isLoading, isFetching } = useQuery({
@@ -131,6 +138,27 @@ export function AppointmentListPage() {
 
     const appointments = data?.appointments ?? [];
     const pagination = data?.pagination;
+    const departments = departmentsData?.departments ?? [];
+
+    const filteredProviders = useMemo(() => {
+        if (!departmentId) return meta?.providers ?? [];
+        return (meta?.providers ?? []).filter((provider) => provider.departmentId === departmentId);
+    }, [departmentId, meta?.providers]);
+
+    const filteredLocations = useMemo(() => {
+        if (!departmentId) return meta?.locations ?? [];
+        return (meta?.locations ?? []).filter((location) => location.departmentId === departmentId);
+    }, [departmentId, meta?.locations]);
+
+    useEffect(() => {
+        if (!departmentId) return;
+        if (form.providerId && !filteredProviders.some((provider) => provider.id === form.providerId)) {
+            setForm((prev) => ({ ...prev, providerId: '' }));
+        }
+        if (form.locationId && !filteredLocations.some((location) => location.id === form.locationId)) {
+            setForm((prev) => ({ ...prev, locationId: '' }));
+        }
+    }, [departmentId, form.providerId, form.locationId, filteredProviders, filteredLocations]);
 
     return (
         <div className="space-y-6">
@@ -248,6 +276,21 @@ export function AppointmentListPage() {
                             />
                         </div>
                         <div>
+                            <label className="text-sm text-gray-600 mb-1 block">Department</label>
+                            <select
+                                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                                value={departmentId}
+                                onChange={(e) => setDepartmentId(e.target.value)}
+                            >
+                                <option value="">All departments</option>
+                                {departments.map((department) => (
+                                    <option key={department.id} value={department.id}>
+                                        {department.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
                             <label className="text-sm text-gray-600 mb-1 block">Provider</label>
                             <select
                                 className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
@@ -256,7 +299,7 @@ export function AppointmentListPage() {
                                 required
                             >
                                 <option value="">Select a provider</option>
-                                {meta?.providers.map((provider) => (
+                                {filteredProviders.map((provider) => (
                                     <option key={provider.id} value={provider.id}>
                                         Dr. {provider.firstName} {provider.lastName}
                                     </option>
@@ -287,7 +330,7 @@ export function AppointmentListPage() {
                                     onChange={(e) => setForm((prev) => ({ ...prev, locationId: e.target.value }))}
                                 >
                                     <option value="">Select</option>
-                                    {meta?.locations.map((loc) => (
+                                    {filteredLocations.map((loc) => (
                                         <option key={loc.id} value={loc.id}>
                                             {loc.name} {loc.type ? `(${loc.type})` : ''}
                                         </option>

@@ -6,6 +6,7 @@ import { wardService } from '../../services/ward.service';
 import { bedService } from '../../services/bed.service';
 import { providerService } from '../../services/provider.service';
 import { patientService } from '../../services/patient.service';
+import { departmentService } from '../../services/department.service';
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, SearchableSelect } from '../../components/ui';
 import { ArrowLeft, Save } from 'lucide-react';
 import type { AdmissionStatus, CreateAdmissionRequest } from '../../types';
@@ -43,6 +44,7 @@ export function AdmissionFormPage() {
     const [providerInput, setProviderInput] = useState('');
     const [wardInput, setWardInput] = useState('');
     const [bedInput, setBedInput] = useState('');
+    const [departmentInput, setDepartmentInput] = useState('');
 
     const defaultAdmitDate = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
@@ -70,6 +72,7 @@ export function AdmissionFormPage() {
     const providerSearch = providerInput.trim();
     const wardSearch = wardInput.trim();
     const bedSearch = bedInput.trim();
+    const departmentSearch = departmentInput.trim();
 
     const { data: patientsData, isLoading: isPatientsLoading } = useQuery({
         queryKey: ['patients', 'admission-picker', patientSearch],
@@ -116,6 +119,16 @@ export function AdmissionFormPage() {
             }),
     });
 
+    const { data: departmentsData, isLoading: isDepartmentsLoading } = useQuery({
+        queryKey: ['departments', 'admission-picker', departmentSearch],
+        queryFn: () =>
+            departmentService.getDepartments({
+                page: 1,
+                limit: 10,
+                search: departmentSearch || undefined,
+            }),
+    });
+
     useEffect(() => {
         if (!admission) return;
         setFormData({
@@ -151,6 +164,11 @@ export function AdmissionFormPage() {
             setBedInput(admission.bed.bedLabel);
         } else if (admission.bedId) {
             setBedInput(admission.bedId);
+        }
+        if (admission.department) {
+            setDepartmentInput(admission.department.name);
+        } else if (admission.departmentId) {
+            setDepartmentInput(admission.departmentId);
         }
     }, [admission]);
 
@@ -232,6 +250,8 @@ export function AdmissionFormPage() {
         label: ward.name,
         subLabel: ward.department?.name || ward.departmentId || undefined,
     }));
+    const wards = wardsData?.wards || [];
+    const wardsById = new Map(wards.map((ward) => [ward.id, ward]));
 
     const beds = bedsData?.beds || [];
     const bedsById = new Map(beds.map((bed) => [bed.id, bed]));
@@ -239,6 +259,12 @@ export function AdmissionFormPage() {
         id: bed.id,
         label: bed.bedLabel,
         subLabel: bed.roomNumber ? `Room ${bed.roomNumber}` : undefined,
+    }));
+
+    const departmentOptions: SelectOption[] = (departmentsData?.departments || []).map((department) => ({
+        id: department.id,
+        label: department.name,
+        subLabel: department.description || undefined,
     }));
 
     if (isEditMode && isLoading) {
@@ -360,9 +386,22 @@ export function AdmissionFormPage() {
                                 placeholder="Search wards"
                                 onInputChange={setWardInput}
                                 onSelect={(option) => {
-                                    setFormData((prev) => ({ ...prev, wardId: option.id, bedId: '' }));
+                                    const selectedWard = wardsById.get(option.id);
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        wardId: option.id,
+                                        bedId: '',
+                                        departmentId: selectedWard?.department?.id || selectedWard?.departmentId || '',
+                                    }));
                                     setWardInput(option.label);
                                     setBedInput('');
+                                    if (selectedWard?.department?.name) {
+                                        setDepartmentInput(selectedWard.department.name);
+                                    } else if (selectedWard?.departmentId) {
+                                        setDepartmentInput(selectedWard.departmentId);
+                                    } else {
+                                        setDepartmentInput('');
+                                    }
                                 }}
                             />
                             <SearchableSelect
@@ -375,23 +414,37 @@ export function AdmissionFormPage() {
                                 onInputChange={setBedInput}
                                 onSelect={(option) => {
                                     const selectedBed = bedsById.get(option.id);
+                                    const wardForBed = selectedBed ? wardsById.get(selectedBed.wardId) : undefined;
                                     setFormData((prev) => ({
                                         ...prev,
                                         bedId: option.id,
                                         wardId: prev.wardId || selectedBed?.wardId || '',
+                                        departmentId: wardForBed?.department?.id || wardForBed?.departmentId || prev.departmentId,
                                     }));
                                     setBedInput(option.label);
                                     if (!formData.wardId && selectedBed?.ward) {
                                         setWardInput(selectedBed.ward.name);
                                     }
+                                    if (wardForBed?.department?.name) {
+                                        setDepartmentInput(wardForBed.department.name);
+                                    } else if (wardForBed?.departmentId) {
+                                        setDepartmentInput(wardForBed.departmentId);
+                                    }
                                 }}
                             />
                         </div>
-                        <Input
-                            label="Department ID"
-                            value={formData.departmentId}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, departmentId: e.target.value }))}
-                            placeholder="Optional department ID"
+                        <SearchableSelect
+                            label="Department (optional)"
+                            value={departmentInput}
+                            options={departmentOptions}
+                            selectedId={formData.departmentId}
+                            isLoading={isDepartmentsLoading}
+                            placeholder="Search departments"
+                            onInputChange={setDepartmentInput}
+                            onSelect={(option) => {
+                                setFormData((prev) => ({ ...prev, departmentId: option.id }));
+                                setDepartmentInput(option.label);
+                            }}
                         />
                         <Input
                             label="Reason for Admission"

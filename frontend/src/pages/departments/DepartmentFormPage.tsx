@@ -1,79 +1,55 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { wardService } from '../../services/ward.service';
 import { departmentService } from '../../services/department.service';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, SearchableSelect } from '../../components/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '../../components/ui';
 import { ArrowLeft, Save } from 'lucide-react';
-import type { CreateWardRequest } from '../../types';
-import type { SelectOption } from '../../components/ui/SearchableSelect';
-import { AdmissionsNav } from './AdmissionsNav';
+import type { CreateDepartmentRequest } from '../../types';
 
 const statusOptions = [
     { value: 'active', label: 'Active' },
     { value: 'inactive', label: 'Inactive' },
 ];
 
-type WardFormState = {
+type DepartmentFormState = {
     name: string;
-    departmentId: string;
-    notes: string;
+    description: string;
     isActive: boolean;
 };
 
-export function WardFormPage() {
+export function DepartmentFormPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [error, setError] = useState('');
     const isEditMode = Boolean(id);
-    const [departmentInput, setDepartmentInput] = useState('');
 
-    const [formData, setFormData] = useState<WardFormState>({
+    const [formData, setFormData] = useState<DepartmentFormState>({
         name: '',
-        departmentId: '',
-        notes: '',
+        description: '',
         isActive: true,
     });
 
-    const { data: ward, isLoading } = useQuery({
-        queryKey: ['ward', id],
-        queryFn: () => wardService.getWard(id!),
+    const { data: department, isLoading } = useQuery({
+        queryKey: ['department', id],
+        queryFn: () => departmentService.getDepartment(id!),
         enabled: isEditMode,
     });
 
-    const departmentSearch = departmentInput.trim();
-
-    const { data: departmentsData, isLoading: isDepartmentsLoading } = useQuery({
-        queryKey: ['departments', 'ward-picker', departmentSearch],
-        queryFn: () =>
-            departmentService.getDepartments({
-                page: 1,
-                limit: 10,
-                search: departmentSearch || undefined,
-            }),
-    });
-
     useEffect(() => {
-        if (!ward) return;
+        if (!department) return;
         setFormData({
-            name: ward.name,
-            departmentId: ward.departmentId || '',
-            notes: ward.notes || '',
-            isActive: ward.isActive,
+            name: department.name,
+            description: department.description || '',
+            isActive: department.isActive ?? true,
         });
-        if (ward.department) {
-            setDepartmentInput(ward.department.name);
-        } else if (ward.departmentId) {
-            setDepartmentInput(ward.departmentId);
-        }
-    }, [ward]);
+    }, [department]);
 
     const createMutation = useMutation({
-        mutationFn: (payload: CreateWardRequest) => wardService.createWard(payload),
+        mutationFn: (payload: CreateDepartmentRequest) => departmentService.createDepartment(payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['wards'] });
-            navigate('/admissions/wards');
+            queryClient.invalidateQueries({ queryKey: ['departments'] });
+            navigate('/departments');
         },
         onError: (err: Error) => {
             setError(err.message);
@@ -81,11 +57,11 @@ export function WardFormPage() {
     });
 
     const updateMutation = useMutation({
-        mutationFn: (payload: CreateWardRequest) => wardService.updateWard(id!, payload),
+        mutationFn: (payload: CreateDepartmentRequest) => departmentService.updateDepartment(id!, payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['wards'] });
-            queryClient.invalidateQueries({ queryKey: ['ward', id] });
-            navigate('/admissions/wards');
+            queryClient.invalidateQueries({ queryKey: ['departments'] });
+            queryClient.invalidateQueries({ queryKey: ['department', id] });
+            navigate('/departments');
         },
         onError: (err: Error) => {
             setError(err.message);
@@ -97,14 +73,13 @@ export function WardFormPage() {
         setError('');
 
         if (!formData.name.trim()) {
-            setError('Please enter a ward name.');
+            setError('Please enter a department name.');
             return;
         }
 
-        const payload: CreateWardRequest = {
+        const payload: CreateDepartmentRequest = {
             name: formData.name.trim(),
-            departmentId: formData.departmentId || undefined,
-            notes: formData.notes || undefined,
+            description: formData.description || undefined,
             isActive: formData.isActive,
         };
 
@@ -123,39 +98,32 @@ export function WardFormPage() {
         );
     }
 
-    if (isEditMode && !ward) {
+    if (isEditMode && !department) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-500">Ward not found</p>
-                <Link to="/admissions/wards" className="text-blue-600 hover:underline mt-2 inline-block">
-                    Back to wards
+                <p className="text-gray-500">Department not found</p>
+                <Link to="/departments" className="text-blue-600 hover:underline mt-2 inline-block">
+                    Back to departments
                 </Link>
             </div>
         );
     }
 
     const isSaving = createMutation.isPending || updateMutation.isPending;
-    const departmentOptions: SelectOption[] = (departmentsData?.departments || []).map((department) => ({
-        id: department.id,
-        label: department.name,
-        subLabel: department.description || undefined,
-    }));
 
     return (
         <div className="w-full max-w-4xl mx-auto space-y-6 lg:pl-0">
             <div className="flex items-center gap-4 pt-2 lg:pt-0">
-                <Link to="/admissions/wards">
+                <Link to="/departments">
                     <Button variant="ghost" size="sm">
                         <ArrowLeft size={18} className="mr-2" />
                         Back
                     </Button>
                 </Link>
                 <h1 className="text-3xl font-bold text-gray-900">
-                    {isEditMode ? 'Edit Ward' : 'New Ward'}
+                    {isEditMode ? 'Edit Department' : 'New Department'}
                 </h1>
             </div>
-
-            <AdmissionsNav />
 
             {error && (
                 <Card className="border-red-200 bg-red-50">
@@ -168,28 +136,25 @@ export function WardFormPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Ward Details</CardTitle>
+                        <CardTitle>Department Details</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <Input
-                            label="Ward Name"
+                            label="Department Name"
                             value={formData.name}
                             onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                             required
                         />
-                        <SearchableSelect
-                            label="Department (optional)"
-                            value={departmentInput}
-                            options={departmentOptions}
-                            selectedId={formData.departmentId}
-                            isLoading={isDepartmentsLoading}
-                            placeholder="Search departments"
-                            onInputChange={setDepartmentInput}
-                            onSelect={(option) => {
-                                setFormData((prev) => ({ ...prev, departmentId: option.id }));
-                                setDepartmentInput(option.label);
-                            }}
-                        />
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea
+                                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                                rows={4}
+                                placeholder="Optional description"
+                                value={formData.description}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                            />
+                        </div>
                         <div className="w-full">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                             <select
@@ -204,23 +169,13 @@ export function WardFormPage() {
                                 ))}
                             </select>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                            <textarea
-                                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                                rows={4}
-                                placeholder="Optional notes"
-                                value={formData.notes}
-                                onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
-                            />
-                        </div>
                     </CardContent>
                 </Card>
 
                 <div className="flex justify-end">
                     <Button type="submit" size="lg" isLoading={isSaving}>
                         <Save size={18} className="mr-2" />
-                        {isEditMode ? 'Update Ward' : 'Save Ward'}
+                        {isEditMode ? 'Update Department' : 'Save Department'}
                     </Button>
                 </div>
             </form>

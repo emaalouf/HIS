@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes';
 import patientRoutes from './patient.routes';
+import departmentRoutes from './department.routes';
+import providerRoutes from './provider.routes';
 import appointmentRoutes from './appointment.routes';
 import dialysisSessionRoutes from './dialysis-session.routes';
 import dialysisPrescriptionRoutes from './dialysis-prescription.routes';
@@ -42,6 +44,8 @@ const router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/patients', patientRoutes);
+router.use('/departments', departmentRoutes);
+router.use('/providers', providerRoutes);
 router.use('/appointments', appointmentRoutes);
 router.use('/dialysis-sessions', dialysisSessionRoutes);
 router.use('/dialysis-prescriptions', dialysisPrescriptionRoutes);

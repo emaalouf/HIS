@@ -215,7 +215,8 @@ export function DialysisPrescriptionFormPage() {
     const providers = providersData?.providers ?? [];
     const providerOptions: SelectOption[] = providers.map((provider) => {
         const prefix = provider.role === 'DOCTOR' ? 'Dr. ' : '';
-        const secondary = [provider.specialty, provider.department].filter(Boolean).join(' • ') || provider.role;
+        const departmentLabel = provider.department?.name || provider.departmentId;
+        const secondary = [provider.specialty, departmentLabel].filter(Boolean).join(' • ') || provider.role;
         return {
             id: provider.id,
             label: `${prefix}${provider.firstName} ${provider.lastName}`,

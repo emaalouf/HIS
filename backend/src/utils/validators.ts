@@ -103,6 +103,41 @@ export const updatePatientSchema = z.object({
     }),
 });
 
+// Provider Schemas
+const providerRoleSchema = z.enum(['DOCTOR', 'NURSE']);
+
+export const createProviderSchema = z.object({
+    body: z.object({
+        email: z.string().email('Invalid email address'),
+        password: z.string().min(8).optional(),
+        firstName: z.string().min(1, 'First name is required'),
+        lastName: z.string().min(1, 'Last name is required'),
+        role: providerRoleSchema,
+        phone: z.string().optional().nullable(),
+        specialty: z.string().optional().nullable(),
+        licenseNumber: z.string().optional().nullable(),
+        departmentId: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+    }),
+});
+
+export const updateProviderSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Provider ID is required'),
+    }),
+    body: z.object({
+        email: z.string().email().optional(),
+        firstName: z.string().min(1).optional(),
+        lastName: z.string().min(1).optional(),
+        role: providerRoleSchema.optional(),
+        phone: z.string().optional().nullable(),
+        specialty: z.string().optional().nullable(),
+        licenseNumber: z.string().optional().nullable(),
+        departmentId: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+    }),
+});
+
 // Medical History Schema
 export const createMedicalHistorySchema = z.object({
     params: z.object({
@@ -1356,6 +1391,26 @@ export const updateMedicationAdministrationSchema = z.object({
     }),
 });
 
+// Department Schemas
+export const createDepartmentSchema = z.object({
+    body: z.object({
+        name: z.string().min(1, 'Department name is required'),
+        description: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+    }),
+});
+
+export const updateDepartmentSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Department ID is required'),
+    }),
+    body: z.object({
+        name: z.string().min(1).optional(),
+        description: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+    }),
+});
+
 // Admissions Schemas
 export const createWardSchema = z.object({
     body: z.object({
@@ -1614,6 +1669,10 @@ export type CreateMedicationOrderInput = z.infer<typeof createMedicationOrderSch
 export type UpdateMedicationOrderInput = z.infer<typeof updateMedicationOrderSchema>['body'];
 export type CreateMedicationAdministrationInput = z.infer<typeof createMedicationAdministrationSchema>['body'];
 export type UpdateMedicationAdministrationInput = z.infer<typeof updateMedicationAdministrationSchema>['body'];
+export type CreateDepartmentInput = z.infer<typeof createDepartmentSchema>['body'];
+export type UpdateDepartmentInput = z.infer<typeof updateDepartmentSchema>['body'];
+export type CreateProviderInput = z.infer<typeof createProviderSchema>['body'];
+export type UpdateProviderInput = z.infer<typeof updateProviderSchema>['body'];
 export type CreateWardInput = z.infer<typeof createWardSchema>['body'];
 export type UpdateWardInput = z.infer<typeof updateWardSchema>['body'];
 export type CreateBedInput = z.infer<typeof createBedSchema>['body'];
