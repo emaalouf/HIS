@@ -72,7 +72,7 @@ export function Sidebar() {
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 )}
             >
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col h-full min-h-0">
                     {/* Logo */}
                     <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-700">
                         <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -85,7 +85,7 @@ export function Sidebar() {
                     </div>
 
                     {/* Navigation */}
-                    <nav className="flex-1 px-4 py-6 space-y-1">
+                    <nav className="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-1">
                         {navigation.map((item) => (
                             <NavLink
                                 key={item.name}

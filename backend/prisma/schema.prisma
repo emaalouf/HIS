@@ -432,6 +432,8 @@ model Department {
 
   locations   Location[]
   users       User[]   @relation("DepartmentUsers")
+  wards       Ward[]
+  admissions  Admission[]
 
   @@map("departments")
 }
