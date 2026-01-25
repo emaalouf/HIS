@@ -46,6 +46,16 @@ export class ProviderService {
             sortOrder = 'asc',
         } = options;
         const skip = (page - 1) * limit;
+        const allowedSortFields = new Set([
+            'firstName',
+            'lastName',
+            'email',
+            'role',
+            'specialty',
+            'createdAt',
+            'updatedAt',
+        ]);
+        const resolvedSortBy = allowedSortFields.has(sortBy) ? sortBy : 'lastName';
 
         const where: Prisma.UserWhereInput = {
             role: role ? role : { in: [Role.DOCTOR, Role.NURSE] },
@@ -74,7 +84,7 @@ export class ProviderService {
                 where,
                 skip,
                 take: limit,
-                orderBy: { [sortBy]: sortOrder },
+                orderBy: { [resolvedSortBy]: sortOrder },
                 select: providerSelect,
             }),
             prisma.user.count({ where }),

@@ -23,6 +23,14 @@ export function formatDateTime(date: string | Date): string {
     });
 }
 
+export function formatTime(date: string | Date): string {
+    return new Date(date).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+    });
+}
+
 export function calculateAge(dateOfBirth: string): number {
     const today = new Date();
     const birthDate = new Date(dateOfBirth);

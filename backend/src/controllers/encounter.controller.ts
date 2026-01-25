@@ -87,6 +87,13 @@ export const createEncounter = async (req: Request, res: Response): Promise<void
                 sendError(res, 'Appointment not found', 404);
                 return;
             }
+            const existingEncounter = await prisma.encounter.findUnique({
+                where: { appointmentId: data.appointmentId },
+            });
+            if (existingEncounter) {
+                sendError(res, 'Appointment already has an encounter', 400);
+                return;
+            }
         }
 
         if (data.admissionId) {
@@ -136,6 +143,13 @@ export const updateEncounter = async (req: Request, res: Response): Promise<void
             const appointment = await prisma.appointment.findUnique({ where: { id: data.appointmentId } });
             if (!appointment) {
                 sendError(res, 'Appointment not found', 404);
+                return;
+            }
+            const existingEncounter = await prisma.encounter.findUnique({
+                where: { appointmentId: data.appointmentId },
+            });
+            if (existingEncounter && existingEncounter.id !== id) {
+                sendError(res, 'Appointment already has an encounter', 400);
                 return;
             }
         }

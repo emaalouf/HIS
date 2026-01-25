@@ -87,6 +87,10 @@ import { NephrologyMedicationFormPage } from './pages/nephrology/NephrologyMedic
 import { NephrologyReportsPage } from './pages/nephrology/NephrologyReportsPage';
 import { NeurologyListPage } from './pages/neurology/NeurologyListPage';
 import { NeurologyFormPage } from './pages/neurology/NeurologyFormPage';
+import { OperatingTheatersListPage } from './pages/operating-theaters/OperatingTheatersListPage';
+import { OperatingTheaterFormPage } from './pages/operating-theaters/OperatingTheaterFormPage';
+import { SurgeriesListPage } from './pages/surgeries/SurgeriesListPage';
+import { SurgeryFormPage } from './pages/surgeries/SurgeryFormPage';
 import './index.css';
 
 function App() {
@@ -203,6 +207,12 @@ function App() {
         <Route path="/neurology" element={<NeurologyListPage />} />
         <Route path="/neurology/new" element={<NeurologyFormPage />} />
         <Route path="/neurology/:id/edit" element={<NeurologyFormPage />} />
+        <Route path="/operating-theaters" element={<OperatingTheatersListPage />} />
+        <Route path="/operating-theaters/new" element={<OperatingTheaterFormPage />} />
+        <Route path="/operating-theaters/:id/edit" element={<OperatingTheaterFormPage />} />
+        <Route path="/surgeries" element={<SurgeriesListPage />} />
+        <Route path="/surgeries/new" element={<SurgeryFormPage />} />
+        <Route path="/surgeries/:id/edit" element={<SurgeryFormPage />} />
         <Route path="/providers" element={<ProviderListPage />} />
         <Route path="/providers/new" element={<ProviderFormPage />} />
         <Route path="/providers/:id/edit" element={<ProviderFormPage />} />

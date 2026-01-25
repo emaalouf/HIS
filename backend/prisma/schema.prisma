@@ -78,6 +78,9 @@ model User {
   invoicesCreated Invoice[]
   paymentsReceived Payment[]
   admissions Admission[]
+  surgeriesTeamMember SurgeryTeamMember[]
+  surgeryChecklists SurgeryChecklist[]
+  operativeReports OperativeReport[]
 
   @@map("users")
 }
@@ -148,6 +151,7 @@ model Patient {
   payments                   Payment[]
   claims                     Claim[]
   admissions                 Admission[]
+  surgeries                  Surgery[]
 
   @@map("patients")
 }
@@ -427,6 +431,59 @@ enum NephrologyImagingModality {
   XRAY
   NUCLEAR
   OTHER
+}
+
+enum SurgeryStatus {
+  REQUESTED
+  SCHEDULED
+  PRE_OP
+  IN_PROGRESS
+  RECOVERY
+  COMPLETED
+  CANCELLED
+}
+
+enum SurgeryPriority {
+  ELECTIVE
+  URGENT
+  EMERGENCY
+}
+
+enum AnesthesiaType {
+  GENERAL
+  REGIONAL_SPINAL
+  REGIONAL_EPIDURAL
+  REGIONAL_NERVE_BLOCK
+  MAC
+  LOCAL
+  TOPICAL
+}
+
+enum AsaPhysicalStatus {
+  I
+  II
+  III
+  IV
+  V
+  VI
+  E
+}
+
+enum SurgicalRole {
+  LEAD_SURGEON
+  ASSISTANT_SURGEON
+  ANESTHESIOLOGIST
+  ANESTHETIST_NURSE
+  SCRUB_NURSE
+  CIRCULATING_NURSE
+  TECHNICIAN
+}
+
+enum WoundClass {
+  CLEAN
+  CLEAN_CONTAMINATED
+  CONTAMINATED
+  DIRTY_INFECTED
 }
 
 model Department {
@@ -1398,6 +1455,7 @@ model Admission {
   bed          Bed?            @relation(fields: [bedId], references: [id])
   department   Department?     @relation(fields: [departmentId], references: [id])
   encounters   Encounter[]
+  surgeries    Surgery[]
 
   @@index([patientId])
   @@index([providerId])
@@ -1491,4 +1549,112 @@ model Claim {
   @@index([patientId])
   @@index([status])
   @@map("claims")
+}
+
+model OperatingTheater {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  location    String?
+  status      String    @default("ACTIVE")
+  notes       String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  surgeries   Surgery[]
+
+  @@map("operating_theaters")
+}
+
+model Surgery {
+  id              String          @id @default(cuid())
+  patientId       String
+  admissionId     String?
+  theaterId       String?
+  status          SurgeryStatus   @default(REQUESTED)
+  priority        SurgeryPriority @default(ELECTIVE)
+  scheduledStart  DateTime
+  scheduledEnd    DateTime
+  actualStart     DateTime?
+  actualEnd       DateTime?
+  preOpDiagnosis  String          @db.Text
+  postOpDiagnosis String?         @db.Text
+  procedureName   String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  patient         Patient           @relation(fields: [patientId], references: [id])
+  admission       Admission?        @relation(fields: [admissionId], references: [id])
+  theater         OperatingTheater? @relation(fields: [theaterId], references: [id])
+
+  teamMembers     SurgeryTeamMember[]
+  checklists      SurgeryChecklist[]
+  anesthesiaRecord AnesthesiaRecord?
+  operativeReport OperativeReport?
+
+  @@index([patientId])
+  @@index([status])
+  @@index([scheduledStart])
+  @@map("surgeries")
+}
+
+model SurgeryTeamMember {
+  id        String       @id @default(cuid())
+  surgeryId String
+  userId    String
+  role      SurgicalRole
+  notes     String?      @db.Text
+  surgery   Surgery      @relation(fields: [surgeryId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id])
+  @@unique([surgeryId, userId, role])
+  @@map("surgery_team_members")
+}
+
+model SurgeryChecklist {
+  id            String    @id @default(cuid())
+  surgeryId     String
+  stage         String
+  items         Json
+  completedById String
+  completedAt   DateTime  @default(now())
+  surgery       Surgery   @relation(fields: [surgeryId], references: [id], onDelete: Cascade)
+  completedBy   User      @relation(fields: [completedById], references: [id])
+  @@index([surgeryId])
+  @@map("surgery_checklists")
+}
+
+model AnesthesiaRecord {
+  id              String            @id @default(cuid())
+  surgeryId       String            @unique
+  anesthesiaType  AnesthesiaType
+  asaStatus       AsaPhysicalStatus
+  inductionTime   DateTime?
+  emergenceTime   DateTime?
+  airwayNotes     String?           @db.Text
+  medications     Json?
+  ivFluids        Json?
+  bloodProducts   Json?
+  complications   String?           @db.Text
+  notes           String?           @db.Text
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  surgery         Surgery           @relation(fields: [surgeryId], references: [id], onDelete: Cascade)
+  @@map("anesthesia_records")
+}
+
+model OperativeReport {
+  id                   String      @id @default(cuid())
+  surgeryId            String      @unique
+  surgeonId            String
+  procedureDescription String      @db.Text
+  findings             String?     @db.Text
+  woundClass           WoundClass?
+  estimatedBloodLoss   Int?
+  specimensRemoved     String?     @db.Text
+  implantsInserted     String?     @db.Text
+  complications        String?     @db.Text
+  postOpInstructions   String?     @db.Text
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  surgery              Surgery     @relation(fields: [surgeryId], references: [id], onDelete: Cascade)
+  surgeon              User        @relation(fields: [surgeonId], references: [id])
+  @@map("operative_reports")
 }

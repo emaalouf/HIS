@@ -21,6 +21,8 @@ import {
     Pill,
     Receipt,
     BedDouble,
+    Scissors,
+    MapPin,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
@@ -30,6 +32,8 @@ const navigation = [
     { name: 'Appointments', href: '/appointments', icon: CalendarClock },
     { name: 'Encounters', href: '/encounters', icon: ClipboardCheck },
     { name: 'Admissions', href: '/admissions', icon: BedDouble },
+    { name: 'Surgeries', href: '/surgeries', icon: Scissors },
+    { name: 'Operating Theaters', href: '/operating-theaters', icon: MapPin },
     { name: 'Pharmacy', href: '/pharmacy', icon: Pill },
     { name: 'Billing', href: '/billing', icon: Receipt },
     { name: 'Dialysis', href: '/dialysis', icon: Droplet },

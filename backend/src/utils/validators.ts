@@ -37,6 +37,12 @@ import {
     ClaimStatus,
     AdmissionStatus,
     BedStatus,
+    SurgeryStatus,
+    SurgeryPriority,
+    AnesthesiaType,
+    AsaPhysicalStatus,
+    SurgicalRole,
+    WoundClass,
 } from '@prisma/client';
 
 // Auth Schemas
@@ -1744,6 +1750,86 @@ export const updateClaimSchema = z.object({
     }),
 });
 
+// Surgery Schemas
+export const createOperatingTheaterSchema = z.object({
+    body: z.object({
+        name: z.string().min(1, 'Theater name is required'),
+        location: z.string().optional().nullable(),
+        status: z.string().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateOperatingTheaterSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Theater ID is required'),
+    }),
+    body: z.object({
+        name: z.string().min(1).optional(),
+        location: z.string().optional().nullable(),
+        status: z.string().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createSurgerySchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        admissionId: z.string().optional().nullable(),
+        theaterId: z.string().optional().nullable(),
+        status: z.nativeEnum(SurgeryStatus).optional(),
+        priority: z.nativeEnum(SurgeryPriority).optional(),
+        scheduledStart: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid scheduled start time',
+        }),
+        scheduledEnd: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid scheduled end time',
+        }),
+        preOpDiagnosis: z.string().min(1, 'Pre-op diagnosis is required'),
+        postOpDiagnosis: z.string().optional().nullable(),
+        procedureName: z.string().min(1, 'Procedure name is required'),
+    }).refine((data) => {
+        return new Date(data.scheduledEnd).getTime() > new Date(data.scheduledStart).getTime();
+    }, {
+        message: 'Scheduled end time must be after scheduled start time',
+        path: ['scheduledEnd'],
+    }),
+});
+
+export const updateSurgerySchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Surgery ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        admissionId: z.string().optional().nullable(),
+        theaterId: z.string().optional().nullable(),
+        status: z.nativeEnum(SurgeryStatus).optional(),
+        priority: z.nativeEnum(SurgeryPriority).optional(),
+        scheduledStart: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid scheduled start time',
+        }).optional(),
+        scheduledEnd: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid scheduled end time',
+        }).optional(),
+        actualStart: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid actual start time',
+        }).optional().nullable(),
+        actualEnd: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid actual end time',
+        }).optional().nullable(),
+        preOpDiagnosis: z.string().min(1).optional(),
+        postOpDiagnosis: z.string().optional().nullable(),
+        procedureName: z.string().min(1).optional(),
+    }).refine((data) => {
+        if (!data.scheduledStart || !data.scheduledEnd) return true;
+        return new Date(data.scheduledEnd).getTime() > new Date(data.scheduledStart).getTime();
+    }, {
+        message: 'Scheduled end time must be after scheduled start time',
+        path: ['scheduledEnd'],
+    }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type CreatePatientInput = z.infer<typeof createPatientSchema>['body'];
@@ -1824,3 +1910,7 @@ export type CreatePaymentInput = z.infer<typeof createPaymentSchema>['body'];
 export type UpdatePaymentInput = z.infer<typeof updatePaymentSchema>['body'];
 export type CreateClaimInput = z.infer<typeof createClaimSchema>['body'];
 export type UpdateClaimInput = z.infer<typeof updateClaimSchema>['body'];
+export type CreateOperatingTheaterInput = z.infer<typeof createOperatingTheaterSchema>['body'];
+export type UpdateOperatingTheaterInput = z.infer<typeof updateOperatingTheaterSchema>['body'];
+export type CreateSurgeryInput = z.infer<typeof createSurgerySchema>['body'];
+export type UpdateSurgeryInput = z.infer<typeof updateSurgerySchema>['body'];

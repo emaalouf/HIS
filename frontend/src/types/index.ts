@@ -1311,6 +1311,12 @@ export type PaymentMethod = 'CASH' | 'CARD' | 'TRANSFER' | 'CHECK' | 'OTHER';
 export type ClaimStatus = 'DRAFT' | 'SUBMITTED' | 'ACCEPTED' | 'DENIED' | 'PAID';
 export type AdmissionStatus = 'ADMITTED' | 'TRANSFERRED' | 'DISCHARGED' | 'CANCELLED';
 export type BedStatus = 'AVAILABLE' | 'OCCUPIED' | 'CLEANING' | 'MAINTENANCE';
+export type SurgeryStatus = 'REQUESTED' | 'SCHEDULED' | 'PRE_OP' | 'IN_PROGRESS' | 'RECOVERY' | 'COMPLETED' | 'CANCELLED';
+export type SurgeryPriority = 'ELECTIVE' | 'URGENT' | 'EMERGENCY';
+export type AnesthesiaType = 'GENERAL' | 'REGIONAL_SPINAL' | 'REGIONAL_EPIDURAL' | 'REGIONAL_NERVE_BLOCK' | 'MAC' | 'LOCAL' | 'TOPICAL';
+export type AsaPhysicalStatus = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'E';
+export type SurgicalRole = 'LEAD_SURGEON' | 'ASSISTANT_SURGEON' | 'ANESTHESIOLOGIST' | 'ANESTHETIST_NURSE' | 'SCRUB_NURSE' | 'CIRCULATING_NURSE' | 'TECHNICIAN';
+export type WoundClass = 'CLEAN' | 'CLEAN_CONTAMINATED' | 'CONTAMINATED' | 'DIRTY_INFECTED';
 
 export interface Encounter {
     id: string;
@@ -1845,4 +1851,155 @@ export interface AppointmentMeta {
     visitTypes: VisitType[];
     locations: Location[];
     providers: Provider[];
+}
+
+export interface OperatingTheater {
+    id: string;
+    name: string;
+    location?: string;
+    status: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    surgeries?: Surgery[];
+}
+
+export interface CreateOperatingTheaterRequest {
+    name: string;
+    location?: string;
+    status?: string;
+    notes?: string;
+}
+
+export interface Surgery {
+    id: string;
+    patientId: string;
+    admissionId?: string;
+    theaterId?: string;
+    status: SurgeryStatus;
+    priority: SurgeryPriority;
+    scheduledStart: string;
+    scheduledEnd: string;
+    actualStart?: string;
+    actualEnd?: string;
+    preOpDiagnosis: string;
+    postOpDiagnosis?: string;
+    procedureName: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+        phone?: string;
+    };
+    admission?: {
+        id: string;
+        admitDate: string;
+        reason?: string;
+        diagnosis?: string;
+    };
+    theater?: {
+        id: string;
+        name: string;
+        location?: string;
+    };
+    teamMembers?: SurgeryTeamMember[];
+    checklists?: SurgeryChecklist[];
+    anesthesiaRecord?: AnesthesiaRecord;
+    operativeReport?: OperativeReport;
+}
+
+export interface CreateSurgeryRequest {
+    patientId: string;
+    admissionId?: string;
+    theaterId?: string;
+    status?: SurgeryStatus;
+    priority?: SurgeryPriority;
+    scheduledStart: string;
+    scheduledEnd: string;
+    preOpDiagnosis: string;
+    postOpDiagnosis?: string;
+    procedureName: string;
+}
+
+export interface SurgeryTeamMember {
+    id: string;
+    surgeryId: string;
+    userId: string;
+    role: SurgicalRole;
+    notes?: string;
+    user?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        role: Role;
+        specialty?: string;
+    };
+}
+
+export interface AddTeamMemberRequest {
+    surgeryId: string;
+    userId: string;
+    role: SurgicalRole;
+    notes?: string;
+}
+
+export interface RemoveTeamMemberRequest {
+    surgeryId: string;
+    userId: string;
+    role: SurgicalRole;
+}
+
+export interface SurgeryChecklist {
+    id: string;
+    surgeryId: string;
+    stage: string;
+    items: unknown;
+    completedById: string;
+    completedAt: string;
+    completedBy?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface AnesthesiaRecord {
+    id: string;
+    surgeryId: string;
+    anesthesiaType: AnesthesiaType;
+    asaStatus: AsaPhysicalStatus;
+    inductionTime?: string;
+    emergenceTime?: string;
+    airwayNotes?: string;
+    medications?: unknown;
+    ivFluids?: unknown;
+    bloodProducts?: unknown;
+    complications?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface OperativeReport {
+    id: string;
+    surgeryId: string;
+    surgeonId: string;
+    procedureDescription: string;
+    findings?: string;
+    woundClass?: WoundClass;
+    estimatedBloodLoss?: number;
+    specimensRemoved?: string;
+    implantsInserted?: string;
+    complications?: string;
+    postOpInstructions?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    surgeon?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+    };
 }
