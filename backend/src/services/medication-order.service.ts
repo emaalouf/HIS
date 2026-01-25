@@ -72,13 +72,13 @@ export class MedicationOrderService {
 
         if (search) {
             where.OR = [
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { provider: { firstName: { contains: search, mode: 'insensitive' } } },
-                { provider: { lastName: { contains: search, mode: 'insensitive' } } },
-                { medicationName: { contains: search, mode: 'insensitive' } },
-                { indication: { contains: search, mode: 'insensitive' } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { provider: { firstName: { contains: search } } },
+                { provider: { lastName: { contains: search } } },
+                { medicationName: { contains: search } },
+                { indication: { contains: search } },
             ];
         }
 
@@ -156,7 +156,7 @@ export class MedicationOrderService {
         indication?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.MedicationOrderUpdateInput = {
+        const updateData: Prisma.MedicationOrderUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId ?? undefined,
             encounterId: data.encounterId ?? undefined,

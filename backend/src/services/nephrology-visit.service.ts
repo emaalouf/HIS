@@ -65,13 +65,13 @@ export class NephrologyVisitService {
 
         if (search) {
             where.OR = [
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { provider: { firstName: { contains: search, mode: 'insensitive' } } },
-                { provider: { lastName: { contains: search, mode: 'insensitive' } } },
-                { reason: { contains: search, mode: 'insensitive' } },
-                { diagnosis: { contains: search, mode: 'insensitive' } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { provider: { firstName: { contains: search } } },
+                { provider: { lastName: { contains: search } } },
+                { reason: { contains: search } },
+                { diagnosis: { contains: search } },
             ];
         }
 
@@ -149,7 +149,7 @@ export class NephrologyVisitService {
         plan?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.NephrologyVisitUpdateInput = {
+        const updateData: Prisma.NephrologyVisitUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId,
             status: data.status,

@@ -77,10 +77,10 @@ export class InvoiceService {
 
         if (search) {
             where.OR = [
-                { invoiceNumber: { contains: search, mode: 'insensitive' } },
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
+                { invoiceNumber: { contains: search } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
             ];
         }
 
@@ -160,7 +160,7 @@ export class InvoiceService {
                 }
             }
 
-            const updateData: Prisma.InvoiceUpdateInput = {
+            const updateData: Prisma.InvoiceUncheckedUpdateInput = {
                 patientId: data.patientId,
                 encounterId: data.encounterId ?? undefined,
                 status: data.status,

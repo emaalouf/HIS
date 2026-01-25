@@ -43,8 +43,8 @@ export class OperatingTheaterService {
 
         if (search) {
             where.OR = [
-                { name: { contains: search, mode: 'insensitive' } },
-                { location: { contains: search, mode: 'insensitive' } },
+                { name: { contains: search } },
+                { location: { contains: search } },
             ];
         }
 

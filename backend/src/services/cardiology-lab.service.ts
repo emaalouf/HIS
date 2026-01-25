@@ -47,10 +47,10 @@ export class CardiologyLabService {
 
         if (search) {
             where.OR = [
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { notes: { contains: search, mode: 'insensitive' } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { notes: { contains: search } },
             ];
         }
 
@@ -125,7 +125,7 @@ export class CardiologyLabService {
         inr?: number;
         notes?: string | null;
     }) {
-        const updateData: Prisma.CardiologyLabResultUpdateInput = {
+        const updateData: Prisma.CardiologyLabResultUncheckedUpdateInput = {
             patientId: data.patientId,
             troponin: data.troponin,
             bnp: data.bnp,

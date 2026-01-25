@@ -37,8 +37,8 @@ export class DialysisFlowsheetService {
         if (search) {
             where.OR = [
                 { sessionId: { contains: search } },
-                { notes: { contains: search, mode: 'insensitive' } },
-                { alarms: { contains: search, mode: 'insensitive' } },
+                { notes: { contains: search } },
+                { alarms: { contains: search } },
             ];
         }
 
@@ -116,7 +116,7 @@ export class DialysisFlowsheetService {
         alarms?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.DialysisFlowsheetEntryUpdateInput = {
+        const updateData: Prisma.DialysisFlowsheetEntryUncheckedUpdateInput = {
             sessionId: data.sessionId,
             bpSystolic: data.bpSystolic,
             bpDiastolic: data.bpDiastolic,

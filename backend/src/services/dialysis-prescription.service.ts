@@ -51,11 +51,11 @@ export class DialysisPrescriptionService {
 
         if (search) {
             where.OR = [
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { dialyzer: { contains: search, mode: 'insensitive' } },
-                { dialysate: { contains: search, mode: 'insensitive' } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { dialyzer: { contains: search } },
+                { dialysate: { contains: search } },
             ];
         }
 
@@ -136,7 +136,7 @@ export class DialysisPrescriptionService {
         startDate?: string;
         endDate?: string;
     }) {
-        const updateData: Prisma.DialysisPrescriptionUpdateInput = {
+        const updateData: Prisma.DialysisPrescriptionUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId ?? undefined,
             dryWeight: data.dryWeight,

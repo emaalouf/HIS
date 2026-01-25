@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { CardiologyTestStatus } from '@prisma/client';
+import { CardiologyTestStatus, HeartFailureStage, NYHAClass } from '@prisma/client';
 import prisma from '../config/database';
 import { cardiologyHeartFailureService } from '../services/cardiology-heart-failure.service';
 import { sendError, sendPaginated, sendSuccess } from '../utils/helpers';
@@ -18,8 +18,15 @@ export const getCardiologyHeartFailureAssessments = async (req: Request, res: Re
         const visitId = req.query.visitId as string | undefined;
         const startDate = req.query.startDate as string | undefined;
         const endDate = req.query.endDate as string | undefined;
-        const nyhaClass = req.query.nyhaClass as string | undefined;
-        const heartFailureStage = req.query.heartFailureStage as string | undefined;
+        const nyhaClassParam = req.query.nyhaClass as string | undefined;
+        const nyhaClass = nyhaClassParam && Object.values(NYHAClass).includes(nyhaClassParam as NYHAClass)
+            ? (nyhaClassParam as NYHAClass)
+            : undefined;
+        const heartFailureStageParam = req.query.heartFailureStage as string | undefined;
+        const heartFailureStage = heartFailureStageParam
+            && Object.values(HeartFailureStage).includes(heartFailureStageParam as HeartFailureStage)
+            ? (heartFailureStageParam as HeartFailureStage)
+            : undefined;
         const sortBy = req.query.sortBy as string | undefined;
         const sortOrder = (req.query.sortOrder as 'asc' | 'desc') || 'desc';
 

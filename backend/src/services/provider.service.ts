@@ -65,17 +65,17 @@ export class ProviderService {
         if (departmentId) where.departmentId = departmentId;
 
         if (specialty) {
-            where.specialty = { contains: specialty, mode: 'insensitive' };
+            where.specialty = { contains: specialty };
         }
 
         if (search) {
             where.OR = [
-                { firstName: { contains: search, mode: 'insensitive' } },
-                { lastName: { contains: search, mode: 'insensitive' } },
-                { email: { contains: search, mode: 'insensitive' } },
-                { specialty: { contains: search, mode: 'insensitive' } },
-                { phone: { contains: search, mode: 'insensitive' } },
-                { licenseNumber: { contains: search, mode: 'insensitive' } },
+                { firstName: { contains: search } },
+                { lastName: { contains: search } },
+                { email: { contains: search } },
+                { specialty: { contains: search } },
+                { phone: { contains: search } },
+                { licenseNumber: { contains: search } },
             ];
         }
 

@@ -1,4 +1,4 @@
-import { CardiologyTestStatus, Prisma } from '@prisma/client';
+import { CardiologyTestStatus, ElectrophysiologyProcedureType, Prisma } from '@prisma/client';
 import prisma from '../config/database';
 
 const cardiologyElectrophysiologyInclude = {
@@ -70,18 +70,18 @@ export class CardiologyElectrophysiologyService {
 
         if (search) {
             where.OR = [
-                { arrhythmiaType: { contains: search, mode: 'insensitive' } },
-                { deviceType: { contains: search, mode: 'insensitive' } },
-                { manufacturer: { contains: search, mode: 'insensitive' } },
-                { model: { contains: search, mode: 'insensitive' } },
-                { ablationTarget: { contains: search, mode: 'insensitive' } },
-                { indication: { contains: search, mode: 'insensitive' } },
-                { outcome: { contains: search, mode: 'insensitive' } },
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { provider: { firstName: { contains: search, mode: 'insensitive' } } },
-                { provider: { lastName: { contains: search, mode: 'insensitive' } } },
+                { arrhythmiaType: { contains: search } },
+                { deviceType: { contains: search } },
+                { manufacturer: { contains: search } },
+                { model: { contains: search } },
+                { ablationTarget: { contains: search } },
+                { indication: { contains: search } },
+                { outcome: { contains: search } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { provider: { firstName: { contains: search } } },
+                { provider: { lastName: { contains: search } } },
             ];
         }
 
@@ -112,7 +112,7 @@ export class CardiologyElectrophysiologyService {
         visitId?: string | null;
         status?: CardiologyTestStatus;
         performedAt: string;
-        procedureType: string;
+        procedureType: ElectrophysiologyProcedureType;
         indication?: string | null;
         arrhythmiaType?: string | null;
         deviceType?: string | null;
@@ -159,7 +159,7 @@ export class CardiologyElectrophysiologyService {
         visitId?: string | null;
         status?: CardiologyTestStatus;
         performedAt?: string;
-        procedureType?: string;
+        procedureType?: ElectrophysiologyProcedureType;
         indication?: string | null;
         arrhythmiaType?: string | null;
         deviceType?: string | null;
@@ -174,7 +174,7 @@ export class CardiologyElectrophysiologyService {
         followUpDate?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.CardiologyElectrophysiologyUpdateInput = {
+        const updateData: Prisma.CardiologyElectrophysiologyUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId ?? undefined,
             visitId: data.visitId ?? undefined,

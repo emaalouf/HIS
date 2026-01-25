@@ -1,4 +1,4 @@
-import { CardiologyTestStatus, Prisma } from '@prisma/client';
+import { CardiologyTestStatus, HeartFailureStage, NYHAClass, Prisma } from '@prisma/client';
 import prisma from '../config/database';
 
 const cardiologyHeartFailureInclude = {
@@ -37,8 +37,8 @@ export class CardiologyHeartFailureService {
         visitId?: string;
         startDate?: string;
         endDate?: string;
-        nyhaClass?: string;
-        heartFailureStage?: string;
+        nyhaClass?: NYHAClass;
+        heartFailureStage?: HeartFailureStage;
         sortBy?: string;
         sortOrder?: 'asc' | 'desc';
     }) {
@@ -76,17 +76,17 @@ export class CardiologyHeartFailureService {
 
         if (search) {
             where.OR = [
-                { etiology: { contains: search, mode: 'insensitive' } },
-                { symptoms: { contains: search, mode: 'insensitive' } },
-                { medications: { contains: search, mode: 'insensitive' } },
-                { mechanicalSupport: { contains: search, mode: 'insensitive' } },
-                { assessment: { contains: search, mode: 'insensitive' } },
-                { plan: { contains: search, mode: 'insensitive' } },
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { provider: { firstName: { contains: search, mode: 'insensitive' } } },
-                { provider: { lastName: { contains: search, mode: 'insensitive' } } },
+                { etiology: { contains: search } },
+                { symptoms: { contains: search } },
+                { medications: { contains: search } },
+                { mechanicalSupport: { contains: search } },
+                { assessment: { contains: search } },
+                { plan: { contains: search } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { provider: { firstName: { contains: search } } },
+                { provider: { lastName: { contains: search } } },
             ];
         }
 
@@ -118,8 +118,8 @@ export class CardiologyHeartFailureService {
         status?: CardiologyTestStatus;
         assessmentDate: string;
         etiology?: string | null;
-        nyhaClass?: string | null;
-        heartFailureStage?: string | null;
+        nyhaClass?: NYHAClass | null;
+        heartFailureStage?: HeartFailureStage | null;
         lvef?: number;
         symptoms?: string | null;
         medications?: string | null;
@@ -171,8 +171,8 @@ export class CardiologyHeartFailureService {
         status?: CardiologyTestStatus;
         assessmentDate?: string;
         etiology?: string | null;
-        nyhaClass?: string | null;
-        heartFailureStage?: string | null;
+        nyhaClass?: NYHAClass | null;
+        heartFailureStage?: HeartFailureStage | null;
         lvef?: number;
         symptoms?: string | null;
         medications?: string | null;
@@ -188,7 +188,7 @@ export class CardiologyHeartFailureService {
         nextFollowUpDate?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.CardiologyHeartFailureUpdateInput = {
+        const updateData: Prisma.CardiologyHeartFailureUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId ?? undefined,
             visitId: data.visitId ?? undefined,

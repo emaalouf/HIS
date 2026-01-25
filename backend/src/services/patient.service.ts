@@ -114,7 +114,7 @@ export class PatientService {
     }
 
     async update(id: string, data: UpdatePatientInput) {
-        const updateData: Prisma.PatientUpdateInput = { ...data };
+        const updateData: Prisma.PatientUncheckedUpdateInput = { ...data };
 
         if (data.dateOfBirth) {
             updateData.dateOfBirth = new Date(data.dateOfBirth);

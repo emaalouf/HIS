@@ -29,9 +29,9 @@ export class DialysisStationService {
 
         if (search) {
             where.OR = [
-                { name: { contains: search, mode: 'insensitive' } },
-                { room: { contains: search, mode: 'insensitive' } },
-                { machineNumber: { contains: search, mode: 'insensitive' } },
+                { name: { contains: search } },
+                { room: { contains: search } },
+                { machineNumber: { contains: search } },
             ];
         }
 
@@ -88,7 +88,7 @@ export class DialysisStationService {
         notes?: string | null;
         isActive?: boolean;
     }) {
-        const updateData: Prisma.DialysisStationUpdateInput = {
+        const updateData: Prisma.DialysisStationUncheckedUpdateInput = {
             name: data.name,
             room: data.room ?? undefined,
             machineNumber: data.machineNumber ?? undefined,

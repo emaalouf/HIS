@@ -61,11 +61,11 @@ export class NephrologyMedicationService {
 
         if (search) {
             where.OR = [
-                { medicationName: { contains: search, mode: 'insensitive' } },
-                { indication: { contains: search, mode: 'insensitive' } },
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
+                { medicationName: { contains: search } },
+                { indication: { contains: search } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
             ];
         }
 
@@ -137,7 +137,7 @@ export class NephrologyMedicationService {
         indication?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.NephrologyMedicationOrderUpdateInput = {
+        const updateData: Prisma.NephrologyMedicationOrderUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId ?? undefined,
             medicationName: data.medicationName,

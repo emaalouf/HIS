@@ -70,14 +70,14 @@ export class CardiologyEcgService {
 
         if (search) {
             where.OR = [
-                { type: { contains: search, mode: 'insensitive' } },
-                { rhythm: { contains: search, mode: 'insensitive' } },
-                { interpretation: { contains: search, mode: 'insensitive' } },
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { provider: { firstName: { contains: search, mode: 'insensitive' } } },
-                { provider: { lastName: { contains: search, mode: 'insensitive' } } },
+                { type: { contains: search } },
+                { rhythm: { contains: search } },
+                { interpretation: { contains: search } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { provider: { firstName: { contains: search } } },
+                { provider: { lastName: { contains: search } } },
             ];
         }
 
@@ -155,7 +155,7 @@ export class CardiologyEcgService {
         interpretation?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.CardiologyEcgUpdateInput = {
+        const updateData: Prisma.CardiologyEcgUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId ?? undefined,
             visitId: data.visitId ?? undefined,

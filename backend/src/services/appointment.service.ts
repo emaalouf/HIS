@@ -79,9 +79,9 @@ export class AppointmentService {
 
         if (search) {
             where.OR = [
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
                 { patient: { phone: { contains: search } } },
             ];
         }
@@ -150,7 +150,7 @@ export class AppointmentService {
         reason?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.AppointmentUpdateInput = {
+        const updateData: Prisma.AppointmentUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId,
             visitTypeId: data.visitTypeId || undefined,

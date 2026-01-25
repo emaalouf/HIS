@@ -143,7 +143,7 @@ export class PaymentService {
         receivedById?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.PaymentUpdateInput = {
+        const updateData: Prisma.PaymentUncheckedUpdateInput = {
             invoiceId: data.invoiceId,
             patientId: data.patientId,
             amount: data.amount,

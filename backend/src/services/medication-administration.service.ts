@@ -123,7 +123,7 @@ export class MedicationAdministrationService {
         status?: MedicationAdministrationStatus;
         notes?: string | null;
     }) {
-        const updateData: Prisma.MedicationAdministrationUpdateInput = {
+        const updateData: Prisma.MedicationAdministrationUncheckedUpdateInput = {
             medicationOrderId: data.medicationOrderId,
             patientId: data.patientId,
             administeredById: data.administeredById ?? undefined,

@@ -1,7 +1,7 @@
 import { SurgeryStatus, SurgeryPriority, Prisma } from '@prisma/client';
 import prisma from '../config/database';
 
-const surgeryInclude = {
+const surgeryInclude: Prisma.SurgeryInclude = {
     patient: {
         select: {
             id: true,
@@ -49,7 +49,7 @@ const surgeryInclude = {
                 },
             },
         },
-        orderBy: { completedAt: 'desc' },
+        orderBy: { completedAt: Prisma.SortOrder.desc },
     },
     anesthesiaRecord: true,
     operativeReport: {
@@ -112,11 +112,11 @@ export class SurgeryService {
 
         if (search) {
             where.OR = [
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { procedureName: { contains: search, mode: 'insensitive' } },
-                { preOpDiagnosis: { contains: search, mode: 'insensitive' } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { procedureName: { contains: search } },
+                { preOpDiagnosis: { contains: search } },
             ];
         }
 
@@ -184,7 +184,7 @@ export class SurgeryService {
         postOpDiagnosis?: string | null;
         procedureName?: string;
     }) {
-        const updateData: Prisma.SurgeryUpdateInput = {
+        const updateData: Prisma.SurgeryUncheckedUpdateInput = {
             patientId: data.patientId,
             admissionId: data.admissionId ?? undefined,
             theaterId: data.theaterId ?? undefined,
@@ -223,7 +223,7 @@ export class SurgeryService {
     }
 
     async updateStatus(id: string, status: SurgeryStatus, actualStart?: string | null, actualEnd?: string | null) {
-        const updateData: Prisma.SurgeryUpdateInput = {
+        const updateData: Prisma.SurgeryUncheckedUpdateInput = {
             status,
         };
 

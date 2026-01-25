@@ -70,14 +70,14 @@ export class NephrologyBiopsyService {
 
         if (search) {
             where.OR = [
-                { indication: { contains: search, mode: 'insensitive' } },
-                { specimenType: { contains: search, mode: 'insensitive' } },
-                { pathologySummary: { contains: search, mode: 'insensitive' } },
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { provider: { firstName: { contains: search, mode: 'insensitive' } } },
-                { provider: { lastName: { contains: search, mode: 'insensitive' } } },
+                { indication: { contains: search } },
+                { specimenType: { contains: search } },
+                { pathologySummary: { contains: search } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { provider: { firstName: { contains: search } } },
+                { provider: { lastName: { contains: search } } },
             ];
         }
 
@@ -143,7 +143,7 @@ export class NephrologyBiopsyService {
         complications?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.NephrologyBiopsyUpdateInput = {
+        const updateData: Prisma.NephrologyBiopsyUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId ?? undefined,
             visitId: data.visitId ?? undefined,

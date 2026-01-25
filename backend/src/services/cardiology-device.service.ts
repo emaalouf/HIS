@@ -51,13 +51,13 @@ export class CardiologyDeviceService {
 
         if (search) {
             where.OR = [
-                { deviceType: { contains: search, mode: 'insensitive' } },
-                { manufacturer: { contains: search, mode: 'insensitive' } },
-                { model: { contains: search, mode: 'insensitive' } },
-                { serialNumber: { contains: search, mode: 'insensitive' } },
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
+                { deviceType: { contains: search } },
+                { manufacturer: { contains: search } },
+                { model: { contains: search } },
+                { serialNumber: { contains: search } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
             ];
         }
 
@@ -132,7 +132,7 @@ export class CardiologyDeviceService {
         settings?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.CardiologyDeviceUpdateInput = {
+        const updateData: Prisma.CardiologyDeviceUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId ?? undefined,
             deviceType: data.deviceType,

@@ -65,11 +65,11 @@ export class ClinicalResultService {
 
         if (search) {
             where.OR = [
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { resultName: { contains: search, mode: 'insensitive' } },
-                { value: { contains: search, mode: 'insensitive' } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { resultName: { contains: search } },
+                { value: { contains: search } },
             ];
         }
 
@@ -135,7 +135,7 @@ export class ClinicalResultService {
         flag?: ResultFlag;
         notes?: string | null;
     }) {
-        const updateData: Prisma.ClinicalResultUpdateInput = {
+        const updateData: Prisma.ClinicalResultUncheckedUpdateInput = {
             orderId: data.orderId,
             patientId: data.patientId,
             resultName: data.resultName,

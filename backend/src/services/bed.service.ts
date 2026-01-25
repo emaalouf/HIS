@@ -41,9 +41,9 @@ export class BedService {
 
         if (search) {
             where.OR = [
-                { bedLabel: { contains: search, mode: 'insensitive' } },
-                { roomNumber: { contains: search, mode: 'insensitive' } },
-                { notes: { contains: search, mode: 'insensitive' } },
+                { bedLabel: { contains: search } },
+                { roomNumber: { contains: search } },
+                { notes: { contains: search } },
             ];
         }
 

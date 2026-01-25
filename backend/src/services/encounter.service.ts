@@ -78,13 +78,13 @@ export class EncounterService {
 
         if (search) {
             where.OR = [
-                { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-                { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-                { patient: { mrn: { contains: search, mode: 'insensitive' } } },
-                { provider: { firstName: { contains: search, mode: 'insensitive' } } },
-                { provider: { lastName: { contains: search, mode: 'insensitive' } } },
-                { reasonForVisit: { contains: search, mode: 'insensitive' } },
-                { diagnosis: { contains: search, mode: 'insensitive' } },
+                { patient: { firstName: { contains: search } } },
+                { patient: { lastName: { contains: search } } },
+                { patient: { mrn: { contains: search } } },
+                { provider: { firstName: { contains: search } } },
+                { provider: { lastName: { contains: search } } },
+                { reasonForVisit: { contains: search } },
+                { diagnosis: { contains: search } },
             ];
         }
 
@@ -157,7 +157,7 @@ export class EncounterService {
         endTime?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.EncounterUpdateInput = {
+        const updateData: Prisma.EncounterUncheckedUpdateInput = {
             patientId: data.patientId,
             providerId: data.providerId,
             appointmentId: data.appointmentId || undefined,

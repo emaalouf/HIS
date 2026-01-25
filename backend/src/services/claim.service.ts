@@ -50,7 +50,7 @@ export class ClaimService {
         if (patientId) where.patientId = patientId;
         if (invoiceId) where.invoiceId = invoiceId;
         if (payerName) {
-            where.payerName = { contains: payerName, mode: 'insensitive' };
+            where.payerName = { contains: payerName };
         }
 
         const [claims, total] = await Promise.all([
@@ -106,7 +106,7 @@ export class ClaimService {
         resolvedAt?: string | null;
         notes?: string | null;
     }) {
-        const updateData: Prisma.ClaimUpdateInput = {
+        const updateData: Prisma.ClaimUncheckedUpdateInput = {
             invoiceId: data.invoiceId,
             patientId: data.patientId,
             payerName: data.payerName,
