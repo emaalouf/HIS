@@ -87,14 +87,14 @@ export const surgeryService = {
     },
 
     async removeTeamMember(data: RemoveTeamMemberRequest): Promise<void> {
-        const response = await api.delete<ApiResponse>>(`/surgeries/${data.surgeryId}/team`, { data });
+        const response = await api.delete<ApiResponse>(`/surgeries/${data.surgeryId}/team`, { data });
         if (!response.data.success) {
             throw new Error(response.data.error || 'Failed to remove team member');
         }
     },
 
     async deleteSurgery(id: string): Promise<void> {
-        const response = await api.delete<ApiResponse>>(`/surgeries/${id}`);
+        const response = await api.delete<ApiResponse>(`/surgeries/${id}`);
         if (!response.data.success) {
             throw new Error(response.data.error || 'Failed to delete surgery');
         }

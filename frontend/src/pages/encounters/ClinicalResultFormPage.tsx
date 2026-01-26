@@ -8,7 +8,6 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Input, SearchableSele
 import { ArrowLeft, Save } from 'lucide-react';
 import type { CreateClinicalResultRequest, ResultFlag, ResultStatus } from '../../types';
 import type { SelectOption } from '../../components/ui/SearchableSelect';
-import { formatDateTime } from '../../lib/utils';
 import { ClinicalNav } from './ClinicalNav';
 
 const statusOptions: ResultStatus[] = ['PENDING', 'FINAL', 'AMENDED'];

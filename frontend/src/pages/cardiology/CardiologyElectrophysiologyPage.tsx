@@ -5,7 +5,8 @@ import { cardiologyElectrophysiologyService } from '../../services/cardiology-el
 import { Button, Card, Input } from '../../components/ui';
 import { formatDateTime } from '../../lib/utils';
 import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { CardiologyElectrophysiology, CardiologyTestStatus } from '../../services/cardiology-electrophysiology.service';
+import type { CardiologyElectrophysiology } from '../../services/cardiology-electrophysiology.service';
+import type { CardiologyTestStatus } from '../../types';
 import { CardiologyNav } from './CardiologyNav';
 
 const statusOptions: CardiologyTestStatus[] = [

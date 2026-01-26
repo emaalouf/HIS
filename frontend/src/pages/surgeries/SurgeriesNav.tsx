@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { SurgeriesListPage } from './SurgeriesListPage';
 import { SurgeryFormPage } from './SurgeryFormPage';
 
@@ -6,7 +6,7 @@ export function SurgeriesNav() {
     return (
         <div className="border-b border-gray-200 mb-6">
             <nav className="flex gap-4">
-                <Link
+                <NavLink
                     to="/surgeries"
                     className={({ isActive }) =>
                         `px-4 py-2 text-sm font-medium transition-colors ${
@@ -17,7 +17,7 @@ export function SurgeriesNav() {
                     }
                 >
                     All Surgeries
-                </Link>
+                </NavLink>
             </nav>
         </div>
     );

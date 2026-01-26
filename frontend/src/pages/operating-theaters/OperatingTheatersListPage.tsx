@@ -23,7 +23,6 @@ export function OperatingTheatersListPage() {
                 search: search || undefined,
                 status: status || undefined,
             }),
-        queryClient,
     });
 
     const deleteMutation = useMutation({

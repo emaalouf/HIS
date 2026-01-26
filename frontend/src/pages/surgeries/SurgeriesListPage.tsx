@@ -57,7 +57,6 @@ export function SurgeriesListPage() {
                 search: search || undefined,
                 patientId: patientIdParam || undefined,
             }),
-        queryClient,
     });
 
     const deleteMutation = useMutation({

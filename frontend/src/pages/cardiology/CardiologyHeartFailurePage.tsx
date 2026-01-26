@@ -5,7 +5,8 @@ import { cardiologyHeartFailureService } from '../../services/cardiology-heart-f
 import { Button, Card, Input } from '../../components/ui';
 import { formatDateTime } from '../../lib/utils';
 import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { CardiologyHeartFailure, CardiologyTestStatus } from '../../services/cardiology-heart-failure.service';
+import type { CardiologyHeartFailure } from '../../services/cardiology-heart-failure.service';
+import type { CardiologyTestStatus } from '../../types';
 import { CardiologyNav } from './CardiologyNav';
 
 const statusOptions: CardiologyTestStatus[] = [

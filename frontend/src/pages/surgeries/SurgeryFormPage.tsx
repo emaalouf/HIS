@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { surgeryService } from '../../services/surgery.service';
@@ -29,20 +29,22 @@ export function SurgeryFormPage() {
         queryKey: ['surgery', id],
         queryFn: () => surgeryService.getSurgery(id!),
         enabled: isEdit,
-        queryClient,
-        onSuccess: (data) => {
-            setPatientId(data.patientId);
-            setAdmissionId(data.admissionId || '');
-            setTheaterId(data.theaterId || '');
-            setStatus(data.status);
-            setPriority(data.priority);
-            setScheduledStart(data.scheduledStart);
-            setScheduledEnd(data.scheduledEnd);
-            setPreOpDiagnosis(data.preOpDiagnosis);
-            setPostOpDiagnosis(data.postOpDiagnosis || '');
-            setProcedureName(data.procedureName);
-        },
     });
+
+    useEffect(() => {
+        if (surgery) {
+            setPatientId(surgery.patientId);
+            setAdmissionId(surgery.admissionId || '');
+            setTheaterId(surgery.theaterId || '');
+            setStatus(surgery.status);
+            setPriority(surgery.priority);
+            setScheduledStart(surgery.scheduledStart);
+            setScheduledEnd(surgery.scheduledEnd);
+            setPreOpDiagnosis(surgery.preOpDiagnosis);
+            setPostOpDiagnosis(surgery.postOpDiagnosis || '');
+            setProcedureName(surgery.procedureName);
+        }
+    }, [surgery]);
 
     const { data: patients } = useQuery({
         queryKey: ['patients'],
