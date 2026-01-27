@@ -81,6 +81,66 @@ model User {
   surgeriesTeamMember SurgeryTeamMember[]
   surgeryChecklists SurgeryChecklist[]
   operativeReports OperativeReport[]
+  
+  // Neurology
+  neurologyEegs NeurologyEeg[]
+  neurologyEmgs NeurologyEmg[]
+  neurologyImagingStudies NeurologyImaging[]
+  neurologyStrokes NeurologyStroke[]
+  neurologySeizures NeurologySeizure[]
+  neurologyCognitiveAssessments NeurologyCognitiveAssessment[]
+  
+  // Oncology
+  oncologyChemotherapy OncologyChemotherapy[]
+  oncologyRadiation OncologyRadiation[]
+  oncologyStaging OncologyStaging[]
+  oncologyTumorBoards OncologyTumorBoard[]
+  
+  // Orthopedics
+  orthopedicFractures OrthopedicFracture[]
+  orthopedicJointReplacements OrthopedicJointReplacement[]
+  orthopedicPhysicalTherapy OrthopedicPhysicalTherapy[]
+  
+  // Pulmonology
+  pulmonologySpirometry PulmonologySpirometry[]
+  pulmonologySleepStudies PulmonologySleepStudy[]
+  pulmonologyBronchoscopies PulmonologyBronchoscopy[]
+  
+  // Gastroenterology
+  gastroEndoscopies GastroEndoscopy[]
+  gastroColonoscopies GastroColonoscopy[]
+  
+  // Endocrinology
+  endoDiabetes EndoDiabetes[]
+  endoInsulin EndoInsulin[]
+  endoThyroids EndoThyroid[]
+  
+  // OBGYN
+  obgynPregnancies ObgynPregnancy[]
+  obgynDeliveries ObgynDelivery[]
+  
+  // Pediatrics
+  pedsGrowthCharts PedsGrowthChart[]
+  pedsVaccinations PedsVaccination[]
+  pedsDevelopmental PedsDevelopmental[]
+  
+  // Psychiatry
+  psychiatryAssessments PsychiatryAssessment[]
+  psychiatryTherapy PsychiatryTherapy[]
+  psychiatryMedication PsychiatryMedication[]
+  
+  // Dermatology
+  dermLesions DermLesion[]
+  dermBiopsies DermBiopsy[]
+  
+  // Ophthalmology
+  ophthExams OphthExam[]
+  ophthVisualAcuity OphthVisualAcuity[]
+  ophthFundus OphthFundus[]
+  
+  // ENT
+  entAudiometry EntAudiometry[]
+  entNasalEndoscopy EntNasalEndoscopy[]
 
   @@map("users")
 }
@@ -143,6 +203,66 @@ model Patient {
   nephrologyBiopsies         NephrologyBiopsy[]
   nephrologyMedicationOrders NephrologyMedicationOrder[]
   neurologyVisits            NeurologyVisit[]
+  neurologyEegs              NeurologyEeg[]
+  neurologyEmgs              NeurologyEmg[]
+  neurologyImaging           NeurologyImaging[]
+  neurologyStrokes           NeurologyStroke[]
+  neurologySeizures          NeurologySeizure[]
+  neurologyCognitiveAssessments NeurologyCognitiveAssessment[]
+  
+  // Oncology
+  oncologyChemotherapy       OncologyChemotherapy[]
+  oncologyRadiation          OncologyRadiation[]
+  oncologyStaging            OncologyStaging[]
+  oncologyTumorBoards        OncologyTumorBoard[]
+  
+  // Orthopedics
+  orthopedicFractures        OrthopedicFracture[]
+  orthopedicJointReplacements OrthopedicJointReplacement[]
+  orthopedicPhysicalTherapy  OrthopedicPhysicalTherapy[]
+  
+  // Pulmonology
+  pulmonologySpirometry      PulmonologySpirometry[]
+  pulmonologySleepStudies    PulmonologySleepStudy[]
+  pulmonologyBronchoscopies  PulmonologyBronchoscopy[]
+  
+  // Gastroenterology
+  gastroEndoscopies          GastroEndoscopy[]
+  gastroColonoscopies        GastroColonoscopy[]
+  gastroLiverFunctions       GastroLiverFunction[]
+  
+  // Endocrinology
+  endoDiabetes               EndoDiabetes[]
+  endoInsulin                EndoInsulin[]
+  endoThyroids               EndoThyroid[]
+  
+  // OBGYN
+  obgynPregnancies           ObgynPregnancy[]
+  obgynDeliveries            ObgynDelivery[]
+  
+  // Pediatrics
+  pedsGrowthCharts           PedsGrowthChart[]
+  pedsVaccinations           PedsVaccination[]
+  pedsDevelopmental          PedsDevelopmental[]
+  
+  // Psychiatry
+  psychiatryAssessments      PsychiatryAssessment[]
+  psychiatryTherapy          PsychiatryTherapy[]
+  psychiatryMedication       PsychiatryMedication[]
+  
+  // Dermatology
+  dermLesions                DermLesion[]
+  dermBiopsies               DermBiopsy[]
+  
+  // Ophthalmology
+  ophthExams                 OphthExam[]
+  ophthVisualAcuity          OphthVisualAcuity[]
+  ophthFundus                OphthFundus[]
+  
+  // ENT
+  entAudiometry              EntAudiometry[]
+  entNasalEndoscopy          EntNasalEndoscopy[]
+  
   clinicalOrders             ClinicalOrder[]
   clinicalResults            ClinicalResult[]
   medicationOrders           MedicationOrder[]
@@ -1668,4 +1788,1835 @@ model OperativeReport {
   surgery              Surgery     @relation(fields: [surgeryId], references: [id], onDelete: Cascade)
   surgeon              User        @relation(fields: [surgeonId], references: [id])
   @@map("operative_reports")
+}
+// ============================================
+// CLINICAL SPECIALTIES EXPANSION
+// ============================================
+
+// ============================================
+// NEUROLOGY EXTENSION
+// ============================================
+
+enum NeurologyTestStatus {
+  ORDERED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NeurologyImagingType {
+  CT_HEAD
+  CT_HEAD_WITH_CONTRAST
+  MRI_BRAIN
+  MRI_BRAIN_WITH_CONTRAST
+  CTA_HEAD
+  MRA_HEAD
+  PET_BRAIN
+  OTHER
+}
+
+enum StrokeType {
+  ISCHEMIC
+  HEMORRHAGIC
+  TIA
+}
+
+enum StrokeSeverity {
+  MILD
+  MODERATE
+  SEVERE
+}
+
+enum SeizureType {
+  FOCAL_ONSET_AWARE
+  FOCAL_ONSET_IMPAIRED
+  GENERALIZED_TONIC_CLONIC
+  ABSENCE
+  MYOCLONIC
+  ATONIC
+  UNKNOWN
+  STATUS_EPILEPTICUS
+}
+
+model NeurologyEeg {
+  id              String             @id @default(cuid())
+  patientId       String
+  providerId      String?
+  visitId         String?
+  status          NeurologyTestStatus @default(ORDERED)
+  recordedAt      DateTime
+  durationMinutes Int?
+  indication      String?            @db.Text
+  findings        String?            @db.Text
+  interpretation  String?            @db.Text
+  seizuresDetected Boolean           @default(false)
+  seizureCount    Int?
+  backgroundActivity String?
+  sleepArchitecture String?
+  photicStimulation Boolean?
+  hyperventilation Boolean?
+  notes           String?            @db.Text
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  patient         Patient            @relation(fields: [patientId], references: [id])
+  provider        User?              @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([recordedAt])
+  @@index([status])
+  @@map("neurology_eegs")
+}
+
+model NeurologyEmg {
+  id              String             @id @default(cuid())
+  patientId       String
+  providerId      String?
+  visitId         String?
+  status          NeurologyTestStatus @default(ORDERED)
+  performedAt     DateTime
+  indication      String?            @db.Text
+  musclesTested   String?            @db.Text
+  findings        String?            @db.Text
+  interpretation  String?            @db.Text
+  neuropathyPresent Boolean?
+  myopathyPresent Boolean?
+  conductionVelocity Float?
+  amplitude       Float?
+  distalLatency   Float?
+  fWaveLatency    Float?
+  notes           String?            @db.Text
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  patient         Patient            @relation(fields: [patientId], references: [id])
+  provider        User?              @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([performedAt])
+  @@index([status])
+  @@map("neurology_emgs")
+}
+
+model NeurologyImaging {
+  id              String                @id @default(cuid())
+  patientId       String
+  providerId      String?
+  visitId         String?
+  status          NeurologyTestStatus   @default(ORDERED)
+  performedAt     DateTime
+  imagingType     NeurologyImagingType
+  indication      String?               @db.Text
+  findings        String?               @db.Text
+  impression      String?               @db.Text
+  acuteFindings   Boolean               @default(false)
+  strokePresent   Boolean               @default(false)
+  hemorrhagePresent Boolean             @default(false)
+  massPresent     Boolean               @default(false)
+  contrastUsed    Boolean               @default(false)
+  notes           String?               @db.Text
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  patient         Patient               @relation(fields: [patientId], references: [id])
+  provider        User?                 @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([performedAt])
+  @@index([status])
+  @@index([imagingType])
+  @@map("neurology_imaging")
+}
+
+model NeurologyStroke {
+  id                  String          @id @default(cuid())
+  patientId           String
+  providerId          String
+  onsetTime           DateTime
+  arrivalTime         DateTime
+  strokeType          StrokeType
+  severity            StrokeSeverity
+  nihssScore          Int
+  nihssDetails        String?         @db.Text
+  location            String?
+  ctDone              Boolean         @default(false)
+  ctTime              DateTime?
+  ctFindings          String?         @db.Text
+  mriDone             Boolean         @default(false)
+  mriTime             DateTime?
+  mriFindings         String?         @db.Text
+  thrombolysisGiven   Boolean         @default(false)
+  thrombolysisTime    DateTime?
+  thrombectomyDone    Boolean         @default(false)
+  thrombectomyTime    DateTime?
+  tpaDose             Float?
+  bpManagement        String?         @db.Text
+  complications       String?         @db.Text
+  dischargeNihss      Int?
+  mrsAtDischarge      Int?
+  dischargeDisposition String?
+  notes               String?         @db.Text
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  patient             Patient         @relation(fields: [patientId], references: [id])
+  provider            User            @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([onsetTime])
+  @@index([strokeType])
+  @@map("neurology_strokes")
+}
+
+model NeurologySeizure {
+  id                  String       @id @default(cuid())
+  patientId           String
+  providerId          String?
+  eventTime           DateTime
+  seizureType         SeizureType
+  durationSeconds     Int?
+  witnessed           Boolean      @default(false)
+  witnessedBy         String?
+  auraPresent         Boolean      @default(false)
+  auraDescription     String?
+  lossOfConsciousness Boolean      @default(false)
+  incontinence        Boolean      @default(false)
+  tongueBite          Boolean      @default(false)
+  postIctalConfusion  Boolean      @default(false)
+  postIctalDuration   Int?
+  triggers            String?
+  eegCorrelation      String?
+  medicationChange    String?
+  injurySustained     String?
+  notes               String?      @db.Text
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  patient             Patient      @relation(fields: [patientId], references: [id])
+  provider            User?        @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([eventTime])
+  @@index([seizureType])
+  @@map("neurology_seizures")
+}
+
+model NeurologyCognitiveAssessment {
+  id                  String   @id @default(cuid())
+  patientId           String
+  providerId          String
+  assessmentDate      DateTime
+  mmseScore           Int?
+  mocaScore           Int?
+  clockDrawingTest    String?
+  verbalFluencyScore  Int?
+  trailMakingA        Int?
+  trailMakingB        Int?
+  delayedRecall       Int?
+  attentionTest       String?
+  languageAssessment  String?
+  visuospatialScore   Int?
+  executiveFunction   String?
+  overallImpression   String?  @db.Text
+  diagnosis           String?
+  recommendations     String?  @db.Text
+  followUpNeeded      Boolean  @default(false)
+  followUpDate        DateTime?
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  patient             Patient  @relation(fields: [patientId], references: [id])
+  provider            User     @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([assessmentDate])
+  @@map("neurology_cognitive_assessments")
+}
+
+// ============================================
+// ONCOLOGY
+// ============================================
+
+enum ChemotherapyStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  CANCELLED
+  HELD
+}
+
+enum RadiationStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  CANCELLED
+  HELD
+}
+
+enum TumorBoardStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum CancerStage {
+  STAGE_0
+  STAGE_I
+  STAGE_IA
+  STAGE_IB
+  STAGE_II
+  STAGE_IIA
+  STAGE_IIB
+  STAGE_III
+  STAGE_IIIA
+  STAGE_IIIB
+  STAGE_IIIC
+  STAGE_IV
+  UNKNOWN
+}
+
+model OncologyChemotherapy {
+  id                  String             @id @default(cuid())
+  patientId           String
+  providerId          String
+  protocolName        String
+  cancerType          String
+  cycleNumber         Int
+  totalCycles         Int
+  status              ChemotherapyStatus @default(PLANNED)
+  scheduledDate       DateTime
+  administeredDate    DateTime?
+  premedications      String?            @db.Text
+  chemotherapyAgents  String?            @db.Text
+  doses               String?            @db.Text
+  route               String?
+  durationHours       Float?
+  tolerance           String?            @db.Text
+  sideEffects         String?            @db.Text
+  doseModifications   String?            @db.Text
+  nextCycleDate       DateTime?
+  growthFactorGiven   Boolean            @default(false)
+  labsReviewed        Boolean            @default(false)
+  notes               String?            @db.Text
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  patient             Patient            @relation(fields: [patientId], references: [id])
+  provider            User               @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([scheduledDate])
+  @@index([status])
+  @@map("oncology_chemotherapy")
+}
+
+model OncologyRadiation {
+  id                  String          @id @default(cuid())
+  patientId           String
+  providerId          String
+  cancerType          String
+  treatmentSite       String
+  totalDoseGy         Float
+  fractions           Int
+  dosePerFraction     Float
+  status              RadiationStatus @default(PLANNED)
+  startDate           DateTime?
+  completionDate      DateTime?
+  fractionNumber      Int             @default(0)
+  technique           String?
+  energy              String?
+  simulationDate      DateTime?
+  planningCtDate      DateTime?
+  skinReactions       String?
+  fatigueLevel        String?
+  esophagitisGrade    String?
+  otherSideEffects    String?         @db.Text
+  treatmentBreaks     Int?
+  breakReason         String?
+  notes               String?         @db.Text
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  patient             Patient         @relation(fields: [patientId], references: [id])
+  provider            User            @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([startDate])
+  @@index([status])
+  @@map("oncology_radiation")
+}
+
+model OncologyStaging {
+  id                  String      @id @default(cuid())
+  patientId           String
+  providerId          String
+  cancerType          String
+  histology           String?
+  grade               String?
+  tStage              String?
+  nStage              String?
+  mStage              String?
+  overallStage        CancerStage
+  stageGrouping       String?
+  stagingDate         DateTime
+  stagingMethod       String?
+  tumorSizeCm         Float?
+  nodesPositive       Int?
+  nodesExamined       Int?
+  metastasisSites     String?
+  biomarkers          String?     @db.Text
+  stagingImaging      String?     @db.Text
+  pathologyReport     String?     @db.Text
+  notes               String?     @db.Text
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  patient             Patient     @relation(fields: [patientId], references: [id])
+  provider            User        @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([stagingDate])
+  @@index([cancerType])
+  @@map("oncology_staging")
+}
+
+model OncologyTumorBoard {
+  id                  String           @id @default(cuid())
+  patientId           String
+  presenterId         String
+  status              TumorBoardStatus @default(SCHEDULED)
+  meetingDate         DateTime
+  cancerType          String
+  stage               String?
+  casePresentation    String?          @db.Text
+  imagingReviewed     String?          @db.Text
+  pathologyReviewed   String?          @db.Text
+  molecularTesting    String?
+  treatmentOptions    String?          @db.Text
+  recommendedPlan     String?          @db.Text
+  clinicalTrialOffered Boolean         @default(false)
+  trialName           String?
+  attendees           String?          @db.Text
+  consensusReached    Boolean          @default(false)
+  notes               String?          @db.Text
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  patient             Patient          @relation(fields: [patientId], references: [id])
+  presenter           User             @relation(fields: [presenterId], references: [id])
+
+  @@index([patientId])
+  @@index([presenterId])
+  @@index([meetingDate])
+  @@index([status])
+  @@map("oncology_tumor_boards")
+}
+
+// ============================================
+// ORTHOPEDICS
+// ============================================
+
+enum FractureType {
+  CLOSED
+  OPEN_GUSTILO_I
+  OPEN_GUSTILO_II
+  OPEN_GUSTILO_IIIA
+  OPEN_GUSTILO_IIIB
+  OPEN_GUSTILO_IIIC
+}
+
+enum FractureStatus {
+  ACUTE
+  HEALING
+  HEALED
+  DELAYED_UNION
+  NON_UNION
+  MALUNION
+}
+
+enum JointType {
+  HIP
+  KNEE
+  SHOULDER
+  ELBOW
+  ANKLE
+  WRIST
+  OTHER
+}
+
+model OrthopedicFracture {
+  id                  String         @id @default(cuid())
+  patientId           String
+  providerId          String
+  injuryDate          DateTime
+  fractureType        FractureType
+  bone                String
+  location            String
+  classification      String?
+  displacement        String?
+  angulation          Float?
+  comminution         Boolean        @default(false)
+  status              FractureStatus @default(ACUTE)
+  reductionPerformed  Boolean        @default(false)
+  reductionDate       DateTime?
+  fixationType        String?
+  implantUsed         String?
+  surgeryDate         DateTime?
+  complications       String?        @db.Text
+  healingProgress     String?        @db.Text
+  followUpXrayDate    DateTime?
+  weightBearingStatus String?
+  physicalTherapyStarted DateTime?
+  notes               String?        @db.Text
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  patient             Patient        @relation(fields: [patientId], references: [id])
+  provider            User           @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([injuryDate])
+  @@index([status])
+  @@map("orthopedic_fractures")
+}
+
+model OrthopedicJointReplacement {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String
+  surgeryDate         DateTime
+  jointType           JointType
+  side                String
+  approach            String?
+  implantManufacturer String?
+  implantModel        String?
+  implantSize         String?
+  bearingSurface      String?
+  fixation            String?
+  anesthesiaType      String?
+  tourniquetTime      Int?
+  estimatedBloodLoss  Int?
+  complications       String?   @db.Text
+  preOpHarrisHipScore Int?
+  postOpHarrisHipScore Int?
+  preOpKssScore       Int?
+  postOpKssScore      Int?
+  rangeOfMotion       String?
+  infection           Boolean   @default(false)
+  dislocation         Boolean   @default(false)
+  revisionNeeded      Boolean   @default(false)
+  revisionDate        DateTime?
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User      @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([surgeryDate])
+  @@index([jointType])
+  @@map("orthopedic_joint_replacements")
+}
+
+model OrthopedicPhysicalTherapy {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String
+  referralDate        DateTime
+  diagnosis           String
+  treatmentGoals      String?   @db.Text
+  sessionsPlanned     Int
+  sessionsCompleted   Int       @default(0)
+  currentStatus       String    @default("ACTIVE")
+  modalities          String?
+  therapeuticExercises String?  @db.Text
+  gaitTraining        Boolean   @default(false)
+  balanceTraining     Boolean   @default(false)
+  strengthening       String?
+  rangeOfMotion       String?
+  functionalActivities String?  @db.Text
+  painLevel           Int?
+  progressNotes       String?   @db.Text
+  nextSessionDate     DateTime?
+  dischargeDate       DateTime?
+  dischargeStatus     String?
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User      @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([referralDate])
+  @@index([currentStatus])
+  @@map("orthopedic_physical_therapy")
+}
+
+// ============================================
+// PULMONOLOGY
+// ============================================
+
+enum SpirometryQuality {
+  GOOD
+  FAIR
+  POOR
+  REJECTED
+}
+
+enum SleepApneaSeverity {
+  NONE
+  MILD
+  MODERATE
+  SEVERE
+}
+
+model PulmonologySpirometry {
+  id                  String           @id @default(cuid())
+  patientId           String
+  providerId          String?
+  testDate            DateTime
+  indication          String?
+  qualityGrade        SpirometryQuality
+  fev1                Float
+  fvc                 Float
+  fev1FvcRatio        Float
+  predictedFev1       Float?
+  predictedFvc        Float?
+  percentPredictedFev1 Float?
+  percentPredictedFvc Float?
+  fef2575             Float?
+  bronchodilatorGiven Boolean          @default(false)
+  postBdFev1          Float?
+  postBdFvc           Float?
+  postBdRatio         Float?
+  significantResponse Boolean          @default(false)
+  interpretation      String?          @db.Text
+  diagnosis           String?
+  notes               String?          @db.Text
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  patient             Patient          @relation(fields: [patientId], references: [id])
+  provider            User?            @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([testDate])
+  @@map("pulmonology_spirometry")
+}
+
+model PulmonologySleepStudy {
+  id                  String             @id @default(cuid())
+  patientId           String
+  providerId          String?
+  studyDate           DateTime
+  studyType           String
+  ahi                 Float
+  rdi                 Float?
+  odi                 Float?
+  meanSpo2            Float?
+  nadirSpo2           Float?
+  timeBelow90         Float?
+  sleepEfficiency     Float?
+  totalSleepTime      Int?
+  remPercentage       Float?
+  deepSleepPercentage Float?
+  apneaSeverity       SleepApneaSeverity
+  centralApneaIndex   Float?
+  obstructiveApneaIndex Float?
+  hypopneaIndex       Float?
+  cpapRecommended     Boolean            @default(false)
+  cpapPressure        Float?
+  bipapRecommended    Boolean            @default(false)
+  bipapSettings       String?
+  positionalTherapy   Boolean            @default(false)
+  oralAppliance       Boolean            @default(false)
+  surgicalEvaluation  Boolean            @default(false)
+  notes               String?            @db.Text
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  patient             Patient            @relation(fields: [patientId], references: [id])
+  provider            User?              @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([studyDate])
+  @@index([apneaSeverity])
+  @@map("pulmonology_sleep_studies")
+}
+
+model PulmonologyBronchoscopy {
+  id                  String   @id @default(cuid())
+  patientId           String
+  providerId          String
+  procedureDate       DateTime
+  indication          String   @db.Text
+  anesthesia          String?
+  vocalCords          String?
+  trachea             String?
+  carina              String?
+  rightMainBronchus   String?
+  leftMainBronchus    String?
+  lobarBranches       String?  @db.Text
+  segmentalBranches   String?  @db.Text
+  abnormalitiesFound  Boolean  @default(false)
+  abnormalities       String?  @db.Text
+  biopsiesTaken       Int      @default(0)
+  biopsySites         String?
+  balfPerformed       Boolean  @default(false)
+  balSites            String?
+  balResults          String?  @db.Text
+  brushingsTaken      Boolean  @default(false)
+  complications       String?  @db.Text
+  postOpInstructions  String?  @db.Text
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  patient             Patient  @relation(fields: [patientId], references: [id])
+  provider            User     @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([procedureDate])
+  @@map("pulmonology_bronchoscopies")
+}
+
+// ============================================
+// GASTROENTEROLOGY
+// ============================================
+
+enum EndoscopyStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum EndoscopyQuality {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+}
+
+model GastroEndoscopy {
+  id                  String           @id @default(cuid())
+  patientId           String
+  providerId          String
+  procedureDate       DateTime
+  indication          String           @db.Text
+  status              EndoscopyStatus  @default(SCHEDULED)
+  sedationType        String?
+  scopeInsertion      String?
+  esophagus           String?
+  gastroesophagealJunction String?
+  stomach             String?          @db.Text
+  pylorus             String?
+  duodenum            String?          @db.Text
+  mucosalAppearance   String?
+  lesionsFound        Boolean          @default(false)
+  lesionsDescription  String?          @db.Text
+  biopsiesTaken       Int              @default(0)
+  biopsySites         String?
+  hemostasisPerformed Boolean          @default(false)
+  hemostasisMethod    String?
+  polypectomy         Boolean          @default(false)
+  polypsRemoved       Int              @default(0)
+  polypSizeMm         Float?
+  complications       String?          @db.Text
+  recommendations     String?          @db.Text
+  followUpInterval    String?
+  prepQuality         EndoscopyQuality?
+  notes               String?          @db.Text
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  patient             Patient          @relation(fields: [patientId], references: [id])
+  provider            User             @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([procedureDate])
+  @@index([status])
+  @@map("gastro_endoscopies")
+}
+
+model GastroColonoscopy {
+  id                  String           @id @default(cuid())
+  patientId           String
+  providerId          String
+  procedureDate       DateTime
+  indication          String           @db.Text
+  status              EndoscopyStatus  @default(SCHEDULED)
+  sedationType        String?
+  scopeInsertion      String?
+  cecalIntubation     Boolean          @default(false)
+  cecalIntubationTime Int?
+  withdrawalTime      Int?
+  prepQuality         EndoscopyQuality?
+  ileumExamined       Boolean          @default(false)
+  mucosalAppearance   String?
+  lesionsFound        Boolean          @default(false)
+  lesionsDescription  String?          @db.Text
+  polypsFound         Boolean          @default(false)
+  polypsRemoved       Int              @default(0)
+  polypSizeMaxMm      Float?
+  polypHistology      String?
+  biopsiesTaken       Int              @default(0)
+  biopsySites         String?
+  hemostasisPerformed Boolean          @default(false)
+  complications       String?          @db.Text
+  recommendations     String?          @db.Text
+  followUpInterval    String?
+  notes               String?          @db.Text
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  patient             Patient          @relation(fields: [patientId], references: [id])
+  provider            User             @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([procedureDate])
+  @@index([status])
+  @@map("gastro_colonoscopies")
+}
+
+model GastroLiverFunction {
+  id                  String   @id @default(cuid())
+  patientId           String
+  testDate            DateTime
+  alt                 Float?
+  ast                 Float?
+  alp                 Float?
+  ggt                 Float?
+  totalBilirubin      Float?
+  directBilirubin     Float?
+  indirectBilirubin   Float?
+  totalProtein        Float?
+  albumin             Float?
+  globulin            Float?
+  agRatio             Float?
+  pt                  Float?
+  inr                 Float?
+  ptt                 Float?
+  fibroscanScore      Float?
+  fibrosisStage       String?
+  steatosisGrade      String?
+  capScore            Float?
+  diagnosis           String?
+  interpretation      String?  @db.Text
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  patient             Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([testDate])
+  @@map("gastro_liver_function")
+}
+
+// ============================================
+// ENDOCRINOLOGY
+// ============================================
+
+enum DiabetesType {
+  TYPE_1
+  TYPE_2
+  GESTATIONAL
+  LADA
+  MODY
+  SECONDARY
+  PREDIABETES
+}
+
+enum InsulinType {
+  RAPID_ACTING
+  SHORT_ACTING
+  INTERMEDIATE
+  LONG_ACTING
+  ULTRA_LONG
+  PREMIXED
+}
+
+model EndoDiabetes {
+  id                  String      @id @default(cuid())
+  patientId           String
+  providerId          String
+  diagnosisDate       DateTime
+  diabetesType        DiabetesType
+  hba1cAtDiagnosis    Float?
+  currentHbA1c        Float?
+  hba1cDate           DateTime?
+  fastingGlucose      Float?
+  postprandialGlucose Float?
+  targetFasting       Float       @default(80)
+  targetPostprandial  Float       @default(140)
+  targetHbA1c         Float       @default(7.0)
+  complications       String?     @db.Text
+  retinopathy         Boolean     @default(false)
+  nephropathy         Boolean     @default(false)
+  neuropathy          Boolean     @default(false)
+  cardiovascular      Boolean     @default(false)
+  footExamDate        DateTime?
+  footExamFindings    String?
+  eyeExamDate         DateTime?
+  eyeExamFindings     String?
+  lastNephrologyReferral DateTime?
+  dietitianReferral   Boolean     @default(false)
+  diabetesEducator    Boolean     @default(false)
+  selfMonitoring      Boolean     @default(false)
+  monitoringFrequency String?
+  lifestyleModifications String?  @db.Text
+  notes               String?     @db.Text
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  patient             Patient     @relation(fields: [patientId], references: [id])
+  provider            User        @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([diagnosisDate])
+  @@index([diabetesType])
+  @@map("endo_diabetes")
+}
+
+model EndoInsulin {
+  id                  String      @id @default(cuid())
+  patientId           String
+  providerId          String
+  prescriptionDate    DateTime
+  insulinType         InsulinType
+  brandName           String?
+  morningDose         Float?
+  noonDose            Float?
+  eveningDose         Float?
+  bedtimeDose         Float?
+  correctionFactor    Float?
+  carbRatio           Float?
+  basalRate           Float?
+  siteRotation        String?
+  storageInstructions String?
+  hypoglycemiaAwareness Boolean   @default(true)
+  glucagonAvailable   Boolean     @default(false)
+  lastHbA1c           Float?
+  adjustmentsMade     String?     @db.Text
+  sideEffects         String?
+  adherence           String?
+  isActive            Boolean     @default(true)
+  notes               String?     @db.Text
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  patient             Patient     @relation(fields: [patientId], references: [id])
+  provider            User        @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([prescriptionDate])
+  @@index([isActive])
+  @@map("endo_insulin")
+}
+
+model EndoThyroid {
+  id                  String   @id @default(cuid())
+  patientId           String
+  providerId          String
+  testDate            DateTime
+  tsh                 Float?
+  freeT3              Float?
+  freeT4              Float?
+  totalT3             Float?
+  totalT4             Float?
+  tpoAntibodies       Float?
+  tgAntibodies        Float?
+  thyroglobulin       Float?
+  calcitonin          Float?
+  diagnosis           String?
+  thyroidSize         String?
+  nodulesPresent      Boolean  @default(false)
+  noduleDescription   String?
+  biopsyRecommended   Boolean  @default(false)
+  biopsyResults       String?  @db.Text
+  medication          String?
+  dose                String?
+  targetTsh           Float?
+  symptoms            String?  @db.Text
+  followUpNeeded      Boolean  @default(true)
+  followUpDate        DateTime?
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  patient             Patient  @relation(fields: [patientId], references: [id])
+  provider            User     @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([testDate])
+  @@map("endo_thyroid")
+}
+
+// ============================================
+// OBGYN
+// ============================================
+
+enum PregnancyStatus {
+  ACTIVE
+  COMPLETED
+  MISCARRIAGE
+  TERMINATED
+  ECTOPIC
+  MOLAR
+}
+
+enum Trimester {
+  FIRST
+  SECOND
+  THIRD
+}
+
+enum DeliveryMode {
+  VAGINAL_SPONTANEOUS
+  VAGINAL_ASSISTED_VACUUM
+  VAGINAL_ASSISTED_FORCEPS
+  CESAREAN_ELECTIVE
+  CESAREAN_EMERGENCY
+}
+
+model ObgynPregnancy {
+  id                  String          @id @default(cuid())
+  patientId           String
+  providerId          String
+  lmpDate             DateTime
+  eddDate             DateTime
+  gestationalAgeWeeks Int             @default(0)
+  gravida             Int
+  para                Int
+  abortions           Int
+  livingChildren      Int
+  status              PregnancyStatus @default(ACTIVE)
+  conceptionMethod    String?
+  ivfCycleNumber      String?
+  multipleGestation   Boolean         @default(false)
+  numberOfFetuses     Int             @default(1)
+  riskFactors         String?         @db.Text
+  previousCesarean    Int             @default(0)
+  rhStatus            String?
+  rubellaStatus       String?
+  hepatitisBStatus    String?
+  hivStatus           String?
+  syphilisStatus      String?
+  gbsStatus           String?
+  initialWeight       Float?
+  initialBmi          Float?
+  preExistingConditions String?       @db.Text
+  currentMedications  String?         @db.Text
+  allergies           String?         @db.Text
+  deliveryDate        DateTime?
+  deliveryMode        DeliveryMode?
+  deliveryOutcome     String?
+  babyWeightGrams     Int?
+  babyApgar1          Int?
+  babyApgar5          Int?
+  babyApgar10         Int?
+  complications       String?         @db.Text
+  notes               String?         @db.Text
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  patient             Patient         @relation(fields: [patientId], references: [id])
+  provider            User            @relation(fields: [providerId], references: [id])
+  antenalVisits       ObgynAntenatal[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([eddDate])
+  @@index([status])
+  @@map("obgyn_pregnancies")
+}
+
+model ObgynAntenatal {
+  id                  String    @id @default(cuid())
+  pregnancyId         String
+  visitDate           DateTime
+  gestationalAgeWeeks Int
+  trimester           Trimester
+  weight              Float?
+  bloodPressure       String?
+  fundalHeight        Float?
+  fetalHeartRate      Int?
+  fetalMovement       Boolean?
+  presentation        String?
+  edema               String?
+  proteinuria         String?
+  glucosuria          String?
+  hemoglobin          Float?
+  ultrasoundFindings  String?   @db.Text
+  screeningTests      String?   @db.Text
+  medications         String?
+  complaints          String?   @db.Text
+  nextVisitDate       DateTime?
+  riskAssessment      String?
+  referralNeeded      Boolean   @default(false)
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  pregnancy           ObgynPregnancy @relation(fields: [pregnancyId], references: [id], onDelete: Cascade)
+
+  @@index([pregnancyId])
+  @@index([visitDate])
+  @@map("obgyn_antenatal")
+}
+
+model ObgynDelivery {
+  id                  String       @id @default(cuid())
+  patientId           String
+  providerId          String
+  deliveryDate        DateTime
+  admissionTime       DateTime
+  deliveryTime        DateTime
+  deliveryMode        DeliveryMode
+  gestationalAgeWeeks Int
+  laborOnset          String?
+  membranesRuptured   DateTime?
+  fluidColor          String?
+  inductionPerformed  Boolean      @default(false)
+  inductionMethod     String?
+  augmentation        Boolean      @default(false)
+  anesthesia          String?
+  secondStageDuration Int?
+  episiotomy          Boolean      @default(false)
+  laceration          String?
+  estimatedBloodLoss  Int?
+  placentaDelivery    String?
+  placentaComplete    Boolean      @default(true)
+  babyWeightGrams     Int
+  babyLengthCm        Float?
+  babyHeadCircumferenceCm Float?
+  babyGender          String
+  babyApgar1          Int
+  babyApgar5          Int
+  babyApgar10         Int?
+  resuscitationNeeded Boolean      @default(false)
+  resuscitationDetails String?
+  nicuAdmission       Boolean      @default(false)
+  nicuReason          String?
+  maternalComplications String?    @db.Text
+  postpartumHb        Float?
+  rhogamGiven         Boolean      @default(false)
+  dischargeDate       DateTime?
+  breastfeedingEstablished Boolean @default(false)
+  contraceptionCounseling Boolean @default(false)
+  notes               String?      @db.Text
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  patient             Patient      @relation(fields: [patientId], references: [id])
+  provider            User         @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([deliveryDate])
+  @@map("obgyn_deliveries")
+}
+
+// ============================================
+// PEDIATRICS
+// ============================================
+
+model PedsGrowthChart {
+  id                  String   @id @default(cuid())
+  patientId           String
+  providerId          String
+  measurementDate     DateTime
+  ageMonths           Int
+  weightKg            Float
+  heightCm            Float
+  headCircumferenceCm Float?
+  bmi                 Float?
+  weightPercentile    Float?
+  heightPercentile    Float?
+  bmiPercentile       Float?
+  headCircPercentile  Float?
+  weightForLength     Float?
+  growthVelocity      String?
+  nutritionalStatus   String?
+  zScoreWeight        Float?
+  zScoreHeight        Float?
+  plotOnWhoChart      Boolean  @default(true)
+  plotOnCdcChart      Boolean  @default(false)
+  prematureCorrection Boolean  @default(false)
+  weeksPremature      Int?
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  patient             Patient  @relation(fields: [patientId], references: [id])
+  provider            User     @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([measurementDate])
+  @@map("peds_growth_charts")
+}
+
+model PedsVaccination {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String
+  vaccineName         String
+  vaccineCode         String?
+  doseNumber          Int
+  totalDoses          Int
+  dateGiven           DateTime
+  ageAtVaccination    String?
+  site                String?
+  route               String?
+  lotNumber           String?
+  manufacturer        String?
+  expirationDate      DateTime?
+  sideEffects         String?
+  contraindications   String?
+  catchUpSchedule     Boolean   @default(false)
+  dueDate             DateTime?
+  nextDoseDue         DateTime?
+  administeredBy      String?
+  consentSigned       Boolean   @default(true)
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User      @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([vaccineName])
+  @@index([dateGiven])
+  @@map("peds_vaccinations")
+}
+
+model PedsDevelopmental {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String
+  assessmentDate      DateTime
+  ageMonths           Int
+  grossMotor          String?   @db.Text
+  fineMotor           String?   @db.Text
+  language            String?   @db.Text
+  socialEmotional     String?   @db.Text
+  cognitive           String?   @db.Text
+  problemSolving      String?   @db.Text
+  personalSocial      String?   @db.Text
+  concernsIdentified  Boolean   @default(false)
+  concernsDescription String?   @db.Text
+  milestonesAchieved  String?   @db.Text
+  milestonesDelayed   String?   @db.Text
+  asqCompleted        Boolean   @default(false)
+  asqScore            String?
+  mchatCompleted      Boolean   @default(false)
+  mchatScore          Int?
+  autismScreenPositive Boolean  @default(false)
+  earlyInterventionReferral Boolean @default(false)
+  speechTherapyReferral Boolean @default(false)
+  occupationalTherapyReferral Boolean @default(false)
+  hearingTestDone     Boolean   @default(false)
+  visionTestDone      Boolean   @default(false)
+  followUpNeeded      Boolean   @default(false)
+  followUpDate        DateTime?
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User      @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([assessmentDate])
+  @@map("peds_developmental")
+}
+
+// ============================================
+// PSYCHIATRY
+// ============================================
+
+enum AssessmentType {
+  INITIAL
+  FOLLOW_UP
+  CRISIS
+  DISCHARGE
+  ANNUAL
+  PRE_ADMISSION
+  FORENSIC
+}
+
+enum TherapyType {
+  INDIVIDUAL
+  GROUP
+  FAMILY
+  COUPLES
+  COGNITIVE_BEHAVIORAL
+  DIALECTICAL_BEHAVIORAL
+  PSYCHODYNAMIC
+  SUPPORTIVE
+  EXPOSURE
+}
+
+model PsychiatryAssessment {
+  id                  String         @id @default(cuid())
+  patientId           String
+  providerId          String
+  assessmentDate      DateTime
+  assessmentType      AssessmentType
+  chiefComplaint      String         @db.Text
+  historyOfPresentIllness String?    @db.Text
+  pastPsychiatricHistory String?     @db.Text
+  pastMedicalHistory  String?        @db.Text
+  familyHistory       String?        @db.Text
+  socialHistory       String?        @db.Text
+  substanceUseHistory String?        @db.Text
+  currentMedications  String?        @db.Text
+  allergies           String?
+  reviewOfSystems     String?        @db.Text
+  mentalStatusExam    String?        @db.Text
+  appearance          String?
+  behavior            String?
+  speech              String?
+  mood                String?
+  affect              String?
+  thoughtProcess      String?
+  thoughtContent      String?
+  perceptions         String?
+  cognition           String?
+  insight             String?
+  judgment            String?
+  phq9Score           Int?
+  gad7Score           Int?
+  mdqScore            Int?
+  pcptsdScore         Int?
+  c_ssrsScore         Int?
+  riskAssessment      String?        @db.Text
+  suicidalIdeation    Boolean        @default(false)
+  suicidalPlan        Boolean        @default(false)
+  suicidalIntent      Boolean        @default(false)
+  homicidalIdeation   Boolean        @default(false)
+  selfHarmBehaviors   Boolean        @default(false)
+  diagnosisPrimary    String?
+  diagnosisSecondary  String?
+  diagnosisCodes      String?
+  formulation         String?        @db.Text
+  plan                String?        @db.Text
+  medicationsStarted  String?        @db.Text
+  psychotherapyRecommended Boolean   @default(false)
+  therapyType         String?
+  followUpInterval    String?
+  urgentFollowUp      Boolean        @default(false)
+  notes               String?        @db.Text
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  patient             Patient        @relation(fields: [patientId], references: [id])
+  provider            User           @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([assessmentDate])
+  @@index([assessmentType])
+  @@map("psychiatry_assessments")
+}
+
+model PsychiatryTherapy {
+  id                  String     @id @default(cuid())
+  patientId           String
+  providerId          String
+  sessionDate         DateTime
+  therapyType         TherapyType
+  sessionNumber       Int
+  durationMinutes     Int        @default(50)
+  subjective          String?    @db.Text
+  objective           String?    @db.Text
+  assessment          String?    @db.Text
+  plan                String?    @db.Text
+  interventionsUsed   String?    @db.Text
+  homeworkAssigned    String?    @db.Text
+  progressNotes       String?    @db.Text
+  moodRating          Int?
+  anxietyRating       Int?
+  functioningLevel    String?
+  goalsDiscussed      String?    @db.Text
+  barriersIdentified  String?    @db.Text
+  copingStrategies    String?    @db.Text
+  crisisPlanReviewed  Boolean    @default(false)
+  medicationAdherence String?
+  sideEffectsDiscussed Boolean   @default(false)
+  patientEngagement   String?
+  nextSessionDate     DateTime?
+  noShow              Boolean    @default(false)
+  cancellationReason  String?
+  urgentIssues        String?    @db.Text
+  safetyPlanUpdated   Boolean    @default(false)
+  notes               String?    @db.Text
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  patient             Patient    @relation(fields: [patientId], references: [id])
+  provider            User       @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([sessionDate])
+  @@index([therapyType])
+  @@map("psychiatry_therapy")
+}
+
+model PsychiatryMedication {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String
+  assessmentDate      DateTime
+  medicationName      String
+  genericName         String?
+  dose                String
+  frequency           String
+  route               String?
+  indication          String?
+  startedDate         DateTime?
+  prescribedBy        String?
+  adherenceRating     Int?
+  adherenceBarriers   String?   @db.Text
+  effectivenessRating Int?
+  sideEffectsPresent  Boolean   @default(false)
+  sideEffects         String?   @db.Text
+  sideEffectSeverity  String?
+  weightChanges       Float?
+  sedationLevel       String?
+  akathisiaPresent    Boolean   @default(false)
+  tremorPresent       Boolean   @default(false)
+  bloodWorkNeeded     Boolean   @default(false)
+  lastClozapineLevel  Float?
+  lastLithiumLevel    Float?
+  lastValproateLevel  Float?
+  ecgNeeded           Boolean   @default(false)
+  metabolicMonitoring Boolean   @default(false)
+  changesMade         String?   @db.Text
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User      @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([assessmentDate])
+  @@index([medicationName])
+  @@map("psychiatry_medication")
+}
+
+// ============================================
+// DERMATOLOGY
+// ============================================
+
+enum LesionType {
+  MACULE
+  PAPULE
+  PLAQUE
+  NODULE
+  TUMOR
+  VESICLE
+  BULLA
+  PUSTULE
+  WHEAL
+  CYST
+  ULCER
+  EROSION
+  SCALE
+  CRUST
+  SCAR
+  EXCORIATION
+}
+
+enum BiopsyType {
+  SHAVE
+  PUNCH
+  EXCISIONAL
+  INCISIONAL
+  WEDGE
+  MOHS
+}
+
+model DermLesion {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String
+  dateNoted           DateTime
+  location            String
+  lesionType          LesionType
+  sizeMm              Float
+  color               String?
+  shape               String?
+  border              String?
+  symmetry            String?
+  elevation           String?
+  surface             String?
+  surroundingSkin     String?
+  symptoms            String?
+  duration            String?
+  changes             String?
+  previousTrauma      Boolean   @default(false)
+  familyHistory       String?
+  personalHistory     String?
+  sunExposure         String?
+  abcdScore           Int?
+  sevenPointChecklist Int?
+  dermoscopyUsed      Boolean   @default(false)
+  dermoscopyFindings  String?   @db.Text
+  photographyDone     Boolean   @default(false)
+  suspiciousFeatures  String?   @db.Text
+  biopsyRecommended   Boolean   @default(false)
+  biopsyType          BiopsyType?
+  diagnosisClinical   String?
+  management          String?   @db.Text
+  followUpWeeks       Int?
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User      @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([dateNoted])
+  @@index([lesionType])
+  @@map("derm_lesions")
+}
+
+model DermBiopsy {
+  id                  String     @id @default(cuid())
+  patientId           String
+  providerId          String
+  biopsyDate          DateTime
+  lesionId            String?
+  location            String
+  biopsyType          BiopsyType
+  localAnesthetic     String     @default("Lidocaine 1%")
+  sutureType          String?
+  sutureCount         Int?
+  specimenLabel       String
+  sentToPathology     Boolean    @default(true)
+  pathologyLab        String?
+  clinicalImpression  String?    @db.Text
+  differentialDiagnosis String?  @db.Text
+  woundCareInstructions String?  @db.Text
+  sutureRemovalDate   DateTime?
+  complications       String?    @db.Text
+  pathologyReceived   Boolean    @default(false)
+  pathologyReportDate DateTime?
+  pathologicDiagnosis String?    @db.Text
+  histology           String?    @db.Text
+  margins             String?
+  depthMm             Float?
+  ulcerationPresent   Boolean    @default(false)
+  mitoticRate         String?
+  breslowDepth        Float?
+  clarkLevel          Int?
+  tnmStage            String?
+  furtherTreatment    String?    @db.Text
+  notes               String?    @db.Text
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  patient             Patient    @relation(fields: [patientId], references: [id])
+  provider            User       @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([biopsyDate])
+  @@index([biopsyType])
+  @@map("derm_biopsies")
+}
+
+// ============================================
+// OPHTHALMOLOGY
+// ============================================
+
+enum EyeSide {
+  RIGHT
+  LEFT
+  BOTH
+}
+
+model OphthExam {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String
+  examDate            DateTime
+  chiefComplaint      String?   @db.Text
+  history             String?   @db.Text
+  lastExam            DateTime?
+  visualAcuityRight   String?
+  visualAcuityLeft    String?
+  bestCorrectedRight  String?
+  bestCorrectedLeft   String?
+  pinholeRight        String?
+  pinholeLeft         String?
+  nearVisionRight     String?
+  nearVisionLeft      String?
+  iopRight            Float?
+  iopLeft             Float?
+  iopMethod           String?
+  pupils              String?
+  extraocularMotility String?
+  confrontationFields String?
+  externalExam        String?   @db.Text
+  slitLampExam        String?   @db.Text
+  anteriorSegment     String?   @db.Text
+  lens                String?   @db.Text
+  vitreous            String?   @db.Text
+  fundusExam          String?   @db.Text
+  opticNerve          String?   @db.Text
+  macula              String?   @db.Text
+  vessels             String?   @db.Text
+  periphery           String?   @db.Text
+  gonioscopy          String?   @db.Text
+  refractionRight     String?
+  refractionLeft      String?
+  diagnosis           String?   @db.Text
+  plan                String?   @db.Text
+  glassesPrescribed   Boolean   @default(false)
+  medicationPrescribed String?  @db.Text
+  followUpWeeks       Int?
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User      @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([examDate])
+  @@map("ophth_exams")
+}
+
+model OphthVisualAcuity {
+  id                  String   @id @default(cuid())
+  patientId           String
+  providerId          String?
+  testDate            DateTime
+  eyeSide             EyeSide
+  distanceUncorrected String?
+  distanceCorrected   String?
+  nearUncorrected     String?
+  nearCorrected       String?
+  pinhole             String?
+  lensPower           String?
+  snellenFraction     String?
+  logmarScore         Float?
+  etdrsLetters        Int?
+  contrastSensitivity String?
+  colorVision         String?
+  amslerGrid          String?
+  amslerAbnormal      Boolean  @default(false)
+  redDesaturation     Boolean  @default(false)
+  diagnosis           String?
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  patient             Patient  @relation(fields: [patientId], references: [id])
+  provider            User?    @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([testDate])
+  @@index([eyeSide])
+  @@map("ophth_visual_acuity")
+}
+
+model OphthFundus {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String?
+  examDate            DateTime
+  eyeSide             EyeSide
+  dilationUsed        String?
+  cupDiscRatio        Float?
+  neuroretinalRim     String?
+  discColor           String?
+  discMargins         String?
+  peripapillaryAtrophy String?
+  vesselAppearance    String?
+  avRatio             String?
+  nipping             Boolean   @default(false)
+  crossingChanges     Boolean   @default(false)
+  maculaAppearance    String?   @db.Text
+  fovealReflex        Boolean   @default(true)
+  drusenPresent       Boolean   @default(false)
+  drusenDescription   String?
+  hemorrhages         Boolean   @default(false)
+  hemorrhageDescription String?
+  exudates            Boolean   @default(false)
+  exudateType         String?
+  cottonWoolSpots     Boolean   @default(false)
+  microaneurysms      Boolean   @default(false)
+  neovascularization  Boolean   @default(false)
+  retinalDetachment   Boolean   @default(false)
+  tearsOrHoles        Boolean   @default(false)
+  latticeDegeneration Boolean   @default(false)
+  peripheralPathology String?   @db.Text
+  diabeticRetinopathy String?
+  hypertensiveChanges String?
+  amdSeverity         String?
+  glaucomaSuspect     Boolean   @default(false)
+  photosTaken         Boolean   @default(false)
+  octRecommended      Boolean   @default(false)
+  faRecommended       Boolean   @default(false)
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User?     @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([examDate])
+  @@index([eyeSide])
+  @@map("ophth_fundus")
+}
+
+// ============================================
+// ENT
+// ============================================
+
+enum HearingLossType {
+  CONDUCTIVE
+  SENSORINEURAL
+  MIXED
+  NORMAL
+}
+
+model EntAudiometry {
+  id                  String          @id @default(cuid())
+  patientId           String
+  providerId          String?
+  testDate            DateTime
+  testType            String          @default("Pure Tone Audiometry")
+  right250Hz          Int?
+  right500Hz          Int?
+  right1000Hz         Int?
+  right2000Hz         Int?
+  right4000Hz         Int?
+  right8000Hz         Int?
+  left250Hz           Int?
+  left500Hz           Int?
+  left1000Hz          Int?
+  left2000Hz          Int?
+  left4000Hz          Int?
+  left8000Hz          Int?
+  rightPta4           Float?
+  leftPta4            Float?
+  rightPta3           Float?
+  leftPta3            Float?
+  rightSpeechReceptionThreshold Int?
+  leftSpeechReceptionThreshold  Int?
+  rightSpeechDiscrimination   Int?
+  leftSpeechDiscrimination    Int?
+  rightHearingLossType  HearingLossType?
+  leftHearingLossType   HearingLossType?
+  rightHearingLossDegree String?
+  leftHearingLossDegree  String?
+  tympanogramRight    String?
+  tympanogramLeft     String?
+  acousticReflexRight String?
+  acousticReflexLeft  String?
+  oaeRight            String?
+  oaeLeft             String?
+  abrRecommended      Boolean         @default(false)
+  hearingAidRecommended Boolean       @default(false)
+  hearingAidType      String?
+  followUpNeeded      Boolean         @default(false)
+  followUpDate        DateTime?
+  notes               String?         @db.Text
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  patient             Patient         @relation(fields: [patientId], references: [id])
+  provider            User?           @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([testDate])
+  @@map("ent_audiometry")
+}
+
+model EntNasalEndoscopy {
+  id                  String    @id @default(cuid())
+  patientId           String
+  providerId          String
+  procedureDate       DateTime
+  indication          String    @db.Text
+  anesthesia          String?   @default("Topical lidocaine 4%")
+  nasalSeptum         String?
+  turbinates          String?   @db.Text
+  meatus              String?
+  nasalPolyps         Boolean   @default(false)
+  polypDescription    String?   @db.Text
+  mucosa              String?
+  discharge           String?
+  adenoids            String?
+  eustachianTubeOrifices String?
+  nasopharynx         String?
+  oropharynx          String?
+  larynx              String?   @db.Text
+  vocalCords          String?
+  lesionsFound        Boolean   @default(false)
+  lesionDescription   String?   @db.Text
+  biopsiesTaken       Int       @default(0)
+  biopsySites         String?
+  photographsTaken    Boolean   @default(false)
+  rigidScopeUsed      Boolean   @default(false)
+  flexibleScopeUsed   Boolean   @default(true)
+  findings            String?   @db.Text
+  impression          String?   @db.Text
+  recommendations     String?   @db.Text
+  followUpWeeks       Int?
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  patient             Patient   @relation(fields: [patientId], references: [id])
+  provider            User      @relation(fields: [providerId], references: [id])
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([procedureDate])
+  @@map("ent_nasal_endoscopy")
 }

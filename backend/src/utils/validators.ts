@@ -43,6 +43,8 @@ import {
     AsaPhysicalStatus,
     SurgicalRole,
     WoundClass,
+    EndoscopyStatus,
+    EndoscopyQuality,
 } from '@prisma/client';
 
 // Auth Schemas
@@ -1850,6 +1852,210 @@ export const updateSurgerySchema = z.object({
     }),
 });
 
+// Gastroenterology Schemas
+export const createGastroEndoscopySchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        procedureDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid date',
+        }),
+        indication: z.string().min(1, 'Indication is required'),
+        status: z.nativeEnum(EndoscopyStatus).optional(),
+        sedationType: z.string().optional().nullable(),
+        scopeInsertion: z.string().optional().nullable(),
+        esophagus: z.string().optional().nullable(),
+        gastroesophagealJunction: z.string().optional().nullable(),
+        stomach: z.string().optional().nullable(),
+        pylorus: z.string().optional().nullable(),
+        duodenum: z.string().optional().nullable(),
+        mucosalAppearance: z.string().optional().nullable(),
+        lesionsFound: z.boolean().optional(),
+        lesionsDescription: z.string().optional().nullable(),
+        biopsiesTaken: z.number().optional(),
+        biopsySites: z.string().optional().nullable(),
+        hemostasisPerformed: z.boolean().optional(),
+        hemostasisMethod: z.string().optional().nullable(),
+        polypectomy: z.boolean().optional(),
+        polypsRemoved: z.number().optional(),
+        polypSizeMm: z.number().optional(),
+        complications: z.string().optional().nullable(),
+        recommendations: z.string().optional().nullable(),
+        followUpInterval: z.string().optional().nullable(),
+        prepQuality: z.nativeEnum(EndoscopyQuality).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateGastroEndoscopySchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Endoscopy ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        procedureDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid date',
+        }).optional(),
+        indication: z.string().min(1).optional(),
+        status: z.nativeEnum(EndoscopyStatus).optional(),
+        sedationType: z.string().optional().nullable(),
+        scopeInsertion: z.string().optional().nullable(),
+        esophagus: z.string().optional().nullable(),
+        gastroesophagealJunction: z.string().optional().nullable(),
+        stomach: z.string().optional().nullable(),
+        pylorus: z.string().optional().nullable(),
+        duodenum: z.string().optional().nullable(),
+        mucosalAppearance: z.string().optional().nullable(),
+        lesionsFound: z.boolean().optional(),
+        lesionsDescription: z.string().optional().nullable(),
+        biopsiesTaken: z.number().optional(),
+        biopsySites: z.string().optional().nullable(),
+        hemostasisPerformed: z.boolean().optional(),
+        hemostasisMethod: z.string().optional().nullable(),
+        polypectomy: z.boolean().optional(),
+        polypsRemoved: z.number().optional(),
+        polypSizeMm: z.number().optional(),
+        complications: z.string().optional().nullable(),
+        recommendations: z.string().optional().nullable(),
+        followUpInterval: z.string().optional().nullable(),
+        prepQuality: z.nativeEnum(EndoscopyQuality).optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createGastroColonoscopySchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        procedureDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid date',
+        }),
+        indication: z.string().min(1, 'Indication is required'),
+        status: z.nativeEnum(EndoscopyStatus).optional(),
+        sedationType: z.string().optional().nullable(),
+        scopeInsertion: z.string().optional().nullable(),
+        cecalIntubation: z.boolean().optional(),
+        cecalIntubationTime: z.number().optional(),
+        withdrawalTime: z.number().optional(),
+        prepQuality: z.nativeEnum(EndoscopyQuality).optional(),
+        ileumExamined: z.boolean().optional(),
+        mucosalAppearance: z.string().optional().nullable(),
+        lesionsFound: z.boolean().optional(),
+        lesionsDescription: z.string().optional().nullable(),
+        polypsFound: z.boolean().optional(),
+        polypsRemoved: z.number().optional(),
+        polypSizeMaxMm: z.number().optional(),
+        polypHistology: z.string().optional().nullable(),
+        biopsiesTaken: z.number().optional(),
+        biopsySites: z.string().optional().nullable(),
+        hemostasisPerformed: z.boolean().optional(),
+        complications: z.string().optional().nullable(),
+        recommendations: z.string().optional().nullable(),
+        followUpInterval: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateGastroColonoscopySchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Colonoscopy ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        procedureDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid date',
+        }).optional(),
+        indication: z.string().min(1).optional(),
+        status: z.nativeEnum(EndoscopyStatus).optional(),
+        sedationType: z.string().optional().nullable(),
+        scopeInsertion: z.string().optional().nullable(),
+        cecalIntubation: z.boolean().optional(),
+        cecalIntubationTime: z.number().optional(),
+        withdrawalTime: z.number().optional(),
+        prepQuality: z.nativeEnum(EndoscopyQuality).optional(),
+        ileumExamined: z.boolean().optional(),
+        mucosalAppearance: z.string().optional().nullable(),
+        lesionsFound: z.boolean().optional(),
+        lesionsDescription: z.string().optional().nullable(),
+        polypsFound: z.boolean().optional(),
+        polypsRemoved: z.number().optional(),
+        polypSizeMaxMm: z.number().optional(),
+        polypHistology: z.string().optional().nullable(),
+        biopsiesTaken: z.number().optional(),
+        biopsySites: z.string().optional().nullable(),
+        hemostasisPerformed: z.boolean().optional(),
+        complications: z.string().optional().nullable(),
+        recommendations: z.string().optional().nullable(),
+        followUpInterval: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createGastroLiverFunctionSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        testDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid date',
+        }),
+        alt: z.number().optional(),
+        ast: z.number().optional(),
+        alp: z.number().optional(),
+        ggt: z.number().optional(),
+        totalBilirubin: z.number().optional(),
+        directBilirubin: z.number().optional(),
+        indirectBilirubin: z.number().optional(),
+        totalProtein: z.number().optional(),
+        albumin: z.number().optional(),
+        globulin: z.number().optional(),
+        agRatio: z.number().optional(),
+        pt: z.number().optional(),
+        inr: z.number().optional(),
+        ptt: z.number().optional(),
+        fibroscanScore: z.number().optional(),
+        fibrosisStage: z.string().optional().nullable(),
+        steatosisGrade: z.string().optional().nullable(),
+        capScore: z.number().optional(),
+        diagnosis: z.string().optional().nullable(),
+        interpretation: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateGastroLiverFunctionSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Liver Function ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        testDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid date',
+        }).optional(),
+        alt: z.number().optional(),
+        ast: z.number().optional(),
+        alp: z.number().optional(),
+        ggt: z.number().optional(),
+        totalBilirubin: z.number().optional(),
+        directBilirubin: z.number().optional(),
+        indirectBilirubin: z.number().optional(),
+        totalProtein: z.number().optional(),
+        albumin: z.number().optional(),
+        globulin: z.number().optional(),
+        agRatio: z.number().optional(),
+        pt: z.number().optional(),
+        inr: z.number().optional(),
+        ptt: z.number().optional(),
+        fibroscanScore: z.number().optional(),
+        fibrosisStage: z.string().optional().nullable(),
+        steatosisGrade: z.string().optional().nullable(),
+        capScore: z.number().optional(),
+        diagnosis: z.string().optional().nullable(),
+        interpretation: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type CreatePatientInput = z.infer<typeof createPatientSchema>['body'];
@@ -1936,3 +2142,9 @@ export type CreateOperatingTheaterInput = z.infer<typeof createOperatingTheaterS
 export type UpdateOperatingTheaterInput = z.infer<typeof updateOperatingTheaterSchema>['body'];
 export type CreateSurgeryInput = z.infer<typeof createSurgerySchema>['body'];
 export type UpdateSurgeryInput = z.infer<typeof updateSurgerySchema>['body'];
+export type CreateGastroEndoscopyInput = z.infer<typeof createGastroEndoscopySchema>['body'];
+export type UpdateGastroEndoscopyInput = z.infer<typeof updateGastroEndoscopySchema>['body'];
+export type CreateGastroColonoscopyInput = z.infer<typeof createGastroColonoscopySchema>['body'];
+export type UpdateGastroColonoscopyInput = z.infer<typeof updateGastroColonoscopySchema>['body'];
+export type CreateGastroLiverFunctionInput = z.infer<typeof createGastroLiverFunctionSchema>['body'];
+export type UpdateGastroLiverFunctionInput = z.infer<typeof updateGastroLiverFunctionSchema>['body'];
