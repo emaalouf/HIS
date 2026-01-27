@@ -87,6 +87,12 @@ import { NephrologyMedicationFormPage } from './pages/nephrology/NephrologyMedic
 import { NephrologyReportsPage } from './pages/nephrology/NephrologyReportsPage';
 import { NeurologyListPage } from './pages/neurology/NeurologyListPage';
 import { NeurologyFormPage } from './pages/neurology/NeurologyFormPage';
+import { GastroEndoscopiesPage } from './pages/gastroenterology/GastroEndoscopiesPage';
+import { GastroEndoscopyFormPage } from './pages/gastroenterology/GastroEndoscopyFormPage';
+import { GastroColonoscopiesPage } from './pages/gastroenterology/GastroColonoscopiesPage';
+import { GastroColonoscopyFormPage } from './pages/gastroenterology/GastroColonoscopyFormPage';
+import { GastroLiverFunctionsPage } from './pages/gastroenterology/GastroLiverFunctionsPage';
+import { GastroLiverFunctionFormPage } from './pages/gastroenterology/GastroLiverFunctionFormPage';
 import { OperatingTheatersListPage } from './pages/operating-theaters/OperatingTheatersListPage';
 import { OperatingTheaterFormPage } from './pages/operating-theaters/OperatingTheaterFormPage';
 import { SurgeriesListPage } from './pages/surgeries/SurgeriesListPage';
@@ -207,6 +213,16 @@ function App() {
         <Route path="/neurology" element={<NeurologyListPage />} />
         <Route path="/neurology/new" element={<NeurologyFormPage />} />
         <Route path="/neurology/:id/edit" element={<NeurologyFormPage />} />
+        <Route path="/gastroenterology" element={<GastroEndoscopiesPage />} />
+        <Route path="/gastroenterology/endoscopies" element={<GastroEndoscopiesPage />} />
+        <Route path="/gastroenterology/endoscopies/new" element={<GastroEndoscopyFormPage />} />
+        <Route path="/gastroenterology/endoscopies/:id/edit" element={<GastroEndoscopyFormPage />} />
+        <Route path="/gastroenterology/colonoscopies" element={<GastroColonoscopiesPage />} />
+        <Route path="/gastroenterology/colonoscopies/new" element={<GastroColonoscopyFormPage />} />
+        <Route path="/gastroenterology/colonoscopies/:id/edit" element={<GastroColonoscopyFormPage />} />
+        <Route path="/gastroenterology/liver-function" element={<GastroLiverFunctionsPage />} />
+        <Route path="/gastroenterology/liver-function/new" element={<GastroLiverFunctionFormPage />} />
+        <Route path="/gastroenterology/liver-function/:id/edit" element={<GastroLiverFunctionFormPage />} />
         <Route path="/operating-theaters" element={<OperatingTheatersListPage />} />
         <Route path="/operating-theaters/new" element={<OperatingTheaterFormPage />} />
         <Route path="/operating-theaters/:id/edit" element={<OperatingTheaterFormPage />} />

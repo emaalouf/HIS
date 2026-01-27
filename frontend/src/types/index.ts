@@ -2003,3 +2003,214 @@ export interface OperativeReport {
         lastName: string;
     };
 }
+
+// Gastroenterology Types
+export type EndoscopyStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type EndoscopyQuality = 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
+
+export interface GastroEndoscopy {
+    id: string;
+    patientId: string;
+    providerId: string;
+    procedureDate: string;
+    indication: string;
+    status: EndoscopyStatus;
+    sedationType?: string;
+    scopeInsertion?: string;
+    esophagus?: string;
+    gastroesophagealJunction?: string;
+    stomach?: string;
+    pylorus?: string;
+    duodenum?: string;
+    mucosalAppearance?: string;
+    lesionsFound?: boolean;
+    lesionsDescription?: string;
+    biopsiesTaken?: number;
+    biopsySites?: string;
+    hemostasisPerformed?: boolean;
+    hemostasisMethod?: string;
+    polypectomy?: boolean;
+    polypsRemoved?: number;
+    polypSizeMm?: number;
+    complications?: string;
+    recommendations?: string;
+    followUpInterval?: string;
+    prepQuality?: EndoscopyQuality;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateGastroEndoscopyRequest {
+    patientId: string;
+    providerId: string;
+    procedureDate: string;
+    indication: string;
+    status?: EndoscopyStatus;
+    sedationType?: string;
+    scopeInsertion?: string;
+    esophagus?: string;
+    gastroesophagealJunction?: string;
+    stomach?: string;
+    pylorus?: string;
+    duodenum?: string;
+    mucosalAppearance?: string;
+    lesionsFound?: boolean;
+    lesionsDescription?: string;
+    biopsiesTaken?: number;
+    biopsySites?: string;
+    hemostasisPerformed?: boolean;
+    hemostasisMethod?: string;
+    polypectomy?: boolean;
+    polypsRemoved?: number;
+    polypSizeMm?: number;
+    complications?: string;
+    recommendations?: string;
+    followUpInterval?: string;
+    prepQuality?: EndoscopyQuality;
+    notes?: string;
+}
+
+export interface GastroColonoscopy {
+    id: string;
+    patientId: string;
+    providerId: string;
+    procedureDate: string;
+    indication: string;
+    status: EndoscopyStatus;
+    sedationType?: string;
+    scopeInsertion?: string;
+    cecalIntubation?: boolean;
+    cecalIntubationTime?: number;
+    withdrawalTime?: number;
+    prepQuality?: EndoscopyQuality;
+    ileumExamined?: boolean;
+    mucosalAppearance?: string;
+    lesionsFound?: boolean;
+    lesionsDescription?: string;
+    polypsFound?: boolean;
+    polypsRemoved?: number;
+    polypSizeMaxMm?: number;
+    polypHistology?: string;
+    biopsiesTaken?: number;
+    biopsySites?: string;
+    hemostasisPerformed?: boolean;
+    complications?: string;
+    recommendations?: string;
+    followUpInterval?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+    provider?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateGastroColonoscopyRequest {
+    patientId: string;
+    providerId: string;
+    procedureDate: string;
+    indication: string;
+    status?: EndoscopyStatus;
+    sedationType?: string;
+    scopeInsertion?: string;
+    cecalIntubation?: boolean;
+    cecalIntubationTime?: number;
+    withdrawalTime?: number;
+    prepQuality?: EndoscopyQuality;
+    ileumExamined?: boolean;
+    mucosalAppearance?: string;
+    lesionsFound?: boolean;
+    lesionsDescription?: string;
+    polypsFound?: boolean;
+    polypsRemoved?: number;
+    polypSizeMaxMm?: number;
+    polypHistology?: string;
+    biopsiesTaken?: number;
+    biopsySites?: string;
+    hemostasisPerformed?: boolean;
+    complications?: string;
+    recommendations?: string;
+    followUpInterval?: string;
+    notes?: string;
+}
+
+export interface GastroLiverFunction {
+    id: string;
+    patientId: string;
+    testDate: string;
+    alt?: number;
+    ast?: number;
+    alp?: number;
+    ggt?: number;
+    totalBilirubin?: number;
+    directBilirubin?: number;
+    indirectBilirubin?: number;
+    totalProtein?: number;
+    albumin?: number;
+    globulin?: number;
+    agRatio?: number;
+    pt?: number;
+    inr?: number;
+    ptt?: number;
+    fibroscanScore?: number;
+    fibrosisStage?: string;
+    steatosisGrade?: string;
+    capScore?: number;
+    diagnosis?: string;
+    interpretation?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    patient?: {
+        id: string;
+        mrn: string;
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface CreateGastroLiverFunctionRequest {
+    patientId: string;
+    testDate: string;
+    alt?: number;
+    ast?: number;
+    alp?: number;
+    ggt?: number;
+    totalBilirubin?: number;
+    directBilirubin?: number;
+    indirectBilirubin?: number;
+    totalProtein?: number;
+    albumin?: number;
+    globulin?: number;
+    agRatio?: number;
+    pt?: number;
+    inr?: number;
+    ptt?: number;
+    fibroscanScore?: number;
+    fibrosisStage?: string;
+    steatosisGrade?: string;
+    capScore?: number;
+    diagnosis?: string;
+    interpretation?: string;
+    notes?: string;
+}

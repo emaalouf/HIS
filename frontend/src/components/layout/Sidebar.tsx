@@ -23,6 +23,7 @@ import {
     BedDouble,
     Scissors,
     MapPin,
+    Utensils,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
@@ -40,6 +41,7 @@ const navigation = [
     { name: 'Cardiology', href: '/cardiology', icon: HeartPulse },
     { name: 'Nephrology', href: '/nephrology', icon: Filter },
     { name: 'Neurology', href: '/neurology', icon: Brain },
+    { name: 'Gastroenterology', href: '/gastroenterology', icon: Utensils },
     { name: 'Providers', href: '/providers', icon: Stethoscope },
     { name: 'Specialties', href: '/specialties', icon: ClipboardList },
     { name: 'Departments', href: '/departments', icon: Building2 },
