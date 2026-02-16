@@ -142,6 +142,59 @@ model User {
   entAudiometry EntAudiometry[]
   entNasalEndoscopy EntNasalEndoscopy[]
 
+  // LIS
+  specimensCollected Specimen[] @relation(name: "SpecimenCollectedBy")
+  specimensReceived Specimen[] @relation(name: "SpecimenReceivedBy")
+  labWorkOrdersOrdered LabWorkOrder[] @relation(name: "LabWorkOrderOrderedBy")
+  labWorkOrdersVerified LabWorkOrder[] @relation(name: "LabWorkOrderVerifiedBy")
+  labWorkOrdersCancelled LabWorkOrder[] @relation(name: "LabWorkOrderCancelledBy")
+  labResultsEntered LabResult[] @relation(name: "LabResultTechnician")
+  labResultsReviewed LabResult[] @relation(name: "LabResultReviewer")
+  qcResultsEntered QCResult[] @relation(name: "QCResultTechnician")
+  qcResultsReviewed QCResult[] @relation(name: "QCResultReviewer")
+
+  // Radiology/PACS
+  imagingStudiesReferred ImagingStudy[] @relation(name: "ReferringPhysician")
+  imagingStudiesAsRadiologist ImagingStudy[] @relation(name: "Radiologist")
+  imagingStudiesAsTechnician ImagingStudy[] @relation(name: "Technician")
+  radiologistReports RadiologistReport[] @relation(name: "ReportRadiologist")
+  radiologistReportsVerified RadiologistReport[] @relation(name: "VerifyingRadiologist")
+
+  // Emergency Department
+  edVisitsAsTriageNurse EDVisit[] @relation(name: "EDTriageNurse")
+  edVisitsAsProvider EDVisit[] @relation(name: "EDProvider")
+  edTriages EDTriage[] @relation(name: "TriageNurse")
+  edProceduresPerformed EDProcedure[] @relation(name: "EDProcedureProvider")
+  edProceduresAssisted EDProcedure[] @relation(name: "EDProcedureAssistant")
+  edFlows EDFlow[] @relation(name: "EDFlowProvider")
+
+  // ICU / Critical Care
+  icuAdmissionsAdmitting IcuAdmission[] @relation(name: "IcuAdmittingProvider")
+  icuAdmissionsDischarging IcuAdmission[] @relation(name: "IcuDischargeProvider")
+  icuVitalSignsRecorded IcuVitalSign[] @relation(name: "IcuVitalsRecorder")
+  ventilatorSettingsRecorded VentilatorSetting[] @relation(name: "VentSettingsRecorder")
+  sedationAssessmentsPerformed SedationAssessment[] @relation(name: "SedationAssessor")
+  linesTubesInserted LinesTubesDrains[] @relation(name: "LineInsertedBy")
+  linesTubesRemoved LinesTubesDrains[] @relation(name: "LineRemovedBy")
+  fluidBalancesRecorded FluidBalance[] @relation(name: "FluidBalanceRecorder")
+  icuFlowsheetsRecorded IcuFlowsheet[] @relation(name: "FlowsheetRecorder")
+  icuDailyGoalsCreated IcuDailyGoal[] @relation(name: "DailyGoalCreator")
+
+  // Blood Bank
+  bloodDonationsProcessed BloodDonation[] @relation(name: "BloodProcessedBy")
+  crossMatchesPerformed CrossMatch[] @relation(name: "CrossMatchTester")
+  transfusionsOrdered BloodTransfusion[] @relation(name: "TransfusionOrderedBy")
+  transfusionsStarted BloodTransfusion[] @relation(name: "TransfusionStartedBy")
+  transfusionsCompleted BloodTransfusion[] @relation(name: "TransfusionCompletedBy")
+
+  // Inventory
+  inventoryTransactionsPerformed InventoryTransaction[] @relation(name: "InventoryTransactionPerformer")
+  purchaseOrdersRequested PurchaseOrder[] @relation(name: "PORequestedBy")
+  purchaseOrdersApproved PurchaseOrder[] @relation(name: "POApprovedBy")
+  requisitionsRequested Requisition[] @relation(name: "RequisitionRequestedBy")
+  requisitionsApproved Requisition[] @relation(name: "RequisitionApprovedBy")
+  requisitionsFulfilled Requisition[] @relation(name: "RequisitionFulfilledBy")
+
   @@map("users")
 }
 
@@ -262,6 +315,11 @@ model Patient {
   // ENT
   entAudiometry              EntAudiometry[]
   entNasalEndoscopy          EntNasalEndoscopy[]
+
+  // LIS
+  specimens                  Specimen[]
+  labWorkOrders              LabWorkOrder[]
+  labResults                 LabResult[]
   
   clinicalOrders             ClinicalOrder[]
   clinicalResults            ClinicalResult[]
@@ -272,6 +330,14 @@ model Patient {
   claims                     Claim[]
   admissions                 Admission[]
   surgeries                  Surgery[]
+  imagingStudies             ImagingStudy[]
+  edVisits                   EDVisit[]
+  icuAdmissions              IcuAdmission[]
+  
+  // Blood Bank
+  bloodProductsReserved      BloodProduct[] @relation(name: "BloodReservedFor")
+  crossMatches               CrossMatch[]
+  bloodTransfusions          BloodTransfusion[]
 
   @@map("patients")
 }
@@ -1768,7 +1834,344 @@ model AnesthesiaRecord {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   surgery         Surgery           @relation(fields: [surgeryId], references: [id], onDelete: Cascade)
+
   @@map("anesthesia_records")
+}
+
+// LIS - Laboratory Information System Models
+
+enum LabTestCategory {
+  HEMATOLOGY
+  CHEMISTRY
+  MICROBIOLOGY
+  SEROLOGY
+  IMMUNOLOGY
+  MOLECULAR
+  ENDOCRINOLOGY
+  TOXICOLOGY
+  URINALYSIS
+  COAGULATION
+  HISTOLOGY
+  CYTOLOGY
+  OTHER
+}
+
+enum SpecimenType {
+  BLOOD
+  SERUM
+  PLASMA
+  URINE
+  STOOL
+  CSF
+  SPUTUM
+  SWAB
+  TISSUE
+  FLUID
+  BONE_MARROW
+  OTHER
+}
+
+enum SpecimenStatus {
+  ORDERED
+  COLLECTED
+  RECEIVED
+  PROCESSING
+  COMPLETED
+  REJECTED
+}
+
+enum LabWorkOrderStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum LabResultStatus {
+  PENDING
+  PRELIMINARY
+  FINAL
+  AMENDED
+  CANCELLED
+}
+
+enum LabResultFlag {
+  NORMAL
+  LOW
+  HIGH
+  CRITICAL_LOW
+  CRITICAL_HIGH
+  BORDERLINE
+}
+
+model LabTest {
+  id              String          @id @default(cuid())
+  code            String          @unique
+  name            String
+  category        LabTestCategory
+  description     String?         @db.Text
+  specimenType    SpecimenType
+  containerType   String?
+  volumeRequired  Float?
+  turnaroundTime  Int             @default(60) // minutes
+  isActive        Boolean         @default(true)
+  requiresFasting Boolean         @default(false)
+  specialInstructions String?     @db.Text
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relations
+  referenceRanges ReferenceRange[]
+  panelItems      LabTestPanelItem[]
+  qcControls      QCControl[]
+  workOrderItems  LabWorkOrderItem[]
+  labResults      LabResult[]
+
+  @@index([category])
+  @@index([specimenType])
+  @@index([isActive])
+  @@map("lab_tests")
+}
+
+model TestPanel {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  items       LabTestPanelItem[]
+
+  @@index([isActive])
+  @@map("test_panels")
+}
+
+model LabTestPanelItem {
+  id        String    @id @default(cuid())
+  panelId   String
+  testId    String
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  panel     TestPanel @relation(fields: [panelId], references: [id], onDelete: Cascade)
+  test      LabTest   @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@unique([panelId, testId])
+  @@index([panelId])
+  @@index([testId])
+  @@map("lab_test_panel_items")
+}
+
+model Specimen {
+  id              String         @id @default(cuid())
+  barcode         String         @unique
+  patientId       String
+  specimenType    SpecimenType
+  collectionTime  DateTime       @default(now())
+  collectedById   String?
+  collectionSite  String?
+  volumeCollected Float?
+  collectionNotes String?        @db.Text
+  receivedTime    DateTime?
+  receivedById    String?
+  receptionNotes  String?        @db.Text
+  status          SpecimenStatus @default(ORDERED)
+  rejectionReason String?        @db.Text
+  storageLocation String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relations
+  patient         Patient        @relation(fields: [patientId], references: [id])
+  collectedBy     User?          @relation(name: "SpecimenCollectedBy", fields: [collectedById], references: [id])
+  receivedBy      User?          @relation(name: "SpecimenReceivedBy", fields: [receivedById], references: [id])
+  workOrders      LabWorkOrder[]
+
+  @@index([patientId])
+  @@index([barcode])
+  @@index([status])
+  @@index([collectionTime])
+  @@map("specimens")
+}
+
+model LabWorkOrder {
+  id              String             @id @default(cuid())
+  orderNumber     String             @unique
+  patientId       String
+  specimenId      String?
+  clinicalOrderId String?
+  testPanelId     String?
+  orderedById     String
+  orderedAt       DateTime           @default(now())
+  priority        OrderPriority      @default(ROUTINE)
+  status          LabWorkOrderStatus @default(PENDING)
+  notes           String?            @db.Text
+  startTime       DateTime?
+  completedTime   DateTime?
+  verifiedById    String?
+  verifiedAt      DateTime?
+  cancelledById   String?
+  cancelledAt     DateTime?
+  cancellationReason String?         @db.Text
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  // Relations
+  patient         Patient            @relation(fields: [patientId], references: [id])
+  specimen        Specimen?          @relation(fields: [specimenId], references: [id])
+  orderedBy       User               @relation(name: "LabWorkOrderOrderedBy", fields: [orderedById], references: [id])
+  verifiedBy      User?              @relation(name: "LabWorkOrderVerifiedBy", fields: [verifiedById], references: [id])
+  cancelledBy     User?              @relation(name: "LabWorkOrderCancelledBy", fields: [cancelledById], references: [id])
+  items           LabWorkOrderItem[]
+  results         LabResult[]
+
+  @@index([patientId])
+  @@index([specimenId])
+  @@index([status])
+  @@index([orderedAt])
+  @@index([priority])
+  @@map("lab_work_orders")
+}
+
+model LabWorkOrderItem {
+  id              String   @id @default(cuid())
+  workOrderId     String
+  testId          String
+  order           Int      @default(0)
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  workOrder       LabWorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  test            LabTest      @relation(fields: [testId], references: [id])
+
+  @@unique([workOrderId, testId])
+  @@index([workOrderId])
+  @@index([testId])
+  @@map("lab_work_order_items")
+}
+
+model LabResult {
+  id              String          @id @default(cuid())
+  workOrderId     String
+  testId          String
+  patientId       String
+  value           String?
+  numericValue    Float?
+  unit            String?
+  status          LabResultStatus @default(PENDING)
+  flag            LabResultFlag   @default(NORMAL)
+  referenceRange  String?         @db.Text
+  interpretation  String?         @db.Text
+  technicianId    String?
+  resultedAt      DateTime?
+  reviewerId      String?
+  reviewedAt      DateTime?
+  instrumentId    String?
+  method          String?
+  dilution        Float?
+  comments        String?         @db.Text
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relations
+  workOrder       LabWorkOrder    @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  test            LabTest         @relation(fields: [testId], references: [id])
+  patient         Patient         @relation(fields: [patientId], references: [id])
+  technician      User?           @relation(name: "LabResultTechnician", fields: [technicianId], references: [id])
+  reviewer        User?           @relation(name: "LabResultReviewer", fields: [reviewerId], references: [id])
+
+  @@index([workOrderId])
+  @@index([testId])
+  @@index([patientId])
+  @@index([status])
+  @@index([flag])
+  @@index([resultedAt])
+  @@map("lab_results")
+}
+
+model ReferenceRange {
+  id              String   @id @default(cuid())
+  testId          String
+  gender          Gender?
+  ageMin          Int?     // months
+  ageMax          Int?     // months
+  lowValue        Float?
+  highValue       Float?
+  criticalLow     Float?
+  criticalHigh    Float?
+  isDefault       Boolean  @default(false)
+  referenceText   String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  test            LabTest  @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@index([testId])
+  @@index([gender])
+  @@map("reference_ranges")
+}
+
+enum QCControlLevel {
+  NORMAL
+  ABNORMAL_LOW
+  ABNORMAL_HIGH
+}
+
+enum QCResultStatus {
+  PASS
+  FAIL
+  PENDING
+}
+
+model QCControl {
+  id              String         @id @default(cuid())
+  testId          String
+  lotNumber       String
+  level           QCControlLevel @default(NORMAL)
+  targetValue     Float
+  acceptableRange Float          // +/- acceptable range
+  manufacturer    String?
+  expiryDate      DateTime
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  test            LabTest        @relation(fields: [testId], references: [id])
+  results         QCResult[]
+
+  @@index([testId])
+  @@index([isActive])
+  @@index([expiryDate])
+  @@map("qc_controls")
+}
+
+model QCResult {
+  id              String         @id @default(cuid())
+  controlId       String
+  instrumentId    String?
+  resultValue     Float
+  status          QCResultStatus @default(PENDING)
+  deviation       Float?         // calculated deviation from target
+  runDate         DateTime       @default(now())
+  technicianId    String?
+  reviewedById    String?
+  reviewedAt      DateTime?
+  notes           String?        @db.Text
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  control         QCControl      @relation(fields: [controlId], references: [id], onDelete: Cascade)
+  technician      User?          @relation(name: "QCResultTechnician", fields: [technicianId], references: [id])
+  reviewedBy      User?          @relation(name: "QCResultReviewer", fields: [reviewedById], references: [id])
+
+  @@index([controlId])
+  @@index([runDate])
+  @@index([status])
+  @@map("qc_results")
 }
 
 model OperativeReport {
@@ -3619,4 +4022,1748 @@ model EntNasalEndoscopy {
   @@index([providerId])
   @@index([procedureDate])
   @@map("ent_nasal_endoscopy")
+}
+
+// ============================================
+// RADIOLOGY / PACS
+// ============================================
+
+enum ImagingModality {
+  XRAY
+  CT
+  MRI
+  ULTRASOUND
+  MAMMOGRAPHY
+  FLUOROSCOPY
+  PET
+  NUCLEAR_MEDICINE
+  ANGIOGRAPHY
+  DEXA
+}
+
+enum ImagingStudyStatus {
+  ORDERED
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum RadiologistReportStatus {
+  DRAFT
+  PENDING_VERIFICATION
+  VERIFIED
+  AMENDED
+}
+
+model ImagingStudy {
+  id                String             @id @default(cuid())
+  patientId         String
+  patient           Patient            @relation(fields: [patientId], references: [id])
+  accessionNumber   String             @unique
+  studyInstanceUid  String?            @unique
+  modality          ImagingModality
+  studyDescription  String?
+  bodyPart          String?
+  referringPhysicianId String?
+  referringPhysician User?             @relation(name: "ReferringPhysician", fields: [referringPhysicianId], references: [id])
+  radiologistId     String?
+  radiologist       User?              @relation(name: "Radiologist", fields: [radiologistId], references: [id])
+  technicianId      String?
+  technician        User?              @relation(name: "Technician", fields: [technicianId], references: [id])
+  scheduledDate     DateTime?
+  performedDate     DateTime?
+  status            ImagingStudyStatus @default(ORDERED)
+  priority          OrderPriority      @default(ROUTINE)
+  clinicalHistory   String?            @db.Text
+  indication        String?            @db.Text
+  contrastUsed      Boolean            @default(false)
+  contrastType      String?
+  doseReport        String?            @db.Text
+  numberOfSeries    Int                @default(0)
+  numberOfInstances Int                @default(0)
+  storageLocation   String?
+  dicomUrl          String?
+  notes             String?            @db.Text
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  series            DicomSeries[]
+  reports           RadiologistReport[]
+
+  @@index([patientId])
+  @@index([accessionNumber])
+  @@index([status])
+  @@index([modality])
+  @@index([scheduledDate])
+  @@index([performedDate])
+  @@map("imaging_studies")
+}
+
+model DicomSeries {
+  id                String       @id @default(cuid())
+  studyId           String
+  study             ImagingStudy @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  seriesInstanceUid String       @unique
+  seriesNumber      Int?
+  modality          String?
+  seriesDescription String?
+  bodyPartExamined  String?
+  protocolName      String?
+  sliceThickness    Float?
+  numberOfSlices    Int          @default(0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  instances         DicomInstance[]
+
+  @@index([studyId])
+  @@index([seriesInstanceUid])
+  @@map("dicom_series")
+}
+
+model DicomInstance {
+  id                 String      @id @default(cuid())
+  seriesId           String
+  series             DicomSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  sopInstanceUid     String      @unique
+  instanceNumber     Int?
+  sopClassUid        String?
+  filePath           String
+  fileSize           Int?
+  transferSyntaxUid  String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  @@index([seriesId])
+  @@index([sopInstanceUid])
+  @@map("dicom_instances")
+}
+
+model RadiologistReport {
+  id                String                 @id @default(cuid())
+  studyId           String
+  study             ImagingStudy           @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  radiologistId     String
+  radiologist       User                   @relation(name: "ReportRadiologist", fields: [radiologistId], references: [id])
+  verifyingRadiologistId String?
+  verifyingRadiologist User?               @relation(name: "VerifyingRadiologist", fields: [verifyingRadiologistId], references: [id])
+  status            RadiologistReportStatus @default(DRAFT)
+  findings          String?                @db.Text
+  impression        String?                @db.Text
+  recommendations   String?                @db.Text
+  comparisonStudyId String?
+  criticalFindings  Boolean                @default(false)
+  notificationSent  Boolean                @default(false)
+  reportedAt        DateTime?
+  verifiedAt        DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  @@index([studyId])
+  @@index([radiologistId])
+  @@index([status])
+  @@index([reportedAt])
+  @@map("radiologist_reports")
+}
+
+// ============================================
+// EMERGENCY DEPARTMENT
+// ============================================
+
+enum EDVisitStatus {
+  PENDING
+  TRIAGE
+  IN_PROGRESS
+  UNDER_OBSERVATION
+  WAITING_RESULTS
+  READY_FOR_DISCHARGE
+  DISCHARGED
+  ADMITTED
+  TRANSFERRED
+  LEFT_WITHOUT_BEING_SEEN
+  DECEASED
+}
+
+enum ESI {
+  ESI_1
+  ESI_2
+  ESI_3
+  ESI_4
+  ESI_5
+}
+
+enum EDDisposition {
+  DISCHARGE_HOME
+  ADMIT_TO_WARD
+  ADMIT_TO_ICU
+  TRANSFER_TO_ANOTHER_HOSPITAL
+  TRANSFER_TO_ANOTHER_ED
+  LEAVE_AMA
+  DEATH
+}
+
+model EDVisit {
+  id                    String       @id @default(cuid())
+  patientId             String
+  patient               Patient      @relation(fields: [patientId], references: [id])
+  visitNumber           String       @unique
+  arrivalTime           DateTime
+  chiefComplaint        String       @db.Text
+  
+  // Patient Information at Time of Visit
+  arrivalMode           String?
+  ageAtVisit            Int
+  genderAtVisit         String
+  
+  // Triage Information
+  triageLevel           ESI?
+  triageTime            DateTime?
+  triageNurseId         String?
+  triageNurse           User?        @relation(name: "EDTriageNurse", fields: [triageNurseId], references: [id])
+  
+  // Vitals at Triage
+  triageTemperature     Float?
+  triageHeartRate       Int?
+  triageRespiratoryRate Int?
+  triageBloodPressure   String?
+  triageOxygenSaturation Float?
+  triagePainScore       Int?
+  triageGlasgowComaScore Int?
+  
+  // Current Status
+  currentStatus         EDVisitStatus @default(PENDING)
+  
+  // Provider Assignment
+  assignedProviderId    String?
+  assignedProvider      User?        @relation(name: "EDProvider", fields: [assignedProviderId], references: [id])
+  
+  // Location Tracking
+  bedAssignment         String?
+  bedAssignmentTime     DateTime?
+  
+  // Clinical Course
+  historyOfPresentIllness String?    @db.Text
+  physicalExamination   String?      @db.Text
+  differentialDiagnosis String?      @db.Text
+  finalDiagnosis        String?      @db.Text
+  
+  // Procedures and Tests
+  labsOrdered           String?      @db.Text
+  imagingOrdered        String?      @db.Text
+  proceduresPerformed   String?      @db.Text
+  medicationsGiven      String?      @db.Text
+  
+  // Times
+  providerFirstContactTime DateTime?
+  roomAssignmentTime    DateTime?
+  firstLabResultsTime   DateTime?
+  firstImagingResultsTime DateTime?
+  dispositionDecisionTime DateTime?
+  dischargeTime         DateTime?
+  
+  // Disposition
+  disposition           EDDisposition?
+  dispositionNotes      String?      @db.Text
+  
+  // Consultations
+  consultationsRequested String?     @db.Text
+  
+  // Critical Events
+  cardiacArrest         Boolean      @default(false)
+  intubationPerformed   Boolean      @default(false)
+  cprPerformed          Boolean      @default(false)
+  
+  // Follow-up
+  followUpInstructions  String?      @db.Text
+  followUpRecommended   Boolean      @default(false)
+  followUpWithin        String?
+  
+  // Notes
+  notes                 String?      @db.Text
+  
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  // Relations
+  triageEvents          EDTriage[]
+  procedures            EDProcedure[]
+  flowRecords           EDFlow[]
+
+  @@index([patientId])
+  @@index([visitNumber])
+  @@index([arrivalTime])
+  @@index([currentStatus])
+  @@index([triageLevel])
+  @@index([assignedProviderId])
+  @@index([dischargeTime])
+  @@map("ed_visits")
+}
+
+model EDTriage {
+  id                    String   @id @default(cuid())
+  visitId               String
+  visit                 EDVisit  @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  triageNurseId         String
+  triageNurse           User     @relation(name: "TriageNurse", fields: [triageNurseId], references: [id])
+  
+  triageTime            DateTime @default(now())
+  triageLevel           ESI
+  
+  // Vitals
+  temperature           Float?
+  heartRate             Int?
+  respiratoryRate       Int?
+  bloodPressure         String?
+  oxygenSaturation      Float?
+  painScore             Int?
+  weight                Float?
+  height                Float?
+  
+  // Assessment
+  chiefComplaint        String   @db.Text
+  historyOfPresentIllness String? @db.Text
+  
+  // Risk Factors
+  immunocompromised     Boolean  @default(false)
+  pregnancyStatus       String?
+  allergies             String?
+  currentMedications    String?
+  
+  // Special Considerations
+  psychiatricHold       Boolean  @default(false)
+  isolationRequired     Boolean  @default(false)
+  isolationType         String?
+  
+  // Triage Notes
+  triageNotes           String?  @db.Text
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([visitId])
+  @@index([triageNurseId])
+  @@index([triageTime])
+  @@index([triageLevel])
+  @@map("ed_triages")
+}
+
+enum EDProcedureType {
+  INTUBATION
+  CENTRAL_LINE
+  ARTERIAL_LINE
+  CHEST_TUBE
+  LUMBAR_PUNCTURE
+  THORACENTESIS
+  PARACENTESIS
+  JOINT_ASPIRATION
+  FRACTURE_REDUCTION
+  SUTURING
+  INCISION_DRAINAGE
+  CARDIOVERSION
+  DEFIBRILLATION
+  CPR
+  OTHER
+}
+
+model EDProcedure {
+  id                    String          @id @default(cuid())
+  visitId               String
+  visit                 EDVisit         @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  procedureType         EDProcedureType
+  
+  // Timing
+  procedureTime         DateTime
+  
+  // Provider
+  performedById         String
+  performedBy           User            @relation(name: "EDProcedureProvider", fields: [performedById], references: [id])
+  assistedById          String?
+  assistedBy            User?           @relation(name: "EDProcedureAssistant", fields: [assistedById], references: [id])
+  
+  // Procedure Details
+  procedureDescription  String          @db.Text
+  indication            String?         @db.Text
+  complications         String?         @db.Text
+  
+  // Anesthesia/Sedation
+  sedationUsed          Boolean         @default(false)
+  sedationType          String?
+  anesthesiaProviderId  String?
+  
+  // Outcome
+  outcome               String?
+  specimenCollected     Boolean         @default(false)
+  specimenType          String?
+  
+  // Documentation
+  notes                 String?         @db.Text
+  
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@index([visitId])
+  @@index([performedById])
+  @@index([procedureTime])
+  @@index([procedureType])
+  @@map("ed_procedures")
+}
+
+enum EDFlowStatus {
+  WAITING
+  IN_TREATMENT
+  AWAITING_RESULTS
+  AWAITING_CONSULT
+  AWAITING_BED
+  DISPOSITION_DECIDED
+}
+
+model EDFlow {
+  id                    String       @id @default(cuid())
+  visitId               String
+  visit                 EDVisit      @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  
+  // Timestamp
+  timestamp             DateTime     @default(now())
+  
+  // Status and Location
+  status                EDFlowStatus
+  location              String?
+  
+  // Provider
+  providerId            String?
+  provider              User?        @relation(name: "EDFlowProvider", fields: [providerId], references: [id])
+  
+  // Notes
+  clinicalNotes         String?      @db.Text
+  plan                  String?      @db.Text
+  
+  // Orders Status
+  labsOrdered           Boolean      @default(false)
+  imagingOrdered        Boolean      @default(false)
+  medicationsOrdered    Boolean      @default(false)
+  consultOrdered        Boolean      @default(false)
+  
+  // Results Status
+  labResultsAvailable   Boolean      @default(false)
+  imagingResultsAvailable Boolean    @default(false)
+  
+  // Time Tracking
+  timeInThisStatus      Int?         // in minutes
+  
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  @@index([visitId])
+  @@index([timestamp])
+  @@index([status])
+  @@index([providerId])
+  @@map("ed_flows")
+}
+
+// ============================================
+// ICU / CRITICAL CARE
+// ============================================
+
+enum IcuAdmissionStatus {
+  ADMITTED
+  CRITICAL
+  STABLE
+  IMPROVING
+  DETERIORATING
+  DISCHARGED
+  DECEASED
+}
+
+enum IcuAdmissionSource {
+  ED
+  OR
+  WARD
+  ANOTHER_HOSPITAL
+  DIRECT_ADMISSION
+}
+
+enum VentilatorMode {
+  AC_VC
+  AC_PC
+  SIMV
+  CPAP
+  PS
+  BiPAP
+  APRV
+  PRVC
+  OTHER
+}
+
+enum LineType {
+  CENTRAL_LINE_IJ
+  CENTRAL_LINE_SUBCLAVIAN
+  CENTRAL_LINE_FEMORAL
+  ARTERIAL_LINE_RADIAL
+  ARTERIAL_LINE_FEMORAL
+  PICC_LINE
+  IO_LINE
+  PERIPHERAL_IV
+}
+
+enum DrainType {
+  CHEST_TUBE
+  JP_DRAIN
+  HEMOVAC
+  FOLEY_CATHETER
+  NG_TUBE
+  OG_TUBE
+  SURGICAL_DRAIN
+  WOUND_VAC
+}
+
+model IcuAdmission {
+  id              String              @id @default(cuid())
+  patientId       String
+  patient         Patient             @relation(fields: [patientId], references: [id])
+  
+  admissionNumber String              @unique
+  admissionDate   DateTime
+  admissionSource IcuAdmissionSource
+  admittingProviderId String
+  admittingProvider User              @relation(name: "IcuAdmittingProvider", fields: [admittingProviderId], references: [id])
+  
+  // Location
+  bedId           String?
+  bedNumber       String?
+  
+  // APACHE II Score
+  apacheIIScore   Int?
+  apacheIICalculatedAt DateTime?
+  
+  // Primary Diagnosis
+  primaryDiagnosis String             @db.Text
+  secondaryDiagnoses String?          @db.Text
+  admissionReason String?              @db.Text
+  
+  // Status
+  currentStatus   IcuAdmissionStatus   @default(ADMITTED)
+  isVentilated    Boolean              @default(false)
+  isSedated       Boolean              @default(false)
+  isIsolated      Boolean              @default(false)
+  isolationType   String?
+  
+  // Expected Length of Stay
+  expectedLos     Int?                 // in hours
+  
+  // Discharge Information
+  dischargeDate   DateTime?
+  dischargeDisposition String?
+  dischargeProviderId String?
+  dischargeProvider User?              @relation(name: "IcuDischargeProvider", fields: [dischargeProviderId], references: [id])
+  
+  // Outcome
+  icuLos          Int?                 // actual length of stay in hours
+  hospitalLos     Int?
+  diedInIcu       Boolean              @default(false)
+  
+  // Notes
+  admissionNotes  String?              @db.Text
+  dischargeNotes  String?              @db.Text
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  // Relations
+  vitalSigns      IcuVitalSign[]
+  ventilatorSettings VentilatorSetting[]
+  sedationAssessments SedationAssessment[]
+  linesTubesDrains LinesTubesDrains[]
+  fluidBalances   FluidBalance[]
+  flowsheets      IcuFlowsheet[]
+  dailyGoals      IcuDailyGoal[]
+
+  @@index([patientId])
+  @@index([admissionNumber])
+  @@index([admissionDate])
+  @@index([currentStatus])
+  @@index([admittingProviderId])
+  @@map("icu_admissions")
+}
+
+model IcuVitalSign {
+  id              String          @id @default(cuid())
+  admissionId     String
+  admission       IcuAdmission    @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  
+  recordedAt      DateTime        @default(now())
+  recordedById    String
+  recordedBy      User            @relation(name: "IcuVitalsRecorder", fields: [recordedById], references: [id])
+  
+  // Vitals
+  heartRate       Int?
+  systolicBP      Int?
+  diastolicBP     Int?
+  meanArterialPressure Int?
+  respiratoryRate Int?
+  temperature     Float?
+  oxygenSaturation Float?
+  
+  // GCS
+  gcsEye          Int?            // 1-4
+  gcsVerbal       Int?            // 1-5
+  gcsMotor        Int?            // 1-6
+  gcsTotal        Int?            // 3-15
+  
+  // Advanced Monitoring
+  cvp             Int?            // Central Venous Pressure
+  papSystolic     Int?            // Pulmonary Artery Pressure
+  papDiastolic    Int?
+  pcwp            Int?            // Pulmonary Capillary Wedge Pressure
+  cardiacOutput   Float?
+  cardiacIndex    Float?
+  
+  // Pain
+  painScore       Int?            // 0-10
+  
+  // Critical Alerts
+  isCritical      Boolean         @default(false)
+  criticalAlerts  String?         @db.Text
+  
+  notes           String?         @db.Text
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([admissionId])
+  @@index([recordedAt])
+  @@index([isCritical])
+  @@index([recordedById])
+  @@map("icu_vital_signs")
+}
+
+model VentilatorSetting {
+  id              String              @id @default(cuid())
+  admissionId     String
+  admission       IcuAdmission        @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  
+  recordedAt      DateTime            @default(now())
+  recordedById    String
+  recordedBy      User                @relation(name: "VentSettingsRecorder", fields: [recordedById], references: [id])
+  
+  // Mode and Settings
+  ventilatorMode  VentilatorMode
+  fio2            Float               // 0.21 - 1.0
+  peep            Int?                // cm H2O
+  tidalVolume     Int?                // mL
+  respiratoryRate Int?                // breaths/min
+  pressureSupport Int?                // cm H2O
+  peakPressure    Int?                // cm H2O
+  plateauPressure Int?                // cm H2O
+  
+  // Advanced Settings
+  ieRatio         String?             // I:E ratio (e.g., "1:2")
+  inspiratoryTime Float?              // seconds
+  flowRate        Int?                // L/min
+  sensitivity     Int?                // cm H2O
+  
+  // Weaning Parameters
+  rsbi            Float?              // Rapid Shallow Breathing Index
+  nif             Int?                // Negative Inspiratory Force
+  spontaneousVt   Int?                // mL
+  spontaneousRate Int?
+  
+  // Status
+  isExtubated     Boolean             @default(false)
+  extubationDate  DateTime?
+  extubationNotes String?             @db.Text
+  
+  notes           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([admissionId])
+  @@index([recordedAt])
+  @@index([isExtubated])
+  @@index([recordedById])
+  @@map("ventilator_settings")
+}
+
+model SedationAssessment {
+  id              String              @id @default(cuid())
+  admissionId     String
+  admission       IcuAdmission        @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  
+  assessedAt      DateTime            @default(now())
+  assessedById    String
+  assessedBy      User                @relation(name: "SedationAssessor", fields: [assessedById], references: [id])
+  
+  // RASS (Richmond Agitation-Sedation Scale)
+  rassScore       Int                 // -5 to +4
+  
+  // CAM-ICU Delirium Screening
+  camIcuPositive  Boolean?
+  camIcuFeature1  Boolean?            // Acute onset or fluctuating course
+  camIcuFeature2  Boolean?            // Inattention
+  camIcuFeature3  Boolean?            // Disorganized thinking
+  camIcuFeature4  Boolean?            // Altered level of consciousness
+  
+  // Pain Assessment
+  painScore       Int?                // 0-10 or CPOT for intubated
+  painScale       String?             // "NUMERIC", "CPOT", "BPS"
+  
+  // Sedation Medications
+  sedationMedications String?         @db.Text
+  sedationGoal    String?
+  
+  // Agitation/Delirium Management
+  deliriumManagement String?          @db.Text
+  restraintsUsed    Boolean           @default(false)
+  restraintType     String?
+  
+  notes           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([admissionId])
+  @@index([assessedAt])
+  @@index([rassScore])
+  @@index([camIcuPositive])
+  @@index([assessedById])
+  @@map("sedation_assessments")
+}
+
+model LinesTubesDrains {
+  id              String              @id @default(cuid())
+  admissionId     String
+  admission       IcuAdmission        @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  
+  // Line/Tube/Drain Information
+  deviceType      String              // LINE, TUBE, or DRAIN
+  deviceSubtype   String              // specific type
+  
+  // Insertion Details
+  insertedAt      DateTime
+  insertedById    String
+  insertedBy      User                @relation(name: "LineInsertedBy", fields: [insertedById], references: [id])
+  insertionSite   String?
+  insertionNotes  String?             @db.Text
+  
+  // Specifications
+  size            String?
+  length          String?
+  numberOfLumens  Int?
+  
+  // Maintenance
+  dressingChangeDate DateTime?
+  tubingChangeDate   DateTime?
+  
+  // Removal
+  removedAt       DateTime?
+  removedById     String?
+  removedBy       User?               @relation(name: "LineRemovedBy", fields: [removedById], references: [id])
+  removalReason   String?
+  
+  // Complications
+  complications   String?             @db.Text
+  infectionSigns  Boolean             @default(false)
+  
+  // Status
+  isActive        Boolean             @default(true)
+  
+  notes           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([admissionId])
+  @@index([insertedAt])
+  @@index([isActive])
+  @@index([insertedById])
+  @@map("lines_tubes_drains")
+}
+
+model FluidBalance {
+  id              String              @id @default(cuid())
+  admissionId     String
+  admission       IcuAdmission        @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  
+  recordedAt      DateTime            @default(now())
+  recordedById    String
+  recordedBy      User                @relation(name: "FluidBalanceRecorder", fields: [recordedById], references: [id])
+  
+  // Time Period (usually hourly)
+  periodStart     DateTime
+  periodEnd       DateTime
+  
+  // Intake (mL)
+  ivFluids        Int                 @default(0)
+  enteralFeeds    Int                 @default(0)
+  oralIntake      Int                 @default(0)
+  bloodProducts   Int                 @default(0)
+  medications     Int                 @default(0)
+  otherIntake     Int                 @default(0)
+  totalIntake     Int                 @default(0)
+  
+  // Output (mL)
+  urineOutput     Int                 @default(0)
+  ngTubeDrainage  Int                 @default(0)
+  chestTubeDrainage Int               @default(0)
+  stool           Int                 @default(0)
+  woundDrainage   Int                 @default(0)
+  otherOutput     Int                 @default(0)
+  totalOutput     Int                 @default(0)
+  
+  // Balance
+  balance         Int                 @default(0)
+  cumulativeBalance Int               @default(0)
+  
+  // Urine Characteristics
+  urineColor      String?
+  urineClarity    String?
+  
+  notes           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([admissionId])
+  @@index([recordedAt])
+  @@index([recordedById])
+  @@map("fluid_balances")
+}
+
+model IcuFlowsheet {
+  id              String              @id @default(cuid())
+  admissionId     String
+  admission       IcuAdmission        @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  
+  recordedAt      DateTime            @default(now())
+  recordedById    String
+  recordedBy      User                @relation(name: "FlowsheetRecorder", fields: [recordedById], references: [id])
+  
+  // Shift Information
+  shift           String              // "DAY", "EVENING", "NIGHT"
+  
+  // Activity and Positioning
+  activityLevel   String?
+  position        String?
+  turnsPerformed  Int                 @default(0)
+  
+  // Skin Assessment
+  skinAssessment  String?             @db.Text
+  pressureUlcerRisk String?
+  
+  // Safety
+  fallRisk        String?
+  restraintsChecked Boolean           @default(false)
+  
+  // Lines/Tubes Check
+  linesChecked    Boolean             @default(false)
+  tubesChecked    Boolean             @default(false)
+  
+  // Care Provided
+  bathType        String?
+  oralCare        Boolean             @default(false)
+  eyeCare         Boolean             @default(false)
+  
+  // Family Communication
+  familyUpdated   Boolean             @default(false)
+  familyUpdateNotes String?           @db.Text
+  
+  // Events
+  events          String?             @db.Text
+  
+  // Plan
+  planForNextShift String?            @db.Text
+  
+  notes           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([admissionId])
+  @@index([recordedAt])
+  @@index([shift])
+  @@index([recordedById])
+  @@map("icu_flowsheets")
+}
+
+model IcuDailyGoal {
+  id              String              @id @default(cuid())
+  admissionId     String
+  admission       IcuAdmission        @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  
+  goalDate        DateTime
+  
+  createdById     String
+  createdBy       User                @relation(name: "DailyGoalCreator", fields: [createdById], references: [id])
+  
+  // Patient Status
+  patientStatus   String?             @db.Text
+  overnightEvents String?             @db.Text
+  
+  // Daily Goals
+  ventilationGoal String?             @db.Text
+  sedationGoal    String?             @db.Text
+  mobilityGoal    String?             @db.Text
+  nutritionGoal   String?             @db.Text
+  
+  // Liberation Goals
+  liberationTrial Boolean             @default(false)
+  liberationTrialTime DateTime?
+  extubationGoal  Boolean             @default(false)
+  
+  // Prophylaxis
+  dvtProphylaxis  Boolean             @default(false)
+  pepticUlcerProphylaxis Boolean      @default(false)
+  
+  // Communication
+  familyCommunication String?         @db.Text
+  familyMeetingScheduled Boolean      @default(false)
+  familyMeetingTime DateTime?
+  
+  // Discharge Planning
+  dischargeAnticipatedDate DateTime?
+  dischargeDispositionPlanned String?
+  
+  // Action Items
+  actionItems     String?             @db.Text
+  
+  // Outcome
+  goalsMet        Boolean?
+  barriersToGoals String?             @db.Text
+  
+  notes           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([admissionId])
+  @@index([goalDate])
+  @@index([createdById])
+  @@map("icu_daily_goals")
+}
+
+// ============================================
+// BLOOD BANK
+// ============================================
+
+enum BloodTypeBB {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+}
+
+enum BloodProductType {
+  WHOLE_BLOOD
+  PRBC
+  FFP
+  PLATELETS
+  CRYOPRECIPITATE
+  GRANULOCYTES
+  ALBUMIN
+  IVIG
+}
+
+enum BloodProductStatus {
+  AVAILABLE
+  RESERVED
+  QUARANTINE
+  EXPIRED
+  DISCARDED
+  TRANSFUSED
+}
+
+enum CrossMatchResult {
+  COMPATIBLE
+  INCOMPATIBLE
+  INCONCLUSIVE
+}
+
+enum TransfusionStatus {
+  ORDERED
+  CROSSMATCHED
+  READY
+  IN_PROGRESS
+  COMPLETED
+  STOPPED
+  REACTION
+}
+
+enum TransfusionReactionType {
+  FEBRILE_NONHEMOLYTIC
+  ACUTE_HEMOLYTIC
+  DELAYED_HEMOLYTIC
+  ALLERGIC_URTICARIA
+  ANAPHYLAXIS
+  TRALI
+  TACO
+  SEPSIS
+  TA_GVHD
+  POST_TRANSFUSION_PURPURA
+}
+
+model BloodDonor {
+  id              String    @id @default(cuid())
+  donorId         String    @unique
+  firstName       String
+  lastName        String
+  dateOfBirth     DateTime
+  gender          Gender
+  bloodType       BloodTypeBB
+  phone           String?
+  email           String?
+  address         String?
+  
+  // Screening
+  medicalHistory  String?   @db.Text
+  isEligible      Boolean   @default(true)
+  deferralReason  String?
+  deferralUntil   DateTime?
+  
+  // Last Donation
+  lastDonationDate DateTime?
+  totalDonations  Int       @default(0)
+  
+  // Emergency Contact
+  emergencyContactName String?
+  emergencyContactPhone String?
+  
+  isActive        Boolean   @default(true)
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  donations       BloodDonation[]
+
+  @@index([donorId])
+  @@index([bloodType])
+  @@index([isEligible])
+  @@map("blood_donors")
+}
+
+model BloodDonation {
+  id              String          @id @default(cuid())
+  donorId         String
+  donor           BloodDonor      @relation(fields: [donorId], references: [id])
+  
+  donationNumber  String          @unique
+  donationDate    DateTime        @default(now())
+  
+  // Volume
+  volumeCollected Int             // in mL
+  bloodType       BloodTypeBB
+  
+  // Screening Tests
+  hivTest         String?         // Negative, Positive, Pending
+  hbvTest         String?
+  hcvTest         String?
+  syphilisTest    String?
+  malariaTest     String?
+  
+  // Processing
+  isProcessed     Boolean         @default(false)
+  processedDate   DateTime?
+  processedById   String?
+  processedBy     User?           @relation(name: "BloodProcessedBy", fields: [processedById], references: [id])
+  
+  // Products Created
+  products        BloodProduct[]
+  
+  // Status
+  isQualified     Boolean         @default(false)
+  disqualificationReason String?
+  
+  notes           String?         @db.Text
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([donorId])
+  @@index([donationNumber])
+  @@index([donationDate])
+  @@index([isQualified])
+  @@map("blood_donations")
+}
+
+model BloodProduct {
+  id              String              @id @default(cuid())
+  
+  // Identification
+  productCode     String              @unique
+  productType     BloodProductType
+  bloodType       BloodTypeBB
+  
+  // Source
+  donationId      String
+  donation        BloodDonation       @relation(fields: [donationId], references: [id])
+  
+  // Volume
+  volume          Int                 // in mL
+  
+  // Dates
+  collectionDate  DateTime
+  expirationDate  DateTime
+  
+  // Storage
+  storageLocation String?
+  storageTemp     Float?              // in Celsius
+  
+  // Status
+  status          BloodProductStatus  @default(QUARANTINE)
+  
+  // Reserved For
+  reservedForId   String?
+  reservedFor     Patient?            @relation(name: "BloodReservedFor", fields: [reservedForId], references: [id])
+  reservedUntil   DateTime?
+  
+  // Relations
+  crossMatches    CrossMatch[]
+  transfusions    BloodTransfusion[]
+  
+  // Quality Control
+  qcPassed        Boolean             @default(false)
+  qcDate          DateTime?
+  
+  notes           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([productCode])
+  @@index([productType])
+  @@index([bloodType])
+  @@index([status])
+  @@index([expirationDate])
+  @@index([reservedForId])
+  @@map("blood_products")
+}
+
+model CrossMatch {
+  id              String              @id @default(cuid())
+  
+  // Patient
+  patientId       String
+  patient         Patient             @relation(fields: [patientId], references: [id])
+  
+  // Blood Product
+  productId       String
+  product         BloodProduct        @relation(fields: [productId], references: [id])
+  
+  // Testing
+  testDate        DateTime            @default(now())
+  testedById      String
+  testedBy        User                @relation(name: "CrossMatchTester", fields: [testedById], references: [id])
+  
+  // Compatibility Testing
+  majorCrossMatch CrossMatchResult
+  minorCrossMatch CrossMatchResult
+  antibodyScreen  String?
+  
+  // Results
+  isCompatible    Boolean
+  incompatibilityReason String?
+  
+  // Validity
+  validUntil      DateTime?
+  
+  notes           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([patientId])
+  @@index([productId])
+  @@index([testDate])
+  @@index([isCompatible])
+  @@map("cross_matches")
+}
+
+model BloodTransfusion {
+  id              String                  @id @default(cuid())
+  
+  // Order Information
+  orderNumber     String                  @unique
+  patientId       String
+  patient         Patient                 @relation(fields: [patientId], references: [id])
+  
+  orderingProviderId String
+  orderingProvider User                   @relation(name: "TransfusionOrderedBy", fields: [orderingProviderId], references: [id])
+  
+  // Product
+  productId       String
+  product         BloodProduct            @relation(fields: [productId], references: [id])
+  
+  // Indication
+  indication      String                  @db.Text
+  hemoglobin      Float?
+  plateletCount   Int?
+  inr             Float?
+  
+  // Vital Signs Pre-Transfusion
+  preTemp         Float?
+  preHr           Int?
+  preBp           String?
+  preRr           Int?
+  
+  // Administration
+  startedAt       DateTime?
+  startedById     String?
+  startedBy       User?                   @relation(name: "TransfusionStartedBy", fields: [startedById], references: [id])
+  
+  completedAt     DateTime?
+  completedById   String?
+  completedBy     User?                   @relation(name: "TransfusionCompletedBy", fields: [completedById], references: [id])
+  
+  // Status
+  status          TransfusionStatus       @default(ORDERED)
+  
+  // Reactions
+  reactionOccurred Boolean                 @default(false)
+  reactionType    TransfusionReactionType?
+  reactionTime    DateTime?
+  reactionDetails String?                 @db.Text
+  stoppedReason   String?
+  
+  // Vital Signs Post-Transfusion
+  postTemp        Float?
+  postHr          Int?
+  postBp          String?
+  postRr          Int?
+  
+  // Follow-up
+  hemoglobinPost  Float?
+  
+  notes           String?                 @db.Text
+  
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  @@index([patientId])
+  @@index([productId])
+  @@index([orderNumber])
+  @@index([status])
+  @@index([startedAt])
+  @@map("blood_transfusions")
+}
+
+// ============================================
+// INVENTORY / SUPPLY CHAIN
+// ============================================
+
+enum InventoryItemCategory {
+  MEDICAL_SUPPLIES
+  PHARMACEUTICALS
+  LABORATORY_SUPPLIES
+  SURGICAL_SUPPLIES
+  DURABLE_MEDICAL_EQUIPMENT
+  OFFICE_SUPPLIES
+  LINEN
+  NUTRITION
+  RADIOLOGY_SUPPLIES
+  GENERAL
+}
+
+enum InventoryItemStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+  ON_BACKORDER
+}
+
+enum InventoryTransactionType {
+  RECEIPT
+  ISSUE
+  RETURN
+  ADJUSTMENT
+  TRANSFER_IN
+  TRANSFER_OUT
+  WASTE
+  EXPIRED
+  RECALLED
+  COUNT
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  SENT_TO_SUPPLIER
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+  CLOSED
+}
+
+enum RequisitionStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  FULFILLED
+  PARTIALLY_FULFILLED
+  CANCELLED
+  REJECTED
+}
+
+model InventoryItem {
+  id              String               @id @default(cuid())
+  
+  // Basic Info
+  sku             String               @unique
+  name            String
+  description     String?              @db.Text
+  manufacturer    String?
+  modelNumber     String?
+  barcode         String?              @unique
+  
+  // Classification
+  category        InventoryItemCategory
+  subCategory     String?
+  
+  // Unit of Measure
+  unitOfMeasure   String               // e.g., "each", "box", "case", "ml", "mg"
+  unitsPerPackage Int                  @default(1)
+  
+  // Stock Control
+  reorderPoint    Int                  @default(0)
+  reorderQuantity Int                  @default(1)
+  maxStockLevel   Int?
+  minStockLevel   Int                  @default(0)
+  
+  // Pricing
+  unitCost        Decimal              @db.Decimal(10, 2)
+  averageCost     Decimal              @db.Decimal(10, 2) @default(0)
+  lastCost        Decimal              @db.Decimal(10, 2) @default(0)
+  
+  // Tracking
+  isLotTracked    Boolean              @default(false)
+  isSerialized    Boolean              @default(false)
+  isExpirable     Boolean              @default(false)
+  
+  // Storage
+  defaultLocation String?
+  storageTempMin  Float?
+  storageTempMax  Float?
+  specialHandling String?
+  
+  // Status
+  status          InventoryItemStatus  @default(ACTIVE)
+  
+  // Regulatory
+  hcpcsCode       String?
+  ndcNumber       String?
+  cptCode         String?
+  
+  // Relations
+  stock           InventoryStock[]
+  transactions    InventoryTransaction[]
+  poItems         PurchaseOrderItem[]
+  requisitionItems RequisitionItem[]
+  
+  notes           String?              @db.Text
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([sku])
+  @@index([category])
+  @@index([status])
+  @@index([barcode])
+  @@map("inventory_items")
+}
+
+model InventoryLocation {
+  id              String               @id @default(cuid())
+  
+  // Location Info
+  code            String               @unique
+  name            String
+  description     String?
+  
+  // Hierarchy
+  locationType    String               // e.g., "WAREHOUSE", "PHARMACY", "FLOOR", "DEPARTMENT", "ROOM"
+  parentLocationId String?
+  parentLocation  InventoryLocation?   @relation("LocationHierarchy", fields: [parentLocationId], references: [id])
+  childLocations  InventoryLocation[]  @relation("LocationHierarchy")
+  
+  // Department Assignment
+  departmentId    String?
+  
+  // Storage Properties
+  isTemperatureControlled Boolean      @default(false)
+  temperatureMin  Float?
+  temperatureMax  Float?
+  isSecure        Boolean              @default(false)
+  isActive        Boolean              @default(true)
+  
+  // Relations
+  stock           InventoryStock[]
+  transactionsFrom InventoryTransaction[] @relation("FromLocation")
+  
+  notes           String?              @db.Text
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([code])
+  @@index([locationType])
+  @@index([departmentId])
+  @@map("inventory_locations")
+}
+
+model InventoryStock {
+  id              String               @id @default(cuid())
+  
+  // Item
+  itemId          String
+  item            InventoryItem        @relation(fields: [itemId], references: [id])
+  
+  // Location
+  locationId      String
+  location        InventoryLocation    @relation(fields: [locationId], references: [id])
+  
+  // Quantity
+  quantityOnHand  Int                  @default(0)
+  quantityReserved Int                 @default(0)
+  quantityAvailable Int                @default(0)
+  
+  // Lot/Serial Info (for tracked items)
+  lotNumber       String?
+  serialNumber    String?
+  expirationDate  DateTime?
+  receivedDate    DateTime?
+  
+  // Cost
+  unitCost        Decimal              @db.Decimal(10, 2)
+  
+  // Status
+  isQuarantine    Boolean              @default(false)
+  quarantineReason String?
+  isExpired       Boolean              @default(false)
+  
+  // Relations
+  transactions    InventoryTransaction[]
+  
+  notes           String?              @db.Text
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@unique([itemId, locationId, lotNumber, serialNumber])
+  @@index([itemId])
+  @@index([locationId])
+  @@index([lotNumber])
+  @@index([serialNumber])
+  @@index([expirationDate])
+  @@index([isExpired])
+  @@map("inventory_stock")
+}
+
+model InventoryTransaction {
+  id              String                   @id @default(cuid())
+  
+  // Transaction Info
+  transactionNumber String                 @unique
+  transactionType InventoryTransactionType
+  transactionDate DateTime                 @default(now())
+  
+  // Item
+  itemId          String
+  item            InventoryItem            @relation(fields: [itemId], references: [id])
+  
+  // Stock Reference
+  stockId         String?
+  stock           InventoryStock?          @relation(fields: [stockId], references: [id])
+  
+  // Location
+  fromLocationId  String?
+  fromLocation    InventoryLocation?       @relation(name: "FromLocation", fields: [fromLocationId], references: [id])
+  toLocationId    String?
+  
+  // Quantity
+  quantity        Int
+  unitCost        Decimal                  @db.Decimal(10, 2)
+  totalCost       Decimal                  @db.Decimal(10, 2)
+  
+  // Reference Documents
+  referenceType   String?                  // e.g., "PO", "REQUISITION", "ADJUSTMENT", "TRANSFER"
+  referenceId     String?
+  referenceNumber String?
+  
+  // User
+  performedById   String
+  performedBy     User                     @relation(name: "InventoryTransactionPerformer", fields: [performedById], references: [id])
+  
+  // Lot/Serial
+  lotNumber       String?
+  serialNumber    String?
+  expirationDate  DateTime?
+  
+  // Reason
+  reason          String?
+  notes           String?                  @db.Text
+  
+  createdAt       DateTime                 @default(now())
+
+  @@index([transactionNumber])
+  @@index([itemId])
+  @@index([transactionType])
+  @@index([transactionDate])
+  @@index([fromLocationId])
+  @@index([referenceType])
+  @@map("inventory_transactions")
+}
+
+model Supplier {
+  id              String               @id @default(cuid())
+  
+  // Basic Info
+  code            String               @unique
+  name            String
+  contactPerson   String?
+  
+  // Address
+  address         String?
+  city            String?
+  state           String?
+  zipCode         String?
+  country         String               @default("USA")
+  
+  // Contact
+  phone           String?
+  email           String?
+  fax             String?
+  website         String?
+  
+  // Business Info
+  taxId           String?
+  paymentTerms    String?              // e.g., "Net 30", "Net 60"
+  currency        String               @default("USD")
+  
+  // Status
+  isActive        Boolean              @default(true)
+  isPreferred     Boolean              @default(false)
+  
+  // Ratings
+  rating          Int?                 @db.TinyInt
+  performanceScore Float?
+  
+  // Relations
+  purchaseOrders  PurchaseOrder[]
+  itemsSupplied   SupplierItem[]
+  
+  notes           String?              @db.Text
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([code])
+  @@index([isActive])
+  @@index([isPreferred])
+  @@map("suppliers")
+}
+
+model SupplierItem {
+  id              String               @id @default(cuid())
+  
+  supplierId      String
+  supplier        Supplier             @relation(fields: [supplierId], references: [id])
+  
+  itemId          String
+  
+  // Supplier-specific info
+  supplierSku     String?
+  supplierName    String?
+  
+  // Pricing
+  unitCost        Decimal              @db.Decimal(10, 2)
+  minOrderQty     Int                  @default(1)
+  leadTimeDays    Int?
+  
+  // Status
+  isPrimary       Boolean              @default(false)
+  isActive        Boolean              @default(true)
+  
+  notes           String?              @db.Text
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@unique([supplierId, itemId])
+  @@index([supplierId])
+  @@index([itemId])
+  @@map("supplier_items")
+}
+
+model PurchaseOrder {
+  id              String               @id @default(cuid())
+  
+  // Order Info
+  poNumber        String               @unique
+  poDate          DateTime             @default(now())
+  
+  // Supplier
+  supplierId      String
+  supplier        Supplier             @relation(fields: [supplierId], references: [id])
+  
+  // Status
+  status          PurchaseOrderStatus  @default(DRAFT)
+  
+  // Financials
+  subtotal        Decimal              @db.Decimal(10, 2) @default(0)
+  taxAmount       Decimal              @db.Decimal(10, 2) @default(0)
+  shippingAmount  Decimal              @db.Decimal(10, 2) @default(0)
+  discountAmount  Decimal              @db.Decimal(10, 2) @default(0)
+  totalAmount     Decimal              @db.Decimal(10, 2) @default(0)
+  
+  // Delivery
+  expectedDeliveryDate DateTime?
+  deliveryLocationId String?
+  
+  // Approval
+  requestedById   String
+  requestedBy     User                 @relation(name: "PORequestedBy", fields: [requestedById], references: [id])
+  approvedById    String?
+  approvedBy      User?                @relation(name: "POApprovedBy", fields: [approvedById], references: [id])
+  approvedAt      DateTime?
+  
+  // Receipt
+  receivedDate    DateTime?
+  
+  // Relations
+  items           PurchaseOrderItem[]
+  
+  notes           String?              @db.Text
+  terms           String?
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([poNumber])
+  @@index([supplierId])
+  @@index([status])
+  @@index([poDate])
+  @@index([expectedDeliveryDate])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id              String               @id @default(cuid())
+  
+  // Order
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder        @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  
+  // Item
+  itemId          String
+  item            InventoryItem        @relation(fields: [itemId], references: [id])
+  
+  // Quantity
+  quantityOrdered Int
+  quantityReceived Int                 @default(0)
+  quantityBackordered Int              @default(0)
+  
+  // Pricing
+  unitCost        Decimal              @db.Decimal(10, 2)
+  totalCost       Decimal              @db.Decimal(10, 2)
+  
+  // Status
+  isReceived      Boolean              @default(false)
+  
+  // Delivery
+  expectedDeliveryDate DateTime?
+  
+  notes           String?              @db.Text
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([purchaseOrderId])
+  @@index([itemId])
+  @@map("purchase_order_items")
+}
+
+model Requisition {
+  id              String               @id @default(cuid())
+  
+  // Requisition Info
+  reqNumber       String               @unique
+  reqDate         DateTime             @default(now())
+  
+  // Requester
+  departmentId    String
+  requestedById   String
+  requestedBy     User                 @relation(name: "RequisitionRequestedBy", fields: [requestedById], references: [id])
+  
+  // Priority
+  priority        String               @default("NORMAL") // LOW, NORMAL, HIGH, URGENT
+  neededByDate    DateTime?
+  
+  // Status
+  status          RequisitionStatus    @default(DRAFT)
+  
+  // Approval
+  approvedById    String?
+  approvedBy      User?                @relation(name: "RequisitionApprovedBy", fields: [approvedById], references: [id])
+  approvedAt      DateTime?
+  approvalNotes   String?
+  
+  // Fulfillment
+  fulfilledById   String?
+  fulfilledBy     User?                @relation(name: "RequisitionFulfilledBy", fields: [fulfilledById], references: [id])
+  fulfilledAt     DateTime?
+  
+  // Relations
+  items           RequisitionItem[]
+  
+  notes           String?              @db.Text
+  justification   String?
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([reqNumber])
+  @@index([departmentId])
+  @@index([status])
+  @@index([priority])
+  @@index([reqDate])
+  @@map("requisitions")
+}
+
+model RequisitionItem {
+  id              String               @id @default(cuid())
+  
+  // Requisition
+  requisitionId   String
+  requisition     Requisition          @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  
+  // Item
+  itemId          String
+  item            InventoryItem        @relation(fields: [itemId], references: [id])
+  
+  // Quantity
+  quantityRequested Int
+  quantityApproved Int?
+  quantityIssued  Int                  @default(0)
+  
+  // Status
+  isFulfilled     Boolean              @default(false)
+  
+  // Substitution
+  substituteItemId String?
+  substitutionApproved Boolean         @default(false)
+  
+  notes           String?              @db.Text
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([requisitionId])
+  @@index([itemId])
+  @@map("requisition_items")
 }

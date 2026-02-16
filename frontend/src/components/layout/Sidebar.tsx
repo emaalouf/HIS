@@ -24,6 +24,11 @@ import {
     Scissors,
     MapPin,
     Utensils,
+    FlaskConical,
+    Scan,
+    Siren,
+    Heart,
+    Droplets,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
@@ -42,6 +47,11 @@ const navigation = [
     { name: 'Nephrology', href: '/nephrology', icon: Filter },
     { name: 'Neurology', href: '/neurology', icon: Brain },
     { name: 'Gastroenterology', href: '/gastroenterology', icon: Utensils },
+    { name: 'Laboratory (LIS)', href: '/lis', icon: FlaskConical },
+    { name: 'Radiology (PACS)', href: '/radiology', icon: Scan },
+    { name: 'Emergency Dept', href: '/emergency', icon: Siren },
+    { name: 'ICU / Critical Care', href: '/icu', icon: Heart },
+    { name: 'Blood Bank', href: '/bloodbank', icon: Droplets },
     { name: 'Providers', href: '/providers', icon: Stethoscope },
     { name: 'Specialties', href: '/specialties', icon: ClipboardList },
     { name: 'Departments', href: '/departments', icon: Building2 },

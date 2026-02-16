@@ -45,6 +45,21 @@ import {
     WoundClass,
     EndoscopyStatus,
     EndoscopyQuality,
+    NeurologyTestStatus,
+    NeurologyImagingType,
+    StrokeType,
+    StrokeSeverity,
+    SeizureType,
+    AssessmentType,
+    TherapyType,
+    LesionType,
+    BiopsyType,
+    EyeSide,
+    HearingLossType,
+    SpirometryQuality,
+    SleepApneaSeverity,
+    DiabetesType,
+    InsulinType,
 } from '@prisma/client';
 
 // Auth Schemas
@@ -2148,3 +2163,812 @@ export type CreateGastroColonoscopyInput = z.infer<typeof createGastroColonoscop
 export type UpdateGastroColonoscopyInput = z.infer<typeof updateGastroColonoscopySchema>['body'];
 export type CreateGastroLiverFunctionInput = z.infer<typeof createGastroLiverFunctionSchema>['body'];
 export type UpdateGastroLiverFunctionInput = z.infer<typeof updateGastroLiverFunctionSchema>['body'];
+
+// Neurology EEG Schemas
+export const createNeurologyEegSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NeurologyTestStatus).optional(),
+        recordedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid recorded time',
+        }),
+        durationMinutes: z.number().optional(),
+        indication: z.string().optional().nullable(),
+        backgroundActivity: z.string().optional().nullable(),
+        posteriorDominantRhythm: z.string().optional().nullable(),
+        symmetry: z.string().optional().nullable(),
+        sleepStages: z.string().optional().nullable(),
+        epileptiformActivity: z.boolean().optional(),
+        epileptiformDescription: z.string().optional().nullable(),
+        seizureActivity: z.boolean().optional(),
+        seizureDescription: z.string().optional().nullable(),
+        focalSlowing: z.boolean().optional(),
+        generalizedSlowing: z.boolean().optional(),
+        interpretation: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNeurologyEegSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'EEG ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NeurologyTestStatus).optional(),
+        recordedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid recorded time',
+        }).optional(),
+        durationMinutes: z.number().optional(),
+        indication: z.string().optional().nullable(),
+        backgroundActivity: z.string().optional().nullable(),
+        posteriorDominantRhythm: z.string().optional().nullable(),
+        symmetry: z.string().optional().nullable(),
+        sleepStages: z.string().optional().nullable(),
+        epileptiformActivity: z.boolean().optional(),
+        epileptiformDescription: z.string().optional().nullable(),
+        seizureActivity: z.boolean().optional(),
+        seizureDescription: z.string().optional().nullable(),
+        focalSlowing: z.boolean().optional(),
+        generalizedSlowing: z.boolean().optional(),
+        interpretation: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Neurology EMG Schemas
+export const createNeurologyEmgSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NeurologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }),
+        indication: z.string().optional().nullable(),
+        musclesTested: z.string().optional().nullable(),
+        nerveConductionStudies: z.string().optional().nullable(),
+        needleEmgFindings: z.string().optional().nullable(),
+        spontaneousActivity: z.string().optional().nullable(),
+        motorUnitPotentials: z.string().optional().nullable(),
+        recruitmentPattern: z.string().optional().nullable(),
+        fibrillations: z.boolean().optional(),
+        fasciculations: z.boolean().optional(),
+        positiveSharpWaves: z.boolean().optional(),
+        interpretation: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNeurologyEmgSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'EMG ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NeurologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }).optional(),
+        indication: z.string().optional().nullable(),
+        musclesTested: z.string().optional().nullable(),
+        nerveConductionStudies: z.string().optional().nullable(),
+        needleEmgFindings: z.string().optional().nullable(),
+        spontaneousActivity: z.string().optional().nullable(),
+        motorUnitPotentials: z.string().optional().nullable(),
+        recruitmentPattern: z.string().optional().nullable(),
+        fibrillations: z.boolean().optional(),
+        fasciculations: z.boolean().optional(),
+        positiveSharpWaves: z.boolean().optional(),
+        interpretation: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Neurology Imaging Schemas
+export const createNeurologyImagingSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NeurologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }),
+        imagingType: z.nativeEnum(NeurologyImagingType),
+        indication: z.string().optional().nullable(),
+        contrastUsed: z.boolean().optional(),
+        contrastAgent: z.string().optional().nullable(),
+        findings: z.string().optional().nullable(),
+        impression: z.string().optional().nullable(),
+        acuteIschemicChanges: z.boolean().optional(),
+        hemorrhagePresent: z.boolean().optional(),
+        massEffect: z.boolean().optional(),
+        midlineShift: z.number().optional(),
+        ventricleSize: z.string().optional().nullable(),
+        sulcalEffacement: z.boolean().optional(),
+        oldInfarcts: z.string().optional().nullable(),
+        whiteMatterChanges: z.string().optional().nullable(),
+        vascularAbnormalities: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNeurologyImagingSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Imaging ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        status: z.nativeEnum(NeurologyTestStatus).optional(),
+        performedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid performed time',
+        }).optional(),
+        imagingType: z.nativeEnum(NeurologyImagingType).optional(),
+        indication: z.string().optional().nullable(),
+        contrastUsed: z.boolean().optional(),
+        contrastAgent: z.string().optional().nullable(),
+        findings: z.string().optional().nullable(),
+        impression: z.string().optional().nullable(),
+        acuteIschemicChanges: z.boolean().optional(),
+        hemorrhagePresent: z.boolean().optional(),
+        massEffect: z.boolean().optional(),
+        midlineShift: z.number().optional(),
+        ventricleSize: z.string().optional().nullable(),
+        sulcalEffacement: z.boolean().optional(),
+        oldInfarcts: z.string().optional().nullable(),
+        whiteMatterChanges: z.string().optional().nullable(),
+        vascularAbnormalities: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Neurology Stroke Schemas
+export const createNeurologyStrokeSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        onsetTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid onset time',
+        }),
+        arrivalTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid arrival time',
+        }),
+        strokeType: z.nativeEnum(StrokeType),
+        severity: z.nativeEnum(StrokeSeverity).optional(),
+        nihssScore: z.number().optional(),
+        location: z.string().optional().nullable(),
+        affectedVessel: z.string().optional().nullable(),
+        ivTpaGiven: z.boolean().optional(),
+        ivTpaTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid tPA time',
+        }).optional().nullable(),
+        mechanicalThrombectomy: z.boolean().optional(),
+        thrombectomyTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid thrombectomy time',
+        }).optional().nullable(),
+        hemorrhagicTransformation: z.boolean().optional(),
+        complications: z.string().optional().nullable(),
+        dischargeDisposition: z.string().optional().nullable(),
+        modifiedRankinScale: z.number().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNeurologyStrokeSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Stroke ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        onsetTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid onset time',
+        }).optional(),
+        arrivalTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid arrival time',
+        }).optional(),
+        strokeType: z.nativeEnum(StrokeType).optional(),
+        severity: z.nativeEnum(StrokeSeverity).optional(),
+        nihssScore: z.number().optional(),
+        location: z.string().optional().nullable(),
+        affectedVessel: z.string().optional().nullable(),
+        ivTpaGiven: z.boolean().optional(),
+        ivTpaTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid tPA time',
+        }).optional().nullable(),
+        mechanicalThrombectomy: z.boolean().optional(),
+        thrombectomyTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid thrombectomy time',
+        }).optional().nullable(),
+        hemorrhagicTransformation: z.boolean().optional(),
+        complications: z.string().optional().nullable(),
+        dischargeDisposition: z.string().optional().nullable(),
+        modifiedRankinScale: z.number().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Neurology Seizure Schemas
+export const createNeurologySeizureSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        occurrenceTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid occurrence time',
+        }),
+        seizureType: z.nativeEnum(SeizureType),
+        durationSeconds: z.number().optional(),
+        witnessed: z.boolean().optional(),
+        witnessDescription: z.string().optional().nullable(),
+        auraPresent: z.boolean().optional(),
+        auraDescription: z.string().optional().nullable(),
+        lossOfConsciousness: z.boolean().optional(),
+        postictalState: z.boolean().optional(),
+        postictalDuration: z.number().optional(),
+        injuries: z.string().optional().nullable(),
+        triggers: z.string().optional().nullable(),
+        eegCorrelation: z.string().optional().nullable(),
+        medicationGiven: z.string().optional().nullable(),
+        medicationResponse: z.string().optional().nullable(),
+        statusEpilepticus: z.boolean().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNeurologySeizureSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Seizure ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        occurrenceTime: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid occurrence time',
+        }).optional(),
+        seizureType: z.nativeEnum(SeizureType).optional(),
+        durationSeconds: z.number().optional(),
+        witnessed: z.boolean().optional(),
+        witnessDescription: z.string().optional().nullable(),
+        auraPresent: z.boolean().optional(),
+        auraDescription: z.string().optional().nullable(),
+        lossOfConsciousness: z.boolean().optional(),
+        postictalState: z.boolean().optional(),
+        postictalDuration: z.number().optional(),
+        injuries: z.string().optional().nullable(),
+        triggers: z.string().optional().nullable(),
+        eegCorrelation: z.string().optional().nullable(),
+        medicationGiven: z.string().optional().nullable(),
+        medicationResponse: z.string().optional().nullable(),
+        statusEpilepticus: z.boolean().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Neurology Cognitive Assessment Schemas
+export const createNeurologyCognitiveSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        assessedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid assessment time',
+        }),
+        mmseScore: z.number().optional(),
+        mocaScore: z.number().optional(),
+        clockDrawingTest: z.string().optional().nullable(),
+        verbalFluency: z.number().optional(),
+        memoryImmediate: z.number().optional(),
+        memoryDelayed: z.number().optional(),
+        attentionTest: z.string().optional().nullable(),
+        languageTest: z.string().optional().nullable(),
+        visuospatialTest: z.string().optional().nullable(),
+        executiveFunction: z.string().optional().nullable(),
+        orientationScore: z.number().optional(),
+        registrationScore: z.number().optional(),
+        calculationScore: z.number().optional(),
+        recallScore: z.number().optional(),
+        namingScore: z.number().optional(),
+        repetitionScore: z.number().optional(),
+        comprehensionScore: z.number().optional(),
+        readingScore: z.number().optional(),
+        writingScore: z.number().optional(),
+        drawingScore: z.number().optional(),
+        interpretation: z.string().optional().nullable(),
+        recommendations: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateNeurologyCognitiveSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Cognitive Assessment ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        visitId: z.string().optional().nullable(),
+        assessedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid assessment time',
+        }).optional(),
+        mmseScore: z.number().optional(),
+        mocaScore: z.number().optional(),
+        clockDrawingTest: z.string().optional().nullable(),
+        verbalFluency: z.number().optional(),
+        memoryImmediate: z.number().optional(),
+        memoryDelayed: z.number().optional(),
+        attentionTest: z.string().optional().nullable(),
+        languageTest: z.string().optional().nullable(),
+        visuospatialTest: z.string().optional().nullable(),
+        executiveFunction: z.string().optional().nullable(),
+        orientationScore: z.number().optional(),
+        registrationScore: z.number().optional(),
+        calculationScore: z.number().optional(),
+        recallScore: z.number().optional(),
+        namingScore: z.number().optional(),
+        repetitionScore: z.number().optional(),
+        comprehensionScore: z.number().optional(),
+        readingScore: z.number().optional(),
+        writingScore: z.number().optional(),
+        drawingScore: z.number().optional(),
+        interpretation: z.string().optional().nullable(),
+        recommendations: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export type CreateNeurologyEegInput = z.infer<typeof createNeurologyEegSchema>['body'];
+export type UpdateNeurologyEegInput = z.infer<typeof updateNeurologyEegSchema>['body'];
+export type CreateNeurologyEmgInput = z.infer<typeof createNeurologyEmgSchema>['body'];
+export type UpdateNeurologyEmgInput = z.infer<typeof updateNeurologyEmgSchema>['body'];
+export type CreateNeurologyImagingInput = z.infer<typeof createNeurologyImagingSchema>['body'];
+export type UpdateNeurologyImagingInput = z.infer<typeof updateNeurologyImagingSchema>['body'];
+export type CreateNeurologyStrokeInput = z.infer<typeof createNeurologyStrokeSchema>['body'];
+export type UpdateNeurologyStrokeInput = z.infer<typeof updateNeurologyStrokeSchema>['body'];
+export type CreateNeurologySeizureInput = z.infer<typeof createNeurologySeizureSchema>['body'];
+export type UpdateNeurologySeizureInput = z.infer<typeof updateNeurologySeizureSchema>['body'];
+export type CreateNeurologyCognitiveInput = z.infer<typeof createNeurologyCognitiveSchema>['body'];
+export type UpdateNeurologyCognitiveInput = z.infer<typeof updateNeurologyCognitiveSchema>['body'];
+
+// Pulmonology Schemas
+export const createPulmonologySpirometrySchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        testDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid test date',
+        }),
+        indication: z.string().optional().nullable(),
+        qualityGrade: z.nativeEnum(SpirometryQuality),
+        fev1: z.number(),
+        fvc: z.number(),
+        fev1FvcRatio: z.number(),
+        predictedFev1: z.number().optional().nullable(),
+        predictedFvc: z.number().optional().nullable(),
+        percentPredictedFev1: z.number().optional().nullable(),
+        percentPredictedFvc: z.number().optional().nullable(),
+        fef2575: z.number().optional().nullable(),
+        bronchodilatorGiven: z.boolean().optional(),
+        postBdFev1: z.number().optional().nullable(),
+        postBdFvc: z.number().optional().nullable(),
+        postBdRatio: z.number().optional().nullable(),
+        significantResponse: z.boolean().optional(),
+        interpretation: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updatePulmonologySpirometrySchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Spirometry ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        testDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid test date',
+        }).optional(),
+        indication: z.string().optional().nullable(),
+        qualityGrade: z.nativeEnum(SpirometryQuality).optional(),
+        fev1: z.number().optional(),
+        fvc: z.number().optional(),
+        fev1FvcRatio: z.number().optional(),
+        predictedFev1: z.number().optional().nullable(),
+        predictedFvc: z.number().optional().nullable(),
+        percentPredictedFev1: z.number().optional().nullable(),
+        percentPredictedFvc: z.number().optional().nullable(),
+        fef2575: z.number().optional().nullable(),
+        bronchodilatorGiven: z.boolean().optional(),
+        postBdFev1: z.number().optional().nullable(),
+        postBdFvc: z.number().optional().nullable(),
+        postBdRatio: z.number().optional().nullable(),
+        significantResponse: z.boolean().optional(),
+        interpretation: z.string().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createPulmonologySleepStudySchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().optional().nullable(),
+        studyDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid study date',
+        }),
+        studyType: z.string().min(1, 'Study type is required'),
+        ahi: z.number(),
+        rdi: z.number().optional().nullable(),
+        odi: z.number().optional().nullable(),
+        meanSpo2: z.number().optional().nullable(),
+        nadirSpo2: z.number().optional().nullable(),
+        timeBelow90: z.number().optional().nullable(),
+        sleepEfficiency: z.number().optional().nullable(),
+        totalSleepTime: z.number().optional().nullable(),
+        remPercentage: z.number().optional().nullable(),
+        deepSleepPercentage: z.number().optional().nullable(),
+        apneaSeverity: z.nativeEnum(SleepApneaSeverity),
+        centralApneaIndex: z.number().optional().nullable(),
+        obstructiveApneaIndex: z.number().optional().nullable(),
+        hypopneaIndex: z.number().optional().nullable(),
+        cpapRecommended: z.boolean().optional(),
+        cpapPressure: z.number().optional().nullable(),
+        bipapRecommended: z.boolean().optional(),
+        bipapSettings: z.string().optional().nullable(),
+        positionalTherapy: z.boolean().optional(),
+        oralAppliance: z.boolean().optional(),
+        surgicalEvaluation: z.boolean().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updatePulmonologySleepStudySchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Sleep Study ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().optional().nullable(),
+        studyDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid study date',
+        }).optional(),
+        studyType: z.string().min(1).optional(),
+        ahi: z.number().optional(),
+        rdi: z.number().optional().nullable(),
+        odi: z.number().optional().nullable(),
+        meanSpo2: z.number().optional().nullable(),
+        nadirSpo2: z.number().optional().nullable(),
+        timeBelow90: z.number().optional().nullable(),
+        sleepEfficiency: z.number().optional().nullable(),
+        totalSleepTime: z.number().optional().nullable(),
+        remPercentage: z.number().optional().nullable(),
+        deepSleepPercentage: z.number().optional().nullable(),
+        apneaSeverity: z.nativeEnum(SleepApneaSeverity).optional(),
+        centralApneaIndex: z.number().optional().nullable(),
+        obstructiveApneaIndex: z.number().optional().nullable(),
+        hypopneaIndex: z.number().optional().nullable(),
+        cpapRecommended: z.boolean().optional(),
+        cpapPressure: z.number().optional().nullable(),
+        bipapRecommended: z.boolean().optional(),
+        bipapSettings: z.string().optional().nullable(),
+        positionalTherapy: z.boolean().optional(),
+        oralAppliance: z.boolean().optional(),
+        surgicalEvaluation: z.boolean().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createPulmonologyBronchoscopySchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        procedureDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid procedure date',
+        }),
+        indication: z.string().min(1, 'Indication is required'),
+        anesthesia: z.string().optional().nullable(),
+        vocalCords: z.string().optional().nullable(),
+        trachea: z.string().optional().nullable(),
+        carina: z.string().optional().nullable(),
+        rightMainBronchus: z.string().optional().nullable(),
+        leftMainBronchus: z.string().optional().nullable(),
+        lobarBranches: z.string().optional().nullable(),
+        segmentalBranches: z.string().optional().nullable(),
+        abnormalitiesFound: z.boolean().optional(),
+        abnormalities: z.string().optional().nullable(),
+        biopsiesTaken: z.number().optional(),
+        biopsySites: z.string().optional().nullable(),
+        balfPerformed: z.boolean().optional(),
+        balSites: z.string().optional().nullable(),
+        balResults: z.string().optional().nullable(),
+        brushingsTaken: z.boolean().optional(),
+        complications: z.string().optional().nullable(),
+        postOpInstructions: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updatePulmonologyBronchoscopySchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Bronchoscopy ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        procedureDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid procedure date',
+        }).optional(),
+        indication: z.string().min(1).optional(),
+        anesthesia: z.string().optional().nullable(),
+        vocalCords: z.string().optional().nullable(),
+        trachea: z.string().optional().nullable(),
+        carina: z.string().optional().nullable(),
+        rightMainBronchus: z.string().optional().nullable(),
+        leftMainBronchus: z.string().optional().nullable(),
+        lobarBranches: z.string().optional().nullable(),
+        segmentalBranches: z.string().optional().nullable(),
+        abnormalitiesFound: z.boolean().optional(),
+        abnormalities: z.string().optional().nullable(),
+        biopsiesTaken: z.number().optional(),
+        biopsySites: z.string().optional().nullable(),
+        balfPerformed: z.boolean().optional(),
+        balSites: z.string().optional().nullable(),
+        balResults: z.string().optional().nullable(),
+        brushingsTaken: z.boolean().optional(),
+        complications: z.string().optional().nullable(),
+        postOpInstructions: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Endocrinology Schemas
+export const createEndocrinologyDiabetesSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        diagnosisDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid diagnosis date',
+        }),
+        diabetesType: z.nativeEnum(DiabetesType),
+        hba1cAtDiagnosis: z.number().optional().nullable(),
+        currentHbA1c: z.number().optional().nullable(),
+        hba1cDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid HbA1c date',
+        }).optional().nullable(),
+        fastingGlucose: z.number().optional().nullable(),
+        postprandialGlucose: z.number().optional().nullable(),
+        targetFasting: z.number().optional(),
+        targetPostprandial: z.number().optional(),
+        targetHbA1c: z.number().optional(),
+        complications: z.string().optional().nullable(),
+        retinopathy: z.boolean().optional(),
+        nephropathy: z.boolean().optional(),
+        neuropathy: z.boolean().optional(),
+        cardiovascular: z.boolean().optional(),
+        footExamDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid foot exam date',
+        }).optional().nullable(),
+        footExamFindings: z.string().optional().nullable(),
+        eyeExamDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid eye exam date',
+        }).optional().nullable(),
+        eyeExamFindings: z.string().optional().nullable(),
+        lastNephrologyReferral: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid nephrology referral date',
+        }).optional().nullable(),
+        dietitianReferral: z.boolean().optional(),
+        diabetesEducator: z.boolean().optional(),
+        selfMonitoring: z.boolean().optional(),
+        monitoringFrequency: z.string().optional().nullable(),
+        lifestyleModifications: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateEndocrinologyDiabetesSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Diabetes ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        diagnosisDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid diagnosis date',
+        }).optional(),
+        diabetesType: z.nativeEnum(DiabetesType).optional(),
+        hba1cAtDiagnosis: z.number().optional().nullable(),
+        currentHbA1c: z.number().optional().nullable(),
+        hba1cDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid HbA1c date',
+        }).optional().nullable(),
+        fastingGlucose: z.number().optional().nullable(),
+        postprandialGlucose: z.number().optional().nullable(),
+        targetFasting: z.number().optional(),
+        targetPostprandial: z.number().optional(),
+        targetHbA1c: z.number().optional(),
+        complications: z.string().optional().nullable(),
+        retinopathy: z.boolean().optional(),
+        nephropathy: z.boolean().optional(),
+        neuropathy: z.boolean().optional(),
+        cardiovascular: z.boolean().optional(),
+        footExamDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid foot exam date',
+        }).optional().nullable(),
+        footExamFindings: z.string().optional().nullable(),
+        eyeExamDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid eye exam date',
+        }).optional().nullable(),
+        eyeExamFindings: z.string().optional().nullable(),
+        lastNephrologyReferral: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid nephrology referral date',
+        }).optional().nullable(),
+        dietitianReferral: z.boolean().optional(),
+        diabetesEducator: z.boolean().optional(),
+        selfMonitoring: z.boolean().optional(),
+        monitoringFrequency: z.string().optional().nullable(),
+        lifestyleModifications: z.string().optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createEndocrinologyInsulinSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        prescriptionDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid prescription date',
+        }),
+        insulinType: z.nativeEnum(InsulinType),
+        brandName: z.string().optional().nullable(),
+        morningDose: z.number().optional().nullable(),
+        noonDose: z.number().optional().nullable(),
+        eveningDose: z.number().optional().nullable(),
+        bedtimeDose: z.number().optional().nullable(),
+        correctionFactor: z.number().optional().nullable(),
+        carbRatio: z.number().optional().nullable(),
+        basalRate: z.number().optional().nullable(),
+        siteRotation: z.string().optional().nullable(),
+        storageInstructions: z.string().optional().nullable(),
+        hypoglycemiaAwareness: z.boolean().optional(),
+        glucagonAvailable: z.boolean().optional(),
+        lastHbA1c: z.number().optional().nullable(),
+        adjustmentsMade: z.string().optional().nullable(),
+        sideEffects: z.string().optional().nullable(),
+        adherence: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateEndocrinologyInsulinSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Insulin ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        prescriptionDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid prescription date',
+        }).optional(),
+        insulinType: z.nativeEnum(InsulinType).optional(),
+        brandName: z.string().optional().nullable(),
+        morningDose: z.number().optional().nullable(),
+        noonDose: z.number().optional().nullable(),
+        eveningDose: z.number().optional().nullable(),
+        bedtimeDose: z.number().optional().nullable(),
+        correctionFactor: z.number().optional().nullable(),
+        carbRatio: z.number().optional().nullable(),
+        basalRate: z.number().optional().nullable(),
+        siteRotation: z.string().optional().nullable(),
+        storageInstructions: z.string().optional().nullable(),
+        hypoglycemiaAwareness: z.boolean().optional(),
+        glucagonAvailable: z.boolean().optional(),
+        lastHbA1c: z.number().optional().nullable(),
+        adjustmentsMade: z.string().optional().nullable(),
+        sideEffects: z.string().optional().nullable(),
+        adherence: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const createEndocrinologyThyroidSchema = z.object({
+    body: z.object({
+        patientId: z.string().min(1, 'Patient ID is required'),
+        providerId: z.string().min(1, 'Provider ID is required'),
+        testDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid test date',
+        }),
+        tsh: z.number().optional().nullable(),
+        freeT3: z.number().optional().nullable(),
+        freeT4: z.number().optional().nullable(),
+        totalT3: z.number().optional().nullable(),
+        totalT4: z.number().optional().nullable(),
+        tpoAntibodies: z.number().optional().nullable(),
+        tgAntibodies: z.number().optional().nullable(),
+        thyroglobulin: z.number().optional().nullable(),
+        calcitonin: z.number().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        thyroidSize: z.string().optional().nullable(),
+        nodulesPresent: z.boolean().optional(),
+        noduleDescription: z.string().optional().nullable(),
+        biopsyRecommended: z.boolean().optional(),
+        biopsyResults: z.string().optional().nullable(),
+        medication: z.string().optional().nullable(),
+        dose: z.string().optional().nullable(),
+        targetTsh: z.number().optional().nullable(),
+        symptoms: z.string().optional().nullable(),
+        followUpNeeded: z.boolean().optional(),
+        followUpDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid follow-up date',
+        }).optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+export const updateEndocrinologyThyroidSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'Thyroid ID is required'),
+    }),
+    body: z.object({
+        patientId: z.string().min(1).optional(),
+        providerId: z.string().min(1).optional(),
+        testDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid test date',
+        }).optional(),
+        tsh: z.number().optional().nullable(),
+        freeT3: z.number().optional().nullable(),
+        freeT4: z.number().optional().nullable(),
+        totalT3: z.number().optional().nullable(),
+        totalT4: z.number().optional().nullable(),
+        tpoAntibodies: z.number().optional().nullable(),
+        tgAntibodies: z.number().optional().nullable(),
+        thyroglobulin: z.number().optional().nullable(),
+        calcitonin: z.number().optional().nullable(),
+        diagnosis: z.string().optional().nullable(),
+        thyroidSize: z.string().optional().nullable(),
+        nodulesPresent: z.boolean().optional(),
+        noduleDescription: z.string().optional().nullable(),
+        biopsyRecommended: z.boolean().optional(),
+        biopsyResults: z.string().optional().nullable(),
+        medication: z.string().optional().nullable(),
+        dose: z.string().optional().nullable(),
+        targetTsh: z.number().optional().nullable(),
+        symptoms: z.string().optional().nullable(),
+        followUpNeeded: z.boolean().optional(),
+        followUpDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: 'Invalid follow-up date',
+        }).optional().nullable(),
+        notes: z.string().optional().nullable(),
+    }),
+});
+
+// Type exports
+export type CreatePulmonologySpirometryInput = z.infer<typeof createPulmonologySpirometrySchema>['body'];
+export type UpdatePulmonologySpirometryInput = z.infer<typeof updatePulmonologySpirometrySchema>['body'];
+export type CreatePulmonologySleepStudyInput = z.infer<typeof createPulmonologySleepStudySchema>['body'];
+export type UpdatePulmonologySleepStudyInput = z.infer<typeof updatePulmonologySleepStudySchema>['body'];
+export type CreatePulmonologyBronchoscopyInput = z.infer<typeof createPulmonologyBronchoscopySchema>['body'];
+export type UpdatePulmonologyBronchoscopyInput = z.infer<typeof updatePulmonologyBronchoscopySchema>['body'];
+export type CreateEndocrinologyDiabetesInput = z.infer<typeof createEndocrinologyDiabetesSchema>['body'];
+export type UpdateEndocrinologyDiabetesInput = z.infer<typeof updateEndocrinologyDiabetesSchema>['body'];
+export type CreateEndocrinologyInsulinInput = z.infer<typeof createEndocrinologyInsulinSchema>['body'];
+export type UpdateEndocrinologyInsulinInput = z.infer<typeof updateEndocrinologyInsulinSchema>['body'];
+export type CreateEndocrinologyThyroidInput = z.infer<typeof createEndocrinologyThyroidSchema>['body'];
+export type UpdateEndocrinologyThyroidInput = z.infer<typeof updateEndocrinologyThyroidSchema>['body'];

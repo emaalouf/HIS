@@ -47,6 +47,24 @@ import operatingTheaterRoutes from './operating-theater.routes';
 import invoiceRoutes from './invoice.routes';
 import paymentRoutes from './payment.routes';
 import claimRoutes from './claim.routes';
+import labTestRoutes from './labTests.routes';
+import testPanelRoutes from './testPanels.routes';
+import specimenRoutes from './specimens.routes';
+import labWorkOrderRoutes from './labWorkOrders.routes';
+import labResultRoutes from './labResults.routes';
+import referenceRangeRoutes from './referenceRanges.routes';
+import qcControlRoutes from './qcControls.routes';
+import imagingStudyRoutes from './imagingStudies.routes';
+import radiologistReportRoutes from './radiologistReports.routes';
+import edVisitRoutes from './edVisits.routes';
+import icuAdmissionRoutes from './icuAdmissions.routes';
+import bloodProductRoutes from './bloodProducts.routes';
+import inventoryItemRoutes from './inventoryItems.routes';
+import inventoryLocationRoutes from './inventoryLocations.routes';
+import inventoryTransactionRoutes from './inventoryTransactions.routes';
+import supplierRoutes from './suppliers.routes';
+import purchaseOrderRoutes from './purchaseOrders.routes';
+import requisitionRoutes from './requisitions.routes';
 
 const router = Router();
 
@@ -98,5 +116,35 @@ router.use('/operating-theaters', operatingTheaterRoutes);
 router.use('/invoices', invoiceRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/claims', claimRoutes);
+
+// LIS - Laboratory Information System Routes
+router.use('/lab-tests', labTestRoutes);
+router.use('/test-panels', testPanelRoutes);
+router.use('/specimens', specimenRoutes);
+router.use('/lab-work-orders', labWorkOrderRoutes);
+router.use('/lab-results', labResultRoutes);
+router.use('/reference-ranges', referenceRangeRoutes);
+router.use('/qc-controls', qcControlRoutes);
+
+// Radiology/PACS Routes
+router.use('/imaging-studies', imagingStudyRoutes);
+router.use('/radiologist-reports', radiologistReportRoutes);
+
+// Emergency Department Routes
+router.use('/ed-visits', edVisitRoutes);
+
+// ICU / Critical Care Routes
+router.use('/icu-admissions', icuAdmissionRoutes);
+
+// Blood Bank Routes
+router.use('/blood-products', bloodProductRoutes);
+
+// Inventory / Supply Chain Routes
+router.use('/inventory-items', inventoryItemRoutes);
+router.use('/inventory-locations', inventoryLocationRoutes);
+router.use('/inventory-transactions', inventoryTransactionRoutes);
+router.use('/suppliers', supplierRoutes);
+router.use('/purchase-orders', purchaseOrderRoutes);
+router.use('/requisitions', requisitionRoutes);
 
 export default router;

@@ -97,6 +97,16 @@ import { OperatingTheatersListPage } from './pages/operating-theaters/OperatingT
 import { OperatingTheaterFormPage } from './pages/operating-theaters/OperatingTheaterFormPage';
 import { SurgeriesListPage } from './pages/surgeries/SurgeriesListPage';
 import { SurgeryFormPage } from './pages/surgeries/SurgeryFormPage';
+import { LabTestsPage } from './pages/lis/LabTestsPage';
+import { LabTestFormPage } from './pages/lis/LabTestFormPage';
+import { SpecimensPage } from './pages/lis/SpecimensPage';
+import { LabWorkOrdersPage } from './pages/lis/LabWorkOrdersPage';
+import { LabResultsPage } from './pages/lis/LabResultsPage';
+import { QCControlsPage } from './pages/lis/QCControlsPage';
+import { ImagingStudiesPage } from './pages/radiology/ImagingStudiesPage';
+import { EmergencyDepartmentPage } from './pages/emergency/EmergencyDepartmentPage';
+import { BloodBankPage } from './pages/bloodbank/BloodBankPage';
+import { IcuDashboardPage } from './pages/icu/IcuDashboardPage';
 import './index.css';
 
 function App() {
@@ -244,6 +254,19 @@ function App() {
         <Route path="/permissions" element={<PermissionListPage />} />
         <Route path="/permissions/new" element={<PermissionFormPage />} />
         <Route path="/permissions/:id/edit" element={<PermissionFormPage />} />
+        <Route path="/lis" element={<LabTestsPage />} />
+        <Route path="/lis/tests" element={<LabTestsPage />} />
+        <Route path="/lis/tests/new" element={<LabTestFormPage />} />
+        <Route path="/lis/tests/:id/edit" element={<LabTestFormPage />} />
+        <Route path="/lis/specimens" element={<SpecimensPage />} />
+        <Route path="/lis/work-orders" element={<LabWorkOrdersPage />} />
+        <Route path="/lis/results" element={<LabResultsPage />} />
+        <Route path="/lis/qc" element={<QCControlsPage />} />
+        <Route path="/radiology" element={<ImagingStudiesPage />} />
+        <Route path="/radiology/studies" element={<ImagingStudiesPage />} />
+        <Route path="/emergency" element={<EmergencyDepartmentPage />} />
+        <Route path="/icu" element={<IcuDashboardPage />} />
+        <Route path="/bloodbank" element={<BloodBankPage />} />
         <Route path="/patients" element={<PatientListPage />} />
         <Route path="/patients/new" element={<PatientFormPage />} />
         <Route path="/patients/:id" element={<PatientDetailPage />} />
