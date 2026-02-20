@@ -1,12 +1,15 @@
 import express from 'express';
+import http from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import config from './config';
 import routes from './routes';
 import { errorHandler, notFound } from './middleware';
 import prisma from './config/database';
+import { setupSocketIO } from './ai/socket';
 
 const app = express();
+const server = http.createServer(app);
 
 // Security middleware
 app.use(helmet());
@@ -38,9 +41,13 @@ const startServer = async () => {
         await prisma.$connect();
         console.log('✅ Database connected successfully');
 
-        app.listen(config.port, () => {
+        // Setup Socket.IO for AI chat
+        setupSocketIO(server);
+
+        server.listen(config.port, () => {
             console.log(`🚀 Server running on http://localhost:${config.port}`);
             console.log(`📚 API available at http://localhost:${config.port}/api`);
+            console.log(`🤖 AI WebSocket available at ws://localhost:${config.port}/ws`);
         });
     } catch (error) {
         console.error('❌ Failed to start server:', error);

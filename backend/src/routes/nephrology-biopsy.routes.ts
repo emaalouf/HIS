@@ -6,7 +6,7 @@ import {
     getNephrologyBiopsyById,
     updateNephrologyBiopsy,
 } from '../controllers/nephrology-biopsy.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNephrologyBiopsySchema, updateNephrologyBiopsySchema } from '../utils/validators';
 

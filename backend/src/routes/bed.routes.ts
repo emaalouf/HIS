@@ -6,7 +6,7 @@ import {
     getBeds,
     updateBed,
 } from '../controllers/bed.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createBedSchema, updateBedSchema } from '../utils/validators';
 

@@ -6,7 +6,7 @@ import {
     getPedsDevelopmentalAssessments,
     updatePedsDevelopmentalAssessment,
 } from '../controllers/pediatrics-developmental.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createPedsDevelopmentalSchema, updatePedsDevelopmentalSchema } from '../utils/validators';
 

@@ -6,7 +6,7 @@ import {
     getThyroidTests,
     updateThyroidTest,
 } from '../controllers/endocrinology-thyroid.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createEndocrinologyThyroidSchema, updateEndocrinologyThyroidSchema } from '../utils/validators';
 

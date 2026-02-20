@@ -6,7 +6,7 @@ import {
     getOncologyRadiations,
     updateOncologyRadiation,
 } from '../controllers/oncology-radiation.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createOncologyRadiationSchema, updateOncologyRadiationSchema } from '../utils/validators';
 

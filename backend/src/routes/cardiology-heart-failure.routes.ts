@@ -6,7 +6,7 @@ import {
     getCardiologyHeartFailureById,
     updateCardiologyHeartFailure,
 } from '../controllers/cardiology-heart-failure.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createCardiologyHeartFailureSchema, updateCardiologyHeartFailureSchema } from '../utils/validators';
 

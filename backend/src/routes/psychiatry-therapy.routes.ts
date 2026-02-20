@@ -6,7 +6,7 @@ import {
     getPsychiatryTherapySessions,
     updatePsychiatryTherapySession,
 } from '../controllers/psychiatry-therapy.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createPsychiatryTherapySchema, updatePsychiatryTherapySchema } from '../utils/validators';
 

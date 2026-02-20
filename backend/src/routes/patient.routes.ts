@@ -9,7 +9,7 @@ import {
     addMedicalHistory,
     getPatientStats,
 } from '../controllers/patient.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import {
     createPatientSchema,

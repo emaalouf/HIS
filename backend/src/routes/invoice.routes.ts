@@ -6,7 +6,7 @@ import {
     getInvoices,
     updateInvoice,
 } from '../controllers/invoice.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createInvoiceSchema, updateInvoiceSchema } from '../utils/validators';
 

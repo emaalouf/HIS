@@ -6,7 +6,7 @@ import {
     getNeurologyCognitives,
     updateNeurologyCognitive,
 } from '../controllers/neurology-cognitive.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNeurologyCognitiveSchema, updateNeurologyCognitiveSchema } from '../utils/validators';
 

@@ -6,7 +6,7 @@ import {
     getClinicalOrders,
     updateClinicalOrder,
 } from '../controllers/clinical-order.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createClinicalOrderSchema, updateClinicalOrderSchema } from '../utils/validators';
 

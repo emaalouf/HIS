@@ -6,7 +6,7 @@ import {
     getOphthExams,
     updateOphthExam,
 } from '../controllers/ophthalmology-exam.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createOphthExamSchema, updateOphthExamSchema } from '../utils/validators';
 

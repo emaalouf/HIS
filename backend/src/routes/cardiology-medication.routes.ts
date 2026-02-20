@@ -6,7 +6,7 @@ import {
     getCardiologyMedications,
     updateCardiologyMedication,
 } from '../controllers/cardiology-medication.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createCardiologyMedicationSchema, updateCardiologyMedicationSchema } from '../utils/validators';
 

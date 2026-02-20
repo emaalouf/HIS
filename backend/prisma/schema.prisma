@@ -194,6 +194,7 @@ model User {
   requisitionsRequested Requisition[] @relation(name: "RequisitionRequestedBy")
   requisitionsApproved Requisition[] @relation(name: "RequisitionApprovedBy")
   requisitionsFulfilled Requisition[] @relation(name: "RequisitionFulfilledBy")
+  aiChatSessions AiChatSession[]
 
   @@map("users")
 }
@@ -5766,4 +5767,32 @@ model RequisitionItem {
   @@index([requisitionId])
   @@index([itemId])
   @@map("requisition_items")
+}
+
+model AiChatSession {
+  id             String          @id @default(cuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  lastActivityAt DateTime        @default(now())
+  messages       AiChatMessage[]
+
+  @@index([userId, isActive])
+  @@index([lastActivityAt])
+  @@map("ai_chat_sessions")
+}
+
+model AiChatMessage {
+  id        String        @id @default(cuid())
+  sessionId String
+  session   AiChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sequence  Int
+  payload   Json
+  createdAt DateTime      @default(now())
+
+  @@unique([sessionId, sequence])
+  @@index([sessionId])
+  @@map("ai_chat_messages")
 }

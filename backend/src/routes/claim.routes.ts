@@ -6,7 +6,7 @@ import {
     getClaims,
     updateClaim,
 } from '../controllers/claim.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createClaimSchema, updateClaimSchema } from '../utils/validators';
 

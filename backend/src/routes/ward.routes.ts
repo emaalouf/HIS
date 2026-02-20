@@ -6,7 +6,7 @@ import {
     getWards,
     updateWard,
 } from '../controllers/ward.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createWardSchema, updateWardSchema } from '../utils/validators';
 

@@ -6,7 +6,7 @@ import {
     getNephrologyMedications,
     updateNephrologyMedication,
 } from '../controllers/nephrology-medication.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNephrologyMedicationSchema, updateNephrologyMedicationSchema } from '../utils/validators';
 

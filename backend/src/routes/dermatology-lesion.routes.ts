@@ -6,7 +6,7 @@ import {
     getDermLesions,
     updateDermLesion,
 } from '../controllers/dermatology-lesion.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createDermLesionSchema, updateDermLesionSchema } from '../utils/validators';
 

@@ -6,7 +6,7 @@ import {
     getPedsGrowthCharts,
     updatePedsGrowthChart,
 } from '../controllers/pediatrics-growth-chart.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createPedsGrowthChartSchema, updatePedsGrowthChartSchema } from '../utils/validators';
 

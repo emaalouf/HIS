@@ -6,7 +6,7 @@ import {
     getOrthopedicJointReplacements,
     updateOrthopedicJointReplacement,
 } from '../controllers/orthopedic-joint-replacement.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createOrthopedicJointReplacementSchema, updateOrthopedicJointReplacementSchema } from '../utils/validators';
 

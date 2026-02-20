@@ -6,7 +6,7 @@ import {
     getNephrologyLabs,
     updateNephrologyLab,
 } from '../controllers/nephrology-lab.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNephrologyLabSchema, updateNephrologyLabSchema } from '../utils/validators';
 

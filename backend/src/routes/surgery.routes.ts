@@ -9,7 +9,7 @@ import {
     updateSurgery,
     updateSurgeryStatus,
 } from '../controllers/surgery.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createSurgerySchema, updateSurgerySchema } from '../utils/validators';
 

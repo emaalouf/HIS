@@ -6,7 +6,7 @@ import {
     getOncologyChemotherapies,
     updateOncologyChemotherapy,
 } from '../controllers/oncology-chemotherapy.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createOncologyChemotherapySchema, updateOncologyChemotherapySchema } from '../utils/validators';
 

@@ -6,7 +6,7 @@ import {
     getNeurologyImagings,
     updateNeurologyImaging,
 } from '../controllers/neurology-imaging.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNeurologyImagingSchema, updateNeurologyImagingSchema } from '../utils/validators';
 

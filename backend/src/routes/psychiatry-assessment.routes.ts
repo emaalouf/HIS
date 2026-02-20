@@ -6,7 +6,7 @@ import {
     getPsychiatryAssessments,
     updatePsychiatryAssessment,
 } from '../controllers/psychiatry-assessment.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createPsychiatryAssessmentSchema, updatePsychiatryAssessmentSchema } from '../utils/validators';
 

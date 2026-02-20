@@ -6,7 +6,7 @@ import {
     getSpecialtyById,
     updateSpecialty,
 } from '../controllers/specialty.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createSpecialtySchema, updateSpecialtySchema } from '../utils/validators';
 

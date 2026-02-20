@@ -6,7 +6,7 @@ import {
     getDermBiopsies,
     updateDermBiopsy,
 } from '../controllers/dermatology-biopsy.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createDermBiopsySchema, updateDermBiopsySchema } from '../utils/validators';
 

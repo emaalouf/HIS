@@ -6,7 +6,7 @@ import {
     getProviders,
     updateProvider,
 } from '../controllers/provider.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createProviderSchema, updateProviderSchema } from '../utils/validators';
 

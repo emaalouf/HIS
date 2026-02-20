@@ -6,7 +6,7 @@ import {
     getPayments,
     updatePayment,
 } from '../controllers/payment.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createPaymentSchema, updatePaymentSchema } from '../utils/validators';
 

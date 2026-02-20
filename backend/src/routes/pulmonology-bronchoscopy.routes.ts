@@ -6,7 +6,7 @@ import {
     getBronchoscopies,
     updateBronchoscopy,
 } from '../controllers/pulmonology-bronchoscopy.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createPulmonologyBronchoscopySchema, updatePulmonologyBronchoscopySchema } from '../utils/validators';
 

@@ -6,7 +6,7 @@ import {
     getGastroEndoscopies,
     updateGastroEndoscopy,
 } from '../controllers/gastro-endoscopy.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createGastroEndoscopySchema, updateGastroEndoscopySchema } from '../utils/validators';
 

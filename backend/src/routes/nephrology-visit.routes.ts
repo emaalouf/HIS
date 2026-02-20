@@ -6,7 +6,7 @@ import {
     getNephrologyVisits,
     updateNephrologyVisit,
 } from '../controllers/nephrology-visit.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNephrologyVisitSchema, updateNephrologyVisitSchema } from '../utils/validators';
 

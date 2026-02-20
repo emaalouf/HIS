@@ -6,7 +6,7 @@ import {
     getSpirometryTests,
     updateSpirometryTest,
 } from '../controllers/pulmonology-spirometry.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createPulmonologySpirometrySchema, updatePulmonologySpirometrySchema } from '../utils/validators';
 

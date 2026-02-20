@@ -6,7 +6,7 @@ import {
     getDialysisFlowsheets,
     updateDialysisFlowsheet,
 } from '../controllers/dialysis-flowsheet.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createDialysisFlowsheetSchema, updateDialysisFlowsheetSchema } from '../utils/validators';
 

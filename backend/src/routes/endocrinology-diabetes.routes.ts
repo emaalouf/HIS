@@ -6,7 +6,7 @@ import {
     getDiabetesRecords,
     updateDiabetesRecord,
 } from '../controllers/endocrinology-diabetes.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createEndocrinologyDiabetesSchema, updateEndocrinologyDiabetesSchema } from '../utils/validators';
 

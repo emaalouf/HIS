@@ -6,7 +6,7 @@ import {
     getNephrologyImagingById,
     updateNephrologyImaging,
 } from '../controllers/nephrology-imaging.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNephrologyImagingSchema, updateNephrologyImagingSchema } from '../utils/validators';
 

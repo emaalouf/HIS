@@ -6,7 +6,7 @@ import {
     getOncologyTumorBoards,
     updateOncologyTumorBoard,
 } from '../controllers/oncology-tumor-board.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createOncologyTumorBoardSchema, updateOncologyTumorBoardSchema } from '../utils/validators';
 

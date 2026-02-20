@@ -6,7 +6,7 @@ import {
     getNeurologyVisits,
     updateNeurologyVisit,
 } from '../controllers/neurology-visit.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNeurologyVisitSchema, updateNeurologyVisitSchema } from '../utils/validators';
 

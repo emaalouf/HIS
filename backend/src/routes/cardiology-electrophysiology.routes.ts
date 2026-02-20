@@ -6,7 +6,7 @@ import {
     getCardiologyElectrophysiologyStudies,
     updateCardiologyElectrophysiology,
 } from '../controllers/cardiology-electrophysiology.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createCardiologyElectrophysiologySchema, updateCardiologyElectrophysiologySchema } from '../utils/validators';
 

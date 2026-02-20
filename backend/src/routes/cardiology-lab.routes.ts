@@ -6,7 +6,7 @@ import {
     getCardiologyLabs,
     updateCardiologyLab,
 } from '../controllers/cardiology-lab.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createCardiologyLabSchema, updateCardiologyLabSchema } from '../utils/validators';
 

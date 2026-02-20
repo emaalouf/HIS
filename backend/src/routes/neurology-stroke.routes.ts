@@ -6,7 +6,7 @@ import {
     getNeurologyStrokes,
     updateNeurologyStroke,
 } from '../controllers/neurology-stroke.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNeurologyStrokeSchema, updateNeurologyStrokeSchema } from '../utils/validators';
 

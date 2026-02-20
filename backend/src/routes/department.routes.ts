@@ -6,7 +6,7 @@ import {
     getDepartments,
     updateDepartment,
 } from '../controllers/department.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createDepartmentSchema, updateDepartmentSchema } from '../utils/validators';
 

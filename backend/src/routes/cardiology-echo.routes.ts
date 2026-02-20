@@ -6,7 +6,7 @@ import {
     getCardiologyEchos,
     updateCardiologyEcho,
 } from '../controllers/cardiology-echo.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createCardiologyEchoSchema, updateCardiologyEchoSchema } from '../utils/validators';
 

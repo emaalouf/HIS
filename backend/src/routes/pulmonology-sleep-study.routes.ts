@@ -6,7 +6,7 @@ import {
     getSleepStudies,
     updateSleepStudy,
 } from '../controllers/pulmonology-sleep-study.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createPulmonologySleepStudySchema, updatePulmonologySleepStudySchema } from '../utils/validators';
 

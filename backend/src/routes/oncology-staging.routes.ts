@@ -6,7 +6,7 @@ import {
     getOncologyStagings,
     updateOncologyStaging,
 } from '../controllers/oncology-staging.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createOncologyStagingSchema, updateOncologyStagingSchema } from '../utils/validators';
 

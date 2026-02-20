@@ -6,7 +6,7 @@ import {
     getClinicalResults,
     updateClinicalResult,
 } from '../controllers/clinical-result.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createClinicalResultSchema, updateClinicalResultSchema } from '../utils/validators';
 

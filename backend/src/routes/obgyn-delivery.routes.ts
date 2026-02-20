@@ -6,7 +6,7 @@ import {
     getObgynDeliveries,
     updateObgynDelivery,
 } from '../controllers/obgyn-delivery.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createObgynDeliverySchema, updateObgynDeliverySchema } from '../utils/validators';
 

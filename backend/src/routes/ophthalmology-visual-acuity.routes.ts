@@ -6,7 +6,7 @@ import {
     getOphthVisualAcuityTests,
     updateOphthVisualAcuityTest,
 } from '../controllers/ophthalmology-visual-acuity.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createOphthVisualAcuitySchema, updateOphthVisualAcuitySchema } from '../utils/validators';
 

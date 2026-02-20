@@ -4,6 +4,21 @@ import { CreatePatientInput, UpdatePatientInput, CreateMedicalHistoryInput } fro
 import { Prisma } from '@prisma/client';
 
 export class PatientService {
+    private buildSearchInput(search: string): { variants: string[]; nameParts: string[] } {
+        const trimmed = search.trim();
+        if (!trimmed) return { variants: [], nameParts: [] };
+
+        // Example: "johnSmith" -> ["john", "Smith"] (plus original token)
+        const camelSplit = trimmed.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+        const nameParts = camelSplit
+            .split(/\s+/)
+            .map((term) => term.trim())
+            .filter(Boolean);
+
+        const variants = Array.from(new Set([trimmed, ...nameParts]));
+        return { variants, nameParts };
+    }
+
     async create(data: CreatePatientInput) {
         const mrn = generateMRN();
 
@@ -43,13 +58,37 @@ export class PatientService {
         const where: Prisma.PatientWhereInput = {};
 
         if (search) {
-            where.OR = [
-                { firstName: { contains: search } },
-                { lastName: { contains: search } },
-                { mrn: { contains: search } },
-                { phone: { contains: search } },
-                { email: { contains: search } },
-            ];
+            const { variants, nameParts } = this.buildSearchInput(search);
+            const firstNamePart = nameParts[0];
+            const remainingNameParts = nameParts.slice(1).join(' ');
+
+            const orFilters: Prisma.PatientWhereInput[] = variants.flatMap((term) => ([
+                { firstName: { contains: term } },
+                { lastName: { contains: term } },
+                { mrn: { contains: term } },
+                { phone: { contains: term } },
+                { email: { contains: term } },
+            ]));
+
+            // For camelCase or multi-word name queries, try paired first/last matching.
+            if (firstNamePart && remainingNameParts) {
+                orFilters.push(
+                    {
+                        AND: [
+                            { firstName: { contains: firstNamePart } },
+                            { lastName: { contains: remainingNameParts } },
+                        ],
+                    },
+                    {
+                        AND: [
+                            { firstName: { contains: remainingNameParts } },
+                            { lastName: { contains: firstNamePart } },
+                        ],
+                    }
+                );
+            }
+
+            where.OR = orFilters;
         }
 
         if (isActive !== undefined) {

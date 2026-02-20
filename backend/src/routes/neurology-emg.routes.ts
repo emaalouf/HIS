@@ -6,7 +6,7 @@ import {
     getNeurologyEmgs,
     updateNeurologyEmg,
 } from '../controllers/neurology-emg.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createNeurologyEmgSchema, updateNeurologyEmgSchema } from '../utils/validators';
 

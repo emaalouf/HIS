@@ -6,7 +6,7 @@ import {
     getAdmissions,
     updateAdmission,
 } from '../controllers/admission.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createAdmissionSchema, updateAdmissionSchema } from '../utils/validators';
 

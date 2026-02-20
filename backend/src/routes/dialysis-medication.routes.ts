@@ -6,7 +6,7 @@ import {
     getDialysisMedications,
     updateDialysisMedication,
 } from '../controllers/dialysis-medication.controller';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validate';
 import { createDialysisMedicationSchema, updateDialysisMedicationSchema } from '../utils/validators';
 
